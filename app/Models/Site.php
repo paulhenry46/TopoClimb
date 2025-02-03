@@ -10,4 +10,10 @@ class Site extends Model
     {
         return $this->hasMany(Area::class);
     }
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'adress',
+    ];
 }
