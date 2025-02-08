@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Site;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -17,8 +18,11 @@ Route::middleware([
     })->name('dashboard');
 });
 
-//Volt::route('/sites/manage', 'managesites')->name('managesites');
 
 Route::get('/sites/manage', function () {
     return view('sites.index');
-})->name('managesites');
+})->name('sites.manage');
+
+Route::get('sites/{site}/areas/manage', function (Site $site) {
+    return view('areas.index', compact('site'));
+})->name('areas.manage');

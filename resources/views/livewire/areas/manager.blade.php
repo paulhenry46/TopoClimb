@@ -1,6 +1,7 @@
 <?php
 
 use Livewire\Volt\Component;
+use App\Models\Area;
 use App\Models\Site;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
@@ -9,7 +10,9 @@ use Livewire\Attributes\Computed;
 new class extends Component {
   use WithPagination;
 
+    public Area $area;
     public Site $site;
+    public $site_id;
     public $modal_open;
     public $modal_title;
     public $modal_subtitle;
@@ -18,7 +21,7 @@ new class extends Component {
     #[Validate('required')]
     public $name;
     #[Validate('required')]
-    public $adress;
+    public $type;
     public $slug;
     public $id_editing;
     
@@ -28,15 +31,15 @@ new class extends Component {
         $this->validate(); 
         $this->slug = Str::slug($this->name, '-');
         if($this->id_editing == 0){
-          Site::create(
-            $this->pull(['name', 'adress', 'slug'])
+          Area::create(
+            $this->pull(['name', 'type', 'slug', 'site_id'])
         );
         }else{
-          $this->site->name = $this->name;
-          $this->site->adress = $this->adress;
-          $this->site->slug = $this->slug;
-          $this->site->save();
-          $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
+          $this->area->name = $this->name;
+          $this->area->type = $this->type;
+          $this->area->slug = $this->slug;
+          $this->area->save();
+          $this->dispatch('action_ok', title: 'Area saved', message: 'Your modifications has been registered !');
         }
         
         $this->modal_open = false;
@@ -44,39 +47,43 @@ new class extends Component {
     }
 
     #[Computed]
-    public function sites()
+    public function areas()
     {
-        return Site::paginate(10);
+        return Area::where('site_id', $this->site->id)->paginate(10);
     }
 
     public function open_item($id){
-      $item = Site::find($id);
-      $this->site = $item;
+      $item = Area::find($id);
+      $this->area = $item;
       $this->name = $item->name;
-      $this->adress = $item->adress;
+      $this->type = $item->type;
       $this->id_editing = $id;
       $this->modal_title = __('Editing ').$this->name;
-      $this->modal_subtitle = __('Check the informations about this site.');
+      $this->modal_subtitle = __('Check the informations about this area.');
       $this->modal_submit_message = __('Edit');
       $this->modal_open = true;
     }
 
     public function delete_item($id){
-      $item = Site::find($id);
+      $item = Area::find($id);
       $item->delete();
-      $this->dispatch('action_ok', title: 'Site deleted', message: 'Your modifications has been registered !');
+      $this->dispatch('action_ok', title: 'Area deleted', message: 'Your modifications has been registered !');
       $this->render();
     }
 
-    public function mount(){
-      $this->modal_subtitle = __('Get started by filling in the information below to create a new site.');
-      $this->modal_title = __('New site');
+    public function mount(Site $site){
+      $this->modal_subtitle = __('Get started by filling in the information below to create a new area.');
+      $this->modal_title = __('New area');
       $this->modal_submit_message = __('Create');
+      $this->site = $site;
+      $this->site_id = $site->id;
+      $this->site = $site;
+      $this->site_id = $site->id;
     }
 
     public function open_modal(){
-      $this->modal_subtitle = __('Get started by filling in the information below to create a new site.');
-      $this->modal_title = __('New site');
+      $this->modal_subtitle = __('Get started by filling in the information below to create a new area.');
+      $this->modal_title = __('New area');
       $this->id_editing = 0;
       $this->modal_submit_message = __('Create');
       $this->modal_open = true;
@@ -87,11 +94,12 @@ new class extends Component {
   <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Sites')}}</h1>
-        <p class="mt-2 text-sm text-gray-700">{{__('Registered climbing sites in the website')}}</p>
+        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Areas')}}</h1>
+        <p class="mt-2 text-sm text-gray-700">{{__('Registered Areas in this site')}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <button type="button" wire:click="open_modal()" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{__('Add site')}}</button>
+        <x-button wire:click="open_modal()" type="button">{{__('New area')}}</x-button>
+        
       </div>
     </div>
     <div class="mt-8 flow-root">
@@ -101,25 +109,25 @@ new class extends Component {
             <thead>
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Name')}}</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Adress')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Type')}}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white"> @foreach ($this->sites as $site) <tr class="even:bg-gray-50">
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$site->name}}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->adress}}</td>
+            <tbody class="bg-white"> @foreach ($this->areas as $area) <tr class="even:bg-gray-50">
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$area->name}}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->type}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                  <button wire:click="open_item({{$site->id}})" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-icon-edit/></button>
-                  <button type="button" wire:click="delete_item({{$site->id}})" wire:confirm="{{__('Are you sure you want to delete this site?')}}" class="text-red-600 hover:text-red-900">
+                  <button wire:click="open_item({{$area->id}})" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-icon-edit/></button>
+                  <button type="button" wire:click="delete_item({{$area->id}})" wire:confirm="{{__('Are you sure you want to delete this site?')}}" class="text-red-600 hover:text-red-900">
                     <x-icon-delete/>
                   </button>
                 </td>
               </tr> @endforeach
             </tbody>
           </table>
-          {{ $this->sites->links() }}
+          {{ $this->areas->links() }}
         </div>
       </div>
     </div>
@@ -143,8 +151,6 @@ new class extends Component {
                     </div>
                     <div class="flex h-7 items-center">
                       <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500">
-                        <span class="absolute -inset-2.5"></span>
-                        <span class="sr-only">Close panel</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -164,10 +170,33 @@ new class extends Component {
                   </div>
                   <!-- Project description -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="adress" value="{{ __('Adress') }}" />
+                      <x-label for="adress" value="{{ __('Area Type') }}" />
                     <div class="sm:col-span-2">
-                      <textarea wire:model="adress" id="adress" name="adress" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
-                      <x-input-error for="adress" class="mt-2" />
+                      <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
+                        <legend class="sr-only">{{__('Area Type')}}</legend>
+                        <div class="-space-y-px bg-white">
+                          <!-- Checked: "z-10 border-indigo-200 bg-indigo-50", Not Checked: "border-gray-200" -->
+                          <label :class="type == 'voie' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
+                            <input x-model="type" type="radio" name="area-type" value="voie" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
+                            <span class="ml-3 flex flex-col">
+                              <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" -->
+                              <span :class="type == 'voie' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('Type Voie')}}</span>
+                              <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
+                              <span :class="type == 'voie' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
+                            </span>
+                          </label>
+                          <!-- Checked: "z-10 border-indigo-200 bg-indigo-50", Not Checked: "border-gray-200" -->
+                          <label :class="type == 'bloc' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
+                            <input x-model="type" type="radio" name="area-type" value="bloc" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
+                            <span class="ml-3 flex flex-col">
+                              <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" -->
+                              <span :class="type == 'bloc' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Type Bloc')}}</span>
+                              <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
+                              <span :class="type == 'bloc' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
+                            </span>
+                          </label>
+                        </div>
+                      </fieldset>
                     </div>
                   </div>
                 </div>

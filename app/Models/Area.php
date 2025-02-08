@@ -15,4 +15,11 @@ class Area extends Model
     {
         return $this->belongsTo(Site::class);
     }
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'type',
+        'site_id'
+    ];
 }
