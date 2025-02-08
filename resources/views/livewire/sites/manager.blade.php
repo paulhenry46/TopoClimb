@@ -103,6 +103,7 @@ new class extends Component {
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Name')}}</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Adress')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of areas')}}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
                 </th>
@@ -111,8 +112,10 @@ new class extends Component {
             <tbody class="bg-white"> @foreach ($this->sites as $site) <tr class="even:bg-gray-50">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$site->name}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->adress}}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->areas->count()}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                  <button wire:click="open_item({{$site->id}})" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-icon-edit/></button>
+                  <a wire:navigate href="{{route('areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button><x-icon-see/></button></a>
+                  <button wire:click="open_item({{$site->id}})" class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-edit/></button>
                   <button type="button" wire:click="delete_item({{$site->id}})" wire:confirm="{{__('Are you sure you want to delete this site?')}}" class="text-red-600 hover:text-red-900">
                     <x-icon-delete/>
                   </button>

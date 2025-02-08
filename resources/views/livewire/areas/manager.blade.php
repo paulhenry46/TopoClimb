@@ -77,8 +77,6 @@ new class extends Component {
       $this->modal_submit_message = __('Create');
       $this->site = $site;
       $this->site_id = $site->id;
-      $this->site = $site;
-      $this->site_id = $site->id;
     }
 
     public function open_modal(){
@@ -94,8 +92,8 @@ new class extends Component {
   <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Areas')}}</h1>
-        <p class="mt-2 text-sm text-gray-700">{{__('Registered Areas in this site')}}</p>
+        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Areas of')}} {{$this->site->name}}</h1>
+        <p class="mt-2 text-sm text-gray-700">{{$this->site->adress}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <x-button wire:click="open_modal()" type="button">{{__('New area')}}</x-button>
@@ -110,6 +108,9 @@ new class extends Component {
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Name')}}</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Type')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of sectors')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of routes')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Statut')}}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
                 </th>
@@ -118,9 +119,30 @@ new class extends Component {
             <tbody class="bg-white"> @foreach ($this->areas as $area) <tr class="even:bg-gray-50">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$area->name}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->type}}</td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                  <button wire:click="open_item({{$area->id}})" class="text-indigo-600 hover:text-indigo-900 mr-2"><x-icon-edit/></button>
-                  <button type="button" wire:click="delete_item({{$area->id}})" wire:confirm="{{__('Are you sure you want to delete this site?')}}" class="text-red-600 hover:text-red-900">
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->sectors()->count()}}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">0</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  @if($area->sectors()->count() == 0) 
+                  <span class="inline-flex items-center gap-x-1.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                    <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3"></circle>
+                    </svg>
+                    {{('Uninitialized')}}
+                  </span>
+                   
+                  @else
+                  <span class="inline-flex items-center gap-x-1.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3"></circle>
+                    </svg>
+                    {{('OK')}}
+                  </span>
+                  @endif
+                </td>
+                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 flex">
+                  <button class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-map/></button>
+                  <button wire:click="open_item({{$area->id}})" class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-edit/></button>
+                  <button type="button" wire:click="delete_item({{$area->id}})" wire:confirm="{{__('Are you sure you want to delete this area?')}}" class="text-red-600 hover:text-red-900">
                     <x-icon-delete/>
                   </button>
                 </td>
@@ -162,7 +184,7 @@ new class extends Component {
                 <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
                   <!-- Project name -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="name" value="{{ __('Site name') }}" />
+                      <x-label for="name" value="{{ __('Area name') }}" />
                     <div class="sm:col-span-2">
                       <x-input wire:model="name" type="text" name="name" id="project-name" class="block w-full" />
                       <x-input-error for="name" class="mt-2" />
@@ -175,23 +197,17 @@ new class extends Component {
                       <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
                         <legend class="sr-only">{{__('Area Type')}}</legend>
                         <div class="-space-y-px bg-white">
-                          <!-- Checked: "z-10 border-indigo-200 bg-indigo-50", Not Checked: "border-gray-200" -->
                           <label :class="type == 'voie' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
                             <input x-model="type" type="radio" name="area-type" value="voie" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
                             <span class="ml-3 flex flex-col">
-                              <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" -->
                               <span :class="type == 'voie' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('Type Voie')}}</span>
-                              <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
                               <span :class="type == 'voie' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
                             </span>
                           </label>
-                          <!-- Checked: "z-10 border-indigo-200 bg-indigo-50", Not Checked: "border-gray-200" -->
                           <label :class="type == 'bloc' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
                             <input x-model="type" type="radio" name="area-type" value="bloc" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
                             <span class="ml-3 flex flex-col">
-                              <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" -->
                               <span :class="type == 'bloc' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Type Bloc')}}</span>
-                              <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" -->
                               <span :class="type == 'bloc' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
                             </span>
                           </label>
