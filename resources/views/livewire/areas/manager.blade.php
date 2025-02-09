@@ -139,8 +139,9 @@ new class extends Component {
                   </span>
                   @endif
                 </td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 flex">
-                  <button class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-map/></button>
+                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                  
+                  <a wire:navigate href="{{route('areas.initialize', ['site'=>$site->id, 'area' => $area->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button><x-icon-map/></button></a>
                   <button wire:click="open_item({{$area->id}})" class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-edit/></button>
                   <button type="button" wire:click="delete_item({{$area->id}})" wire:confirm="{{__('Are you sure you want to delete this area?')}}" class="text-red-600 hover:text-red-900">
                     <x-icon-delete/>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Area;
 use App\Models\Site;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -26,3 +27,7 @@ Route::get('/sites/manage', function () {
 Route::get('sites/{site}/areas/manage', function (Site $site) {
     return view('areas.index', compact('site'));
 })->name('areas.manage');
+
+Route::get('sites/{site}/areas/{area}/initialize', function (Site $site, Area $area) {
+    return view('areas.initialize', compact('site', 'area'));
+})->name('areas.initialize');
