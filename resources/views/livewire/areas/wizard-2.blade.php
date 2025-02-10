@@ -13,6 +13,7 @@ new class extends Component {
     public Area $area;
     public Site $site;
     public int $step;
+    public string $url;
   public $path;
     #[Validate('mimes:svg|required')]
     public $photo;
@@ -24,12 +25,12 @@ new class extends Component {
 
 
     public function mount(Site $site, Area $area){
-      $this->modal_subtitle = __('Get started by filling in the information below to create a new area.');
-      $this->modal_title = __('New area');
-      $this->modal_submit_message = __('Create');
       $this->site = $site;
       $this->area = $area;
-      $this->step = 1;
+      $map = Storage::disk('public')->get('plans/site-'.$this->site->id.'-area-'.$this->site->id.'.svg');
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->site->id.'.svg');
+      $this->number_sectors = preg_match_all('<path.*\/>', $map, $matches);
+      
     }
 
     public function save_step_2(){
@@ -80,7 +81,7 @@ new class extends Component {
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-indigo-800">{{__('We have detected 15 sectors according to your file. Now, you can attach the number of your sector to the part of the plan. ')}}</h3>
+              <h3 class="text-sm font-medium text-indigo-800">{{__('We have detected')}} {{$this->number_sectors}} {{__('sectors according to your file. Now, you can attach the number of your sector to the part of the plan. ')}}</h3>
               <div class="mt-2 text-sm text-indigo-700">
                 <ul role="list" class="list-disc space-y-1 pl-5">
                   <li>{{__('Simply click on the part of the plan you want to attach to the sector.')}}</li>
@@ -91,45 +92,149 @@ new class extends Component {
           </div>
         </div>
         <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
       
   <script type="text/paperscript" canvas="myCanvas">
-    var path;
-    var strokeWidth = 10;
-    var strokeColor = 'black';
-    var group;
-    var num_line = '211';
+    var number_sectors = 7;
+    var number_processing = 1;
+    var sectors_numbered = []
+    var diameter = 60;
+    var fontsize = 12;
+    var num_line = 211;
+    var color = 'white';
+    var hitOptions = {
+        segments: true,
+        stroke: true,
+        fill: false,
+        tolerance: 5
+    };
+    project.importSVG('{{$this->url}}');
+    project.activeLayer.fitBounds(view.bounds);
+    console.log(project.activeLayer.exportJSON());
+
+for(var item of project.activeLayer.getItems({
+                    class: Path
+                })) {
+                    item.strokeWidth = 10;
+                    item.strokeColor = 'gray';
+                    number_sectors++;
+                    createNewSeparator(item);
+                    //createSeparator(item.getPointAt(item.length));
+                    //createSeparator(path.getPointAt(0));
+    
+                }
+    console.log(number_sectors)
+    function createTruc(point) {
+        // Add a segment to the path at the position of the mouse:
+        point_cool = point;
+    
+        var circle = new Path.Circle({
+            center: point_cool,
+            radius: diameter / 2,
+            fillColor: color
+        });
+        circle.name = 'circle_' + number_processing;
+        point_cool.y = point_cool.y + 4;
+        var text = new PointText(point_cool);
+        text.fillColor = 'black';
+    
+    
+        // Set the content of the text item:
+        text.content = number_processing;
+        text.name = 'text_' + number_processing;
+        text.justification = "center";
+        var box = new Path.Rectangle({
+            center: circle.position,
+            size: [diameter - 8, diameter - 8],
+            fillColor: 'black'
+        });
+        text.fitBounds(box.bounds);
+        box.remove();
+        group = new Group([circle, text]);
+        group.name = 'group_' + number_processing;
+    }
+    
+    function createNewSeparator(item) {
+        console.log('coucou')
+        // Add a segment to the path at the position of the mouse:
+        start = item.getPointAt(item.length - 10)
+        end = item.getPointAt(item.length) + item.getTangentAt(item.length - 1) * 2
+    
+        var path = new Path.Line(start, end);
+        path.strokeColor = 'white';
+        path.strokeWidth = 11;
+        path.name = 'separator';
+    
+        start = item.getPointAt(0) + item.getTangentAt(0) * -2
+        end = item.getPointAt(10)
+    
+        var path = new Path.Line(start, end);
+        path.strokeColor = 'white';
+        path.strokeWidth = 11;
+        path.name = 'separator';
+    }
+    
+    function createSeparator(point) {
+        // Add a segment to the path at the position of the mouse:
+        point_cool = point;
+    
+        var circle = new Path.Circle({
+            center: point_cool,
+            radius: 10,
+            fillColor: color
+        });
+        circle.name = 'separator_' + number_processing;
+    }
     
     function onMouseDown(event) {
-        // If we produced a path before, deselect it:
-        if (path) {
-            path.remove();
+        segment = path = null;
+        var hitResult = project.hitTest(event.point, hitOptions);
+        if (!hitResult) {
+            return;
         }
-        // Create a new path and set its stroke color to black:
-        path = new Path({
-            segments: [event.point],
-            strokeColor: strokeColor,
-            strokeWidth : strokeWidth,
-            name : 'path_' + num_line
-        });
-    }
     
-    // While the user drags the mouse, points are added to the path
-    // at the position of the mouse:
-    function onMouseDrag(event) {
-        path.add(event.point);
-    }
+        if (hitResult) {
+            hit = true;
+            console.log('ok')
+            path = hitResult.item;
+            console.log(path)
+            if(number_processing > number_sectors){
+                console.log(project.activeLayer.exportJSON());
     
-    // When the mouse is released, we simplify the path:
-    function onMouseUp(event) {
-        // When the mouse is released, simplify it:
-        path.simplify(10);
-        group = new Group([path]);
-        group.name = 'id_' + num_line;
-        console.log(group.exportJSON());
-    }
+                for (var item of project.activeLayer.getItems({
+                    class: Path
+                })) {
+                    console.log(item.name);
+                    if(item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle'){
+                    item.remove();
     
-    function exportToJSON(){
-        console.log(group.exportJSON());
+                    }
+                }
+    
+                for (var item of project.activeLayer.getItems({
+                    class: PointText
+                })) {
+                    console.log(item.name);
+                    item.remove();
+                }
+                console.log(project.activeLayer.exportJSON());
+                return;
+            }
+    
+    
+            if(sectors_numbered.includes(path.name)){
+                return;
+            }
+    
+            if(path.name == 'separator' ){
+                return;
+            }
+            createTruc(path.getPointAt(path.length / 2));
+            path.name = 'sector_' + number_processing;
+            sectors_numbered.push(path.name);
+            number_processing++;
+            console.log(sectors_numbered);
+        }
     }
 </script>
   <canvas id="myCanvas"></canvas>

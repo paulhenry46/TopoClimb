@@ -28,6 +28,10 @@ Route::get('sites/{site}/areas/manage', function (Site $site) {
     return view('areas.index', compact('site'));
 })->name('areas.manage');
 
-Route::get('sites/{site}/areas/{area}/initialize', function (Site $site, Area $area) {
-    return view('areas.initialize', compact('site', 'area'));
+Route::get('sites/{site}/areas/{area}/initialize/map', function (Site $site, Area $area) {
+    return view('areas.initialize.step-1', compact('site', 'area'));
 })->name('areas.initialize');
+
+Route::get('sites/{site}/areas/{area}/initialize/sectors', function (Site $site, Area $area) {
+    return view('areas.initialize.step-2', compact('site', 'area'));
+})->name('areas.initialize.sectors');
