@@ -88,6 +88,9 @@ new class extends Component {
                   <li>{{__('You can scale the width of number with + and - key.')}}</li>
                 </ul>
               </div>
+              <div x-data="{message: ''}" @touched.window="$wire.path = $event.detail.message">
+                <span x-text="message"></span>
+            </div>
             </div>
           </div>
         </div>
@@ -95,7 +98,7 @@ new class extends Component {
         <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
       
   <script type="text/paperscript" canvas="myCanvas">
-    var number_sectors = 7;
+    var number_sectors = 0;
     var number_processing = 1;
     var sectors_numbered = []
     var diameter = 60;
@@ -108,22 +111,44 @@ new class extends Component {
         fill: false,
         tolerance: 5
     };
-    project.importSVG('{{$this->url}}');
-    project.activeLayer.fitBounds(view.bounds);
-    console.log(project.activeLayer.exportJSON());
+    project.importSVG('{{$this->url}}', function() {
+      project.activeLayer.fitBounds(view.bounds);
+      console.log(project.activeLayer.exportJSON());
+  
+  for(var item of project.activeLayer.getItems({
+                      class: Path
+                  })) {
+                      item.strokeWidth = 10;
+                      item.strokeColor = 'gray';
+                      number_sectors++;
+                      createNewSeparator(item);
+      
+                  }
+      console.log(number_sectors)
+  });
+    document.addEventListener('restart', () => {
+    project.clear()
+    number_sectors = 1;
+    number_processing = 1;
+    sectors_numbered = [];
 
-for(var item of project.activeLayer.getItems({
-                    class: Path
-                })) {
-                    item.strokeWidth = 10;
-                    item.strokeColor = 'gray';
-                    number_sectors++;
-                    createNewSeparator(item);
-                    //createSeparator(item.getPointAt(item.length));
-                    //createSeparator(path.getPointAt(0));
-    
-                }
-    console.log(number_sectors)
+    project.importSVG('{{$this->url}}', function() {
+      project.activeLayer.fitBounds(view.bounds);
+      console.log(project.activeLayer.exportJSON());
+  
+  for(var item of project.activeLayer.getItems({
+                      class: Path
+                  })) {
+                      item.strokeWidth = 10;
+                      item.strokeColor = 'gray';
+                      number_sectors++;
+                      createNewSeparator(item);
+      
+                  }
+      console.log(number_sectors)
+  });
+
+  })
     function createTruc(point) {
         // Add a segment to the path at the position of the mouse:
         point_cool = point;
@@ -198,7 +223,14 @@ for(var item of project.activeLayer.getItems({
             console.log('ok')
             path = hitResult.item;
             console.log(path)
-            if(number_processing > number_sectors){
+            if(number_processing >= number_sectors){
+              var evt = new CustomEvent('touched', {
+                detail: {
+                  message: "terminated",
+                }});
+              window.dispatchEvent(evt);
+
+              console.log('doing that');
                 console.log(project.activeLayer.exportJSON());
     
                 for (var item of project.activeLayer.getItems({
@@ -234,17 +266,19 @@ for(var item of project.activeLayer.getItems({
             sectors_numbered.push(path.name);
             number_processing++;
             console.log(sectors_numbered);
+            
         }
     }
 </script>
-  <canvas id="myCanvas"></canvas>
+  <canvas class=" min-h-full min-w-full" id="myCanvas"></canvas>
         
       </div>
     </div>
     <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
-      <div class="flex justify-end space-x-3">
+      <div class="flex justify-end space-x-3" x-data="{svg_edited : '', svg_with_numbers : ''}">
         <x-secondary-button type="button">{{__('Cancel')}}</x-secondary-button> 
-        <x-button wire:click="save_step_2">{{('Continue')}}</x-button> 
+        <x-button @click="$dispatch('restart')">{{__('Restart')}}</x-button>
+        <x-button wire:click="save">{{__('Continue')}}</x-button>
       </div>
     </div>
   </div>
