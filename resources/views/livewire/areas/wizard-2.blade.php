@@ -14,7 +14,8 @@ new class extends Component {
     public Site $site;
     public int $step;
     public string $url;
-  public $path;
+    public $svg_edited;
+    public $svg_with_numbers;
     #[Validate('mimes:svg|required')]
     public $photo;
 
@@ -33,8 +34,9 @@ new class extends Component {
       
     }
 
-    public function save_step_2(){
-      dd($this->path);
+    public function save(){
+      dd($this->svg_with_numbers);
+      //TODO Delete <defs clipPath when saving to avoid cut
     }
 }; ?>
 
@@ -88,7 +90,8 @@ new class extends Component {
                   <li>{{__('You can scale the width of number with + and - key.')}}</li>
                 </ul>
               </div>
-              <div x-data="{message: ''}" @touched.window="$wire.path = $event.detail.message">
+              <div x-data="{message: ''}" @svg_with_numbers.window="$wire.svg_with_numbers = $event.detail.message" 
+              @svg_edited.window="$wire.svg_edited = $event.detail.message">
                 <span x-text="message"></span>
             </div>
             </div>
@@ -224,9 +227,9 @@ new class extends Component {
             path = hitResult.item;
             console.log(path)
             if(number_processing >= number_sectors){
-              var evt = new CustomEvent('touched', {
+              var evt = new CustomEvent('svg_with_numbers', {
                 detail: {
-                  message: "terminated",
+                  message: project.activeLayer.exportSVG({asString : true}),
                 }});
               window.dispatchEvent(evt);
 
@@ -250,6 +253,11 @@ new class extends Component {
                     item.remove();
                 }
                 console.log(project.activeLayer.exportJSON());
+                var evt = new CustomEvent('svg_edited', {
+                  detail: {
+                    message: project.activeLayer.exportSVG({asString : true}),
+                  }});
+                window.dispatchEvent(evt);
                 return;
             }
     
@@ -266,6 +274,7 @@ new class extends Component {
             sectors_numbered.push(path.name);
             number_processing++;
             console.log(sectors_numbered);
+            project.activeLayer.fitBounds(view.bounds);
             
         }
     }
