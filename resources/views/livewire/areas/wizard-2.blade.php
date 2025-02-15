@@ -13,6 +13,7 @@ new class extends Component {
     public Area $area;
     public Site $site;
     public int $step;
+    public $number_sectors;
     public string $url;
     public $svg_edited;
     public $svg_with_numbers;
@@ -35,8 +36,12 @@ new class extends Component {
     }
 
     public function save(){
-      dd($this->svg_with_numbers);
-      //TODO Delete <defs clipPath when saving to avoid cut
+      //dump($this->svg_edited);
+      //dd($this->svg_with_numbers);
+      $xml = simplexml_load_string($this->svg_with_numbers);
+      dd($xml);
+      Storage::put('plans/site-'.$this->site->id.'-area-'.$this->site->id.'-edited.svg', $this->svg_edited);
+      Storage::put('plans/site-'.$this->site->id.'-area-'.$this->site->id.'-numbers.svg', $this->svg_with_numbers);
     }
 }; ?>
 
@@ -91,7 +96,8 @@ new class extends Component {
                 </ul>
               </div>
               <div x-data="{message: ''}" @svg_with_numbers.window="$wire.svg_with_numbers = $event.detail.message" 
-              @svg_edited.window="$wire.svg_edited = $event.detail.message">
+              @svg_edited.window="$wire.svg_edited = $event.detail.message"
+              @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
             </div>
             </div>
@@ -131,7 +137,7 @@ new class extends Component {
   });
     document.addEventListener('restart', () => {
     project.clear()
-    number_sectors = 1;
+    number_sectors = 0;
     number_processing = 1;
     sectors_numbered = [];
 
@@ -152,6 +158,18 @@ new class extends Component {
   });
 
   })
+
+  document.addEventListener('terminated', () => {
+
+    exportTheProject();
+
+    var evt = new CustomEvent('sent_to_wire', {
+      detail: {
+        message: 'ok',
+      }});
+    window.dispatchEvent(evt);
+  })
+
     function createTruc(point) {
         // Add a segment to the path at the position of the mouse:
         point_cool = point;
@@ -226,7 +244,7 @@ new class extends Component {
             console.log('ok')
             path = hitResult.item;
             console.log(path)
-            if(number_processing >= number_sectors){
+            if(number_processing > number_sectors){
               var evt = new CustomEvent('svg_with_numbers', {
                 detail: {
                   message: project.activeLayer.exportSVG({asString : true}),
@@ -278,6 +296,91 @@ new class extends Component {
             
         }
     }
+
+    function exportTheProject() {
+
+      var evt = new CustomEvent('svg_with_numbers', {
+        detail: {
+          message: project.activeLayer.exportSVG({asString : true}),
+        }});
+      window.dispatchEvent(evt);
+
+      console.log(project.activeLayer.exportJSON());
+
+     
+
+      for (var item of project.activeLayer.getItems({
+        class: Path
+    })) {
+        console.log(item.name);
+        if(item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle'){
+        item.remove();
+
+        }
+    }
+
+    for (var item of project.activeLayer.getItems({
+        class: PointText
+    })) {
+        console.log(item.name);
+        item.remove();
+    }
+    console.log(project.activeLayer.exportJSON());
+    var evt = new CustomEvent('svg_edited', {
+      detail: {
+        message: project.activeLayer.exportSVG({asString : true}),
+      }});
+    window.dispatchEvent(evt);
+    }
+
+    function scaleAllItems() {
+      for (var item of project.activeLayer.getItems({
+        class: Path
+    })) {
+        console.log(item.name);
+        if(item.name.replace(/[^a-z]/g, '') == 'circle'){
+
+        var box = new Path.Rectangle({
+        center: item.position,
+        size: [diameter, diameter],
+        fillColor: 'black'
+    });
+    item.fitBounds(box.bounds);
+    box.remove();
+
+        }
+    }
+
+    for (var item of project.activeLayer.getItems({
+        class: PointText
+    })) {
+        console.log(item.name);
+        if(item.name.replace(/[^a-z]/g, '') == 'text'){
+          
+        var box = new Path.Rectangle({
+        center: item.position,
+        size: [diameter - 8, diameter - 8],
+        fillColor: 'black'
+    });
+    item.fitBounds(box.bounds);
+    box.remove();
+
+        }
+    }
+    project.activeLayer.fitBounds(view.bounds);
+    }
+
+    function onKeyDown(event) {
+    if (event.key == '+') {
+        diameter = diameter + 2;
+        scaleAllItems();
+    }
+
+    if (event.key == '-') {
+        diameter = diameter - 2;
+        scaleAllItems();
+    }
+}
 </script>
   <canvas class=" min-h-full min-w-full" id="myCanvas"></canvas>
         
@@ -287,7 +390,7 @@ new class extends Component {
       <div class="flex justify-end space-x-3" x-data="{svg_edited : '', svg_with_numbers : ''}">
         <x-secondary-button type="button">{{__('Cancel')}}</x-secondary-button> 
         <x-button @click="$dispatch('restart')">{{__('Restart')}}</x-button>
-        <x-button wire:click="save">{{__('Continue')}}</x-button>
+        <x-button @click="$dispatch('terminated')">{{__('Continue')}}</x-button>
       </div>
     </div>
   </div>
