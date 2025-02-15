@@ -39,7 +39,24 @@ new class extends Component {
       //dump($this->svg_edited);
       //dd($this->svg_with_numbers);
       $xml = simplexml_load_string($this->svg_with_numbers);
-      dd($xml);
+      //dump($xml);
+      $dom = new DOMDocument('1.0');
+$dom->preserveWhiteSpace = false;
+$dom->formatOutput = true;
+$dom->loadXML($xml->asXML());
+//dump($dom);
+$divs = $dom->getElementsByTagName('defs');
+foreach ($divs as $div) {
+    //dump($div);
+    dump($div->remove());
+    
+}
+//$dom->removeChild($dom->getElementsByTagName('clipPath')->item(0));
+dd($dom->saveXML());
+
+
+
+
       Storage::put('plans/site-'.$this->site->id.'-area-'.$this->site->id.'-edited.svg', $this->svg_edited);
       Storage::put('plans/site-'.$this->site->id.'-area-'.$this->site->id.'-numbers.svg', $this->svg_with_numbers);
     }
