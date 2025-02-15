@@ -121,59 +121,60 @@ new class extends Component {
         tolerance: 5
     };
     project.importSVG('{{$this->url}}', function() {
-      project.activeLayer.fitBounds(view.bounds);
-      console.log(project.activeLayer.exportJSON());
-  
-  for(var item of project.activeLayer.getItems({
-                      class: Path
-                  })) {
-                      item.strokeWidth = 10;
-                      item.strokeColor = 'gray';
-                      number_sectors++;
-                      createNewSeparator(item);
-      
-                  }
-      console.log(number_sectors)
-  });
+        project.activeLayer.fitBounds(view.bounds);
+        console.log(project.activeLayer.exportJSON());
+
+        for (var item of project.activeLayer.getItems({
+                class: Path
+            })) {
+            item.strokeWidth = 10;
+            item.strokeColor = 'gray';
+            number_sectors++;
+            createNewSeparator(item);
+
+        }
+        console.log(number_sectors)
+    });
     document.addEventListener('restart', () => {
-    project.clear()
-    number_sectors = 0;
-    number_processing = 1;
-    sectors_numbered = [];
+        project.clear()
+        number_sectors = 0;
+        number_processing = 1;
+        sectors_numbered = [];
 
-    project.importSVG('{{$this->url}}', function() {
-      project.activeLayer.fitBounds(view.bounds);
-      console.log(project.activeLayer.exportJSON());
-  
-  for(var item of project.activeLayer.getItems({
-                      class: Path
-                  })) {
-                      item.strokeWidth = 10;
-                      item.strokeColor = 'gray';
-                      number_sectors++;
-                      createNewSeparator(item);
-      
-                  }
-      console.log(number_sectors)
-  });
+        project.importSVG('{{$this->url}}', function() {
+            project.activeLayer.fitBounds(view.bounds);
+            console.log(project.activeLayer.exportJSON());
 
-  })
+            for (var item of project.activeLayer.getItems({
+                    class: Path
+                })) {
+                item.strokeWidth = 10;
+                item.strokeColor = 'gray';
+                number_sectors++;
+                createNewSeparator(item);
 
-  document.addEventListener('terminated', () => {
+            }
+            console.log(number_sectors)
+        });
 
-    exportTheProject();
+    })
 
-    var evt = new CustomEvent('sent_to_wire', {
-      detail: {
-        message: 'ok',
-      }});
-    window.dispatchEvent(evt);
-  })
+    document.addEventListener('terminated', () => {
+
+        exportTheProject();
+
+        var evt = new CustomEvent('sent_to_wire', {
+            detail: {
+                message: 'ok',
+            }
+        });
+        window.dispatchEvent(evt);
+    })
 
     function createTruc(point) {
         // Add a segment to the path at the position of the mouse:
         point_cool = point;
-    
+
         var circle = new Path.Circle({
             center: point_cool,
             radius: diameter / 2,
@@ -183,8 +184,8 @@ new class extends Component {
         point_cool.y = point_cool.y + 4;
         var text = new PointText(point_cool);
         text.fillColor = 'black';
-    
-    
+
+
         // Set the content of the text item:
         text.content = number_processing;
         text.name = 'text_' + number_processing;
@@ -199,31 +200,31 @@ new class extends Component {
         group = new Group([circle, text]);
         group.name = 'group_' + number_processing;
     }
-    
+
     function createNewSeparator(item) {
         console.log('coucou')
         // Add a segment to the path at the position of the mouse:
         start = item.getPointAt(item.length - 10)
         end = item.getPointAt(item.length) + item.getTangentAt(item.length - 1) * 2
-    
+
         var path = new Path.Line(start, end);
         path.strokeColor = 'white';
         path.strokeWidth = 11;
         path.name = 'separator';
-    
+
         start = item.getPointAt(0) + item.getTangentAt(0) * -2
         end = item.getPointAt(10)
-    
+
         var path = new Path.Line(start, end);
         path.strokeColor = 'white';
         path.strokeWidth = 11;
         path.name = 'separator';
     }
-    
+
     function createSeparator(point) {
         // Add a segment to the path at the position of the mouse:
         point_cool = point;
-    
+
         var circle = new Path.Circle({
             center: point_cool,
             radius: 10,
@@ -231,60 +232,66 @@ new class extends Component {
         });
         circle.name = 'separator_' + number_processing;
     }
-    
+
     function onMouseDown(event) {
         segment = path = null;
         var hitResult = project.hitTest(event.point, hitOptions);
         if (!hitResult) {
             return;
         }
-    
+
         if (hitResult) {
             hit = true;
             console.log('ok')
             path = hitResult.item;
             console.log(path)
-            if(number_processing > number_sectors){
-              var evt = new CustomEvent('svg_with_numbers', {
-                detail: {
-                  message: project.activeLayer.exportSVG({asString : true}),
-                }});
-              window.dispatchEvent(evt);
+            if (number_processing > number_sectors) {
+                var evt = new CustomEvent('svg_with_numbers', {
+                    detail: {
+                        message: project.activeLayer.exportSVG({
+                            asString: true
+                        }),
+                    }
+                });
+                window.dispatchEvent(evt);
 
-              console.log('doing that');
+                console.log('doing that');
                 console.log(project.activeLayer.exportJSON());
-    
+
                 for (var item of project.activeLayer.getItems({
-                    class: Path
-                })) {
+                        class: Path
+                    })) {
                     console.log(item.name);
-                    if(item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle'){
-                    item.remove();
-    
+                    if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
+                        item.remove();
+
                     }
                 }
-    
+
                 for (var item of project.activeLayer.getItems({
-                    class: PointText
-                })) {
+                        class: PointText
+                    })) {
                     console.log(item.name);
                     item.remove();
                 }
                 console.log(project.activeLayer.exportJSON());
                 var evt = new CustomEvent('svg_edited', {
-                  detail: {
-                    message: project.activeLayer.exportSVG({asString : true}),
-                  }});
+                    detail: {
+                        message: project.activeLayer.exportSVG({
+                            asString: true
+                        }),
+                    }
+                });
                 window.dispatchEvent(evt);
                 return;
             }
-    
-    
-            if(sectors_numbered.includes(path.name)){
+
+
+            if (sectors_numbered.includes(path.name)) {
                 return;
             }
-    
-            if(path.name == 'separator' ){
+
+            if (path.name == 'separator') {
                 return;
             }
             createTruc(path.getPointAt(path.length / 2));
@@ -293,94 +300,100 @@ new class extends Component {
             number_processing++;
             console.log(sectors_numbered);
             project.activeLayer.fitBounds(view.bounds);
-            
+
         }
     }
 
     function exportTheProject() {
 
-      var evt = new CustomEvent('svg_with_numbers', {
-        detail: {
-          message: project.activeLayer.exportSVG({asString : true}),
-        }});
-      window.dispatchEvent(evt);
+        var evt = new CustomEvent('svg_with_numbers', {
+            detail: {
+                message: project.activeLayer.exportSVG({
+                    asString: true
+                }),
+            }
+        });
+        window.dispatchEvent(evt);
 
-      console.log(project.activeLayer.exportJSON());
+        console.log(project.activeLayer.exportJSON());
 
-     
 
-      for (var item of project.activeLayer.getItems({
-        class: Path
-    })) {
-        console.log(item.name);
-        if(item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle'){
-        item.remove();
 
+        for (var item of project.activeLayer.getItems({
+                class: Path
+            })) {
+            console.log(item.name);
+            if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
+                item.remove();
+
+            }
         }
-    }
 
-    for (var item of project.activeLayer.getItems({
-        class: PointText
-    })) {
-        console.log(item.name);
-        item.remove();
-    }
-    console.log(project.activeLayer.exportJSON());
-    var evt = new CustomEvent('svg_edited', {
-      detail: {
-        message: project.activeLayer.exportSVG({asString : true}),
-      }});
-    window.dispatchEvent(evt);
+        for (var item of project.activeLayer.getItems({
+                class: PointText
+            })) {
+            console.log(item.name);
+            item.remove();
+        }
+        console.log(project.activeLayer.exportJSON());
+        var evt = new CustomEvent('svg_edited', {
+            detail: {
+                message: project.activeLayer.exportSVG({
+                    asString: true
+                }),
+            }
+        });
+        window.dispatchEvent(evt);
     }
 
     function scaleAllItems() {
-      for (var item of project.activeLayer.getItems({
-        class: Path
-    })) {
-        console.log(item.name);
-        if(item.name.replace(/[^a-z]/g, '') == 'circle'){
+        for (var item of project.activeLayer.getItems({
+                class: Path
+            })) {
+            console.log(item.name);
+            if (item.name.replace(/[^a-z]/g, '') == 'circle') {
 
-        var box = new Path.Rectangle({
-        center: item.position,
-        size: [diameter, diameter],
-        fillColor: 'black'
-    });
-    item.fitBounds(box.bounds);
-    box.remove();
+                var box = new Path.Rectangle({
+                    center: item.position,
+                    size: [diameter, diameter],
+                    fillColor: 'black'
+                });
+                item.fitBounds(box.bounds);
+                box.remove();
 
+            }
         }
-    }
 
-    for (var item of project.activeLayer.getItems({
-        class: PointText
-    })) {
-        console.log(item.name);
-        if(item.name.replace(/[^a-z]/g, '') == 'text'){
-          
-        var box = new Path.Rectangle({
-        center: item.position,
-        size: [diameter - 8, diameter - 8],
-        fillColor: 'black'
-    });
-    item.fitBounds(box.bounds);
-    box.remove();
+        for (var item of project.activeLayer.getItems({
+                class: PointText
+            })) {
+            console.log(item.name);
+            if (item.name.replace(/[^a-z]/g, '') == 'text') {
 
+                var box = new Path.Rectangle({
+                    center: item.position,
+                    size: [diameter - 8, diameter - 8],
+                    fillColor: 'black'
+                });
+                item.fitBounds(box.bounds);
+                box.remove();
+
+            }
         }
-    }
-    project.activeLayer.fitBounds(view.bounds);
+        project.activeLayer.fitBounds(view.bounds);
     }
 
     function onKeyDown(event) {
-    if (event.key == '+') {
-        diameter = diameter + 2;
-        scaleAllItems();
-    }
+        if (event.key == '+') {
+            diameter = diameter + 2;
+            scaleAllItems();
+        }
 
-    if (event.key == '-') {
-        diameter = diameter - 2;
-        scaleAllItems();
+        if (event.key == '-') {
+            diameter = diameter - 2;
+            scaleAllItems();
+        }
     }
-}
 </script>
   <canvas class=" min-h-full min-w-full" id="myCanvas"></canvas>
         
