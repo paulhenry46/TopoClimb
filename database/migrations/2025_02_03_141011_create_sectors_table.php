@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('name');
             $table->string('slug');
+            $table->integer('local_id');
             $table->foreignId('area_id')->constrained()->onDelete('cascade');
         });
     }

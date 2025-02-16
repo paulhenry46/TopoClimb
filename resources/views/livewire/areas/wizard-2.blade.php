@@ -3,6 +3,7 @@
 use Livewire\Volt\Component;
 use App\Models\Area;
 use App\Models\Site;
+use App\Models\Sector;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
@@ -51,6 +52,15 @@ new class extends Component {
     public function save(){
       Storage::put('plans/site-'.$this->site->id.'-area-'.$this->site->id.'-edited.svg', $this->removeClipPath($this->svg_edited));
       Storage::put('plans/site-'.$this->site->id.'-area-'.$this->site->id.'-numbers.svg',$this->removeClipPath($this->svg_with_numbers));
+      
+for ($i = 1; $i <= $this->number_sectors; $i++) {
+    $sector = new Sector;
+    $sector->local_id = $i;
+    $sector->name = ''.__('Sector ').''.$i.'';
+    $sector->slug = Str::slug($sector->name, '-');
+    $sector->area_id = $this->area->id;
+    $sector->save();
+}
     }
 }; ?>
 
