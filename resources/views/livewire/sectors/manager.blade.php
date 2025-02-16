@@ -12,15 +12,19 @@ new class extends Component {
   use WithPagination;
 
     public Area $area;
+    public Sector $sector;
     public $modal_open;
     public $modal_title;
     public $modal_subtitle;
     public $modal_submit_message;
+    public $url;
 
     #[Validate('required')]
     public $name;
 
     public $id;
+
+    public $local_id;
 
     public $id_editing;
     
@@ -52,28 +56,26 @@ new class extends Component {
     }
 
     public function open_item($id){
-      $item = Site::find($id);
-      $this->site = $item;
+      $item = Sector::find($id);
+      $this->sector = $item;
       $this->name = $item->name;
-      $this->adress = $item->adress;
+      $this->local_id = $item->local_id;
       $this->id_editing = $id;
       $this->modal_title = __('Editing ').$this->name;
-      $this->modal_subtitle = __('Check the informations about this site.');
+      $this->modal_subtitle = __('Check the informations about this sector.');
       $this->modal_submit_message = __('Edit');
       $this->modal_open = true;
     }
 
     public function delete_item($id){
-      $item = Site::find($id);
+      $item = Sector::find($id);
       $item->delete();
       $this->dispatch('action_ok', title: 'Sector deleted', message: 'Your modifications has been registered !');
       $this->render();
     }
 
     public function mount(Area $area){
-      $this->modal_subtitle = __('Get started by filling in the information below to create a new site.');
-      $this->modal_title = __('New site');
-      $this->modal_submit_message = __('Create');
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
       $this->area = $area;
       $this->area_id = $area->id;
     }
@@ -87,7 +89,24 @@ new class extends Component {
     }
 }; ?>
 
-<div>
+<div class="py-12">
+
+  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+      <div class="max-w-7xl  sm:px-6 lg:px-8">
+          <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+            <div class="px-4 sm:px-6 lg:px-8 py-8">
+              <div class="sm:flex sm:items-center">
+                <div class="sm:flex-auto">
+                  <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
+                  <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors ')}}</p>
+                  <img src="{{$this->url}}" alt="" class=" w-full rounded-xl ">
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="max-w-7xl  sm:px-6 lg:px-8 lg:col-span-2">
+          <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
   <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
@@ -170,7 +189,7 @@ new class extends Component {
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                     <x-label for="id" value="{{ __('Sector ID') }}" />
                   <div class="sm:col-span-2">
-                    <x-input disabled wire:model="id" type="text" name="id" id="project-name" class="block w-full" />
+                    <x-input disabled wire:model="local_id" type="text" name="id" id="project-name" class="block w-full" />
                   </div>
                 </div>
                 </div>
@@ -189,4 +208,6 @@ new class extends Component {
   </div>
 </div>
 
+</div>
+</div>
 </div>

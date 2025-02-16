@@ -31,7 +31,7 @@ new class extends Component {
       $this->site = $site;
       $this->area = $area;
       $map = Storage::disk('public')->get('plans/site-'.$this->site->id.'-area-'.$this->site->id.'.svg');
-      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->site->id.'.svg');
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->area->id.'.svg');
       $this->number_sectors = preg_match_all('<path.*\/>', $map, $matches);
       
     }
@@ -47,6 +47,7 @@ new class extends Component {
           $item->remove();
       }
       return $dom->saveXML();
+      //TODO clip file to fit content with (inkscape --export-type=svg -o test_cropped-2.svg --export-area-drawing --export-plain-svg ./essai.svg)
     }
 
     public function save(){
