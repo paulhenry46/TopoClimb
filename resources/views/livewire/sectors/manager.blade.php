@@ -18,7 +18,7 @@ new class extends Component {
     public $modal_title;
     public $modal_subtitle;
     public $modal_submit_message;
-    public $url;
+    public $map;
 
     #[Validate('required')]
     public $name;
@@ -33,18 +33,10 @@ new class extends Component {
     public function save()
     {
         $this->validate(); 
-        $this->slug = Str::slug($this->name, '-');
-        if($this->id_editing == 0){
-          Site::create(
-            $this->pull(['name', 'adress', 'slug'])
-        );
-        }else{
-          $this->site->name = $this->name;
-          $this->site->adress = $this->adress;
-          $this->site->slug = $this->slug;
-          $this->site->save();
-          $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
-        }
+        $this->sector->name = $this->name;
+        $this->sector->slug = Str::slug($this->name, '-');
+        $this->sector->save();
+        $this->dispatch('action_ok', title: 'Sector saved', message: 'Your modifications has been registered !');
         
         $this->modal_open = false;
         $this->render();
@@ -68,40 +60,13 @@ new class extends Component {
       $this->modal_open = true;
     }
 
-    public function delete_item($id){
-      $item = Sector::find($id);
-      $item->delete();
-      $this->dispatch('action_ok', title: 'Sector deleted', message: 'Your modifications has been registered !');
-      $this->render();
-    }
-
     public function mount(Area $area){
       
       $this->area = $area;
       $this->area_id = $area->id;
       if(Storage::missing('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg')){
-        $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.temp.svg');
-        $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
-        $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-
-      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg'));
-      $dom = new DOMDocument('1.0');
-      $dom->preserveWhiteSpace = false;
-      $dom->formatOutput = true;
-      $dom->loadXML($xml->asXML());
-      $items = $dom->getElementsByTagName('svg');
-      foreach ($items as $item) {
-          $width = $item->getAttribute('width');
-          $height = $item->getAttribute('height');
-          $item->removeAttribute('width');
-          $item->removeAttribute('height');
-          $item->setAttribute("viewBox", "0 0 $width $height");
-
+        $this->ProcessMaps();
       }
-      Storage::put('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg', $dom->saveXML());
-        dd('ok');
-      }
-
       $this->map = Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
     }
 
@@ -111,6 +76,41 @@ new class extends Component {
       $this->id_editing = 0;
       $this->modal_submit_message = __('Create');
       $this->modal_open = true;
+    }
+
+    public function ProcessMaps(){
+      //Use inkscape to fit map to grid (don't keep blank space around map)
+      $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.temp.svg');
+      $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
+      $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
+
+      
+      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg'));
+      $dom = new DOMDocument('1.0');
+      $dom->preserveWhiteSpace = false;
+      $dom->formatOutput = true;
+      $dom->loadXML($xml->asXML());
+
+      //In order to make svg responsive, delete height and width attributes and replace them by a viewBox attribute
+      $items = $dom->getElementsByTagName('svg');
+      foreach ($items as $item) {
+          $width = $item->getAttribute('width');
+          $height = $item->getAttribute('height');
+          $item->removeAttribute('width');
+          $item->removeAttribute('height');
+          $item->setAttribute("viewBox", "0 0 $width $height");
+
+      }
+
+      foreach (Sector::where('area_id', $this->area->id)->get() as $sector) {
+        $xpath = new DOMXPath($dom);
+        $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
+        $item->setAttribute("x-on:mouseover", "alert('coucou$sector->local_id')");
+
+      }
+
+      Storage::put('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg', $dom->saveXML());
+        dd('ok');
     }
 }; ?>
 
@@ -125,7 +125,7 @@ new class extends Component {
                   <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
                   <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors ')}}</p>
                  
-                  <div class=" w-full rounded-xl object-contain ">
+                  <div class=" w-full rounded-xl object-contain pt-4">
                     {!!$this->map!!}
                   </div>
                 </div>
@@ -166,9 +166,7 @@ new class extends Component {
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->lines->count()}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <button wire:click="open_item({{$sector->id}})" class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-edit/></button>
-                  <button type="button" wire:click="delete_item({{$sector->id}})" wire:confirm="{{__('Are you sure you want to delete this sector?')}}" class="text-red-600 hover:text-red-900">
-                    <x-icon-delete/>
-                  </button>
+                  
                 </td>
               </tr> @endforeach
             </tbody>
