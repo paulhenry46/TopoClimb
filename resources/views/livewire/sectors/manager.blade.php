@@ -105,23 +105,23 @@ new class extends Component {
       foreach (Sector::where('area_id', $this->area->id)->get() as $sector) {
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
-        $item->setAttribute("x-on:mouseover", "alert('coucou$sector->local_id')");
-
+        $item->setAttribute("x-on:mouseover", "selectSector($sector->id)");
+        $item->setAttribute(":class", "currentSector == $sector->id ? 'stroke-indigo-500' : ''");
       }
 
       Storage::put('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg', $dom->saveXML());
-        dd('ok');
+        
     }
 }; ?>
 
 <div class="py-12">
 
-  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
       <div class="max-w-7xl  sm:px-6 lg:px-8">
           <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
             <div class="px-4 sm:px-6 lg:px-8 py-8">
               <div class="sm:flex sm:items-center">
-                <div class="sm:flex-auto">
+                <div class="sm:flex-auto stroke-indigo-500">
                   <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
                   <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors ')}}</p>
                  
@@ -160,7 +160,7 @@ new class extends Component {
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white"> @foreach ($this->sectors as $sector) <tr class="even:bg-gray-50">
+            <tbody class="bg-white"> @foreach ($this->sectors as $sector) <tr  x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : 'even:bg-gray-50'">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->name}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->lines->count()}}</td>
