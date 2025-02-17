@@ -48,7 +48,6 @@ new class extends Component {
           $item->remove();
       }
       return $dom->saveXML();
-      //TODO clip file to fit content with (inkscape --export-type=svg -o test_cropped-2.svg --export-area-drawing --export-plain-svg ./essai.svg)
     }
 
     public function save(){
