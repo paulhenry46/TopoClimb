@@ -63,6 +63,10 @@ new class extends Component {
     public function mount(Area $area){
       
       $this->area = $area;
+      if($this->area->sectors->count() == 0){
+        return $this->redirectRoute('areas.initialize', ['site'=>$this->area->site->id, 'area' => $this->area->id ], navigate: true);
+        
+      }
       $this->area_id = $area->id;
       if(Storage::missing('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg')){
         $this->ProcessMaps();
