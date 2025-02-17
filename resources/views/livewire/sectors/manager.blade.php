@@ -8,6 +8,7 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
+use Illuminate\Support\Facades\Process;
 new class extends Component {
   use WithPagination;
 
@@ -75,9 +76,33 @@ new class extends Component {
     }
 
     public function mount(Area $area){
-      $this->url = Storage::disk('public')->url('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
+      
       $this->area = $area;
       $this->area_id = $area->id;
+      if(Storage::missing('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg')){
+        $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.temp.svg');
+        $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
+        $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
+
+      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg'));
+      $dom = new DOMDocument('1.0');
+      $dom->preserveWhiteSpace = false;
+      $dom->formatOutput = true;
+      $dom->loadXML($xml->asXML());
+      $items = $dom->getElementsByTagName('svg');
+      foreach ($items as $item) {
+          $width = $item->getAttribute('width');
+          $height = $item->getAttribute('height');
+          $item->removeAttribute('width');
+          $item->removeAttribute('height');
+          $item->setAttribute("viewBox", "0 0 $width $height");
+
+      }
+      Storage::put('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg', $dom->saveXML());
+        dd('ok');
+      }
+
+      $this->map = Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
     }
 
     public function open_modal(){
@@ -99,7 +124,10 @@ new class extends Component {
                 <div class="sm:flex-auto">
                   <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
                   <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors ')}}</p>
-                  <img src="{{$this->url}}" alt="" class=" w-full rounded-xl ">
+                 
+                  <div class=" w-full rounded-xl object-contain ">
+                    {!!$this->map!!}
+                  </div>
                 </div>
               </div>
             </div>
