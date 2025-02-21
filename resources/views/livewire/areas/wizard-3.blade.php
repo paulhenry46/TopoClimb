@@ -136,9 +136,8 @@ $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $th
         <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
       
   <script type="text/paperscript" canvas="myCanvas">
-    var number_sectors = 0;
     var number_processing = 1;
-    var sectors_numbered = []
+    var lines_sectors = [] //Array of type line_number => sector_number
     var diameter = 60;
     var fontsize = 12;
     var num_line = 211;
@@ -146,244 +145,185 @@ $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $th
     var hitOptions = {
         segments: true,
         stroke: true,
-        fill: false,
+        fill: true,
         tolerance: 5
     };
     project.importSVG('{{$this->url}}', function() {
         project.activeLayer.fitBounds(view.bounds);
-
-        for (var item of project.activeLayer.getItems({
-                class: Path
-            })) {
-            item.strokeWidth = 10;
-            item.strokeColor = 'gray';
-            number_sectors++;
-            createNewSeparator(item);
-
-        }
     });
     document.addEventListener('restart', () => {
-        project.clear()
-        number_sectors = 0;
-        number_processing = 1;
-        sectors_numbered = [];
+      project.clear()
+      number_lines = 0;
 
-        project.importSVG('{{$this->url}}', function() {
-            project.activeLayer.fitBounds(view.bounds);
+      project.importSVG('{{$this->url}}', function() {
+          project.activeLayer.fitBounds(view.bounds);
+      });
 
-            for (var item of project.activeLayer.getItems({
-                    class: Path
-                })) {
-                item.strokeWidth = 10;
-                item.strokeColor = 'gray';
-                number_sectors++;
-                createNewSeparator(item);
+  })
 
-            }
-        });
+  document.addEventListener('terminated', () => {
+      exportTheProject();
+      var evt = new CustomEvent('sent_to_wire', {
+          detail: {
+              message: 'ok',
+          }
+      });
+      window.dispatchEvent(evt);
+  })
 
-    })
+  function createTruc(point, path) {
+      lines_sectors[number_processing] = Number(path.name.replace(/[^0-9]/g, ''));
+      
+      point_cool = point;
 
-    document.addEventListener('terminated', () => {
-        if(number_processing - 1 == number_sectors){
-        exportTheProject();
-        var evt = new CustomEvent('sent_to_wire', {
-            detail: {
-                message: 'ok',
-            }
-        });
-        window.dispatchEvent(evt);
+      var circle = new Path.Circle({
+          center: point_cool,
+          radius: diameter / 2,
+          fillColor: color
+      });
+      circle.name = 'circle_' + number_processing;
+      point_cool.y = point_cool.y + 4;
+
+      var text = new PointText(point_cool);
+      text.fillColor = 'black';
+      text.content = number_processing;
+      text.name = 'text_' + number_processing;
+      text.justification = "center";
+
+      var box = new Path.Rectangle({
+          center: circle.position,
+          size: [diameter - 8, diameter - 8],
+          fillColor: 'black'
+      });
+      text.fitBounds(box.bounds);
+      box.remove();
+
+      group = new Group([circle, text]);
+      group.name = 'group_' + number_processing;
+  }
+
+  function onMouseDown(event) {
+      path = null;
+      var hitResult = project.hitTest(event.point, hitOptions);
+      if (!hitResult) {
+          return;
       }
-    })
 
-    function createTruc(point) {
-        point_cool = point;
+      if (hitResult) {
+          hit = true;
+          path = hitResult.item;
 
-        var circle = new Path.Circle({
-            center: point_cool,
-            radius: diameter / 2,
-            fillColor: color
-        });
-        circle.name = 'circle_' + number_processing;
-        point_cool.y = point_cool.y + 4;
+          if(path.name.replace(/[^a-z]/g, '') == 'text'){
+            var name = path.name.replace(/text/g, 'circle')
+            associated_paths = project.getItems({
+              name: name
+          });
+          }else if(path.name.replace(/[^a-z]/g, '') == 'circle'){
+            var name = path.name.replace(/circle/g, 'text')
+            associated_paths = project.getItems({
+              name: name
+          });
+          }else if(path.name.replace(/[^a-z]/g, '') == 'sector'){
 
-        var text = new PointText(point_cool);
-        text.fillColor = 'black';
-        text.content = number_processing;
-        text.name = 'text_' + number_processing;
-        text.justification = "center";
+          createTruc(event.point, path);
+          number_processing++;
+          project.activeLayer.fitBounds(view.bounds);
+          }
+      }
+  }
 
-        var box = new Path.Rectangle({
-            center: circle.position,
-            size: [diameter - 8, diameter - 8],
-            fillColor: 'black'
-        });
-        text.fitBounds(box.bounds);
-        box.remove();
+  function exportTheProject() {
 
-        group = new Group([circle, text]);
-        group.name = 'group_' + number_processing;
-    }
+      var evt = new CustomEvent('svg_with_numbers', {
+          detail: {
+              message: project.activeLayer.exportSVG({
+                  asString: true
+              }),
+          }
+      });
+      window.dispatchEvent(evt);
 
-    function createNewSeparator(item) {
-        start = item.getPointAt(item.length - 10)
-        end = item.getPointAt(item.length) + item.getTangentAt(item.length - 1) * 2
+      for (var item of project.activeLayer.getItems({
+              class: Path
+          })) {
+          if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
+              item.remove();
+          }
+      }
 
-        var path = new Path.Line(start, end);
-        path.strokeColor = 'white';
-        path.strokeWidth = 11;
-        path.name = 'separator';
+      for (var item of project.activeLayer.getItems({
+              class: PointText
+          })) {
+          item.remove();
+      }
+      var evt = new CustomEvent('svg_edited', {
+          detail: {
+              message: project.activeLayer.exportSVG({
+                  asString: true
+              }),
+          }
+      });
+      window.dispatchEvent(evt);
+  }
 
-        start = item.getPointAt(0) + item.getTangentAt(0) * -2
-        end = item.getPointAt(10)
+  function scaleAllItems() {
+      for (var item of project.activeLayer.getItems({
+              class: Path
+          })) {
+          if (item.name.replace(/[^a-z]/g, '') == 'circle') {
 
-        var path = new Path.Line(start, end);
-        path.strokeColor = 'white';
-        path.strokeWidth = 11;
-        path.name = 'separator';
-    }
+              var box = new Path.Rectangle({
+                  center: item.position,
+                  size: [diameter, diameter],
+                  fillColor: 'black'
+              });
+              item.fitBounds(box.bounds);
+              box.remove();
+          }
+      }
 
-    function onMouseDown(event) {
-        segment = path = null;
-        var hitResult = project.hitTest(event.point, hitOptions);
-        if (!hitResult) {
-            return;
-        }
+      for (var item of project.activeLayer.getItems({
+              class: PointText
+          })) {
+          if (item.name.replace(/[^a-z]/g, '') == 'text') {
 
-        if (hitResult) {
-            hit = true;
-            path = hitResult.item;
-            if (number_processing > number_sectors) {
-                var evt = new CustomEvent('svg_with_numbers', {
-                    detail: {
-                        message: project.activeLayer.exportSVG({
-                            asString: true
-                        }),
-                    }
-                });
-                window.dispatchEvent(evt);
+              var box = new Path.Rectangle({
+                  center: item.position,
+                  size: [diameter - 8, diameter - 8],
+                  fillColor: 'black'
+              });
+              item.fitBounds(box.bounds);
+              box.remove();
+          }
+      }
+      project.activeLayer.fitBounds(view.bounds);
+  }
 
-                for (var item of project.activeLayer.getItems({
-                        class: Path
-                    })) {
-                    if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
-                        item.remove();
+  function onKeyDown(event) {
+      if (event.key == '+') {
+          diameter = diameter + 2;
+          scaleAllItems();
+      }
 
-                    }
-                }
+      if (event.key == '-') {
+          diameter = diameter - 2;
+          scaleAllItems();
+      }
+  }
 
-                for (var item of project.activeLayer.getItems({
-                        class: PointText
-                    })) {
-                    item.remove();
-                }
-                var evt = new CustomEvent('svg_edited', {
-                    detail: {
-                        message: project.activeLayer.exportSVG({
-                            asString: true
-                        }),
-                    }
-                });
-                window.dispatchEvent(evt);
-                return;
-            }
+function onMouseDrag(event) {
+  if (path) {
+      var sector_path = project.getItem({
+        name: 'sector_' + lines_sectors[path.name.replace(/[^0-9]/g, '')]
+      });
+      var nearestPoint = sector_path.getNearestPoint(event.point);
+      path.position = nearestPoint;
 
-            if (sectors_numbered.includes(path.name)) {
-                return;
-            }
-
-            if (path.name == 'separator') {
-                return;
-            }
-            createTruc(path.getPointAt(path.length / 2));
-            path.name = 'sector_' + number_processing;
-            sectors_numbered.push(path.name);
-            number_processing++;
-            project.activeLayer.fitBounds(view.bounds);
-        }
-    }
-
-    function exportTheProject() {
-
-        var evt = new CustomEvent('svg_with_numbers', {
-            detail: {
-                message: project.activeLayer.exportSVG({
-                    asString: true
-                }),
-            }
-        });
-        window.dispatchEvent(evt);
-
-        for (var item of project.activeLayer.getItems({
-                class: Path
-            })) {
-            if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
-                item.remove();
-
-            }
-        }
-
-        for (var item of project.activeLayer.getItems({
-                class: PointText
-            })) {
-            item.remove();
-        }
-        var evt = new CustomEvent('svg_edited', {
-            detail: {
-                message: project.activeLayer.exportSVG({
-                    asString: true
-                }),
-            }
-        });
-        window.dispatchEvent(evt);
-    }
-
-    function scaleAllItems() {
-        for (var item of project.activeLayer.getItems({
-                class: Path
-            })) {
-            if (item.name.replace(/[^a-z]/g, '') == 'circle') {
-
-                var box = new Path.Rectangle({
-                    center: item.position,
-                    size: [diameter, diameter],
-                    fillColor: 'black'
-                });
-                item.fitBounds(box.bounds);
-                box.remove();
-
-            }
-        }
-
-        for (var item of project.activeLayer.getItems({
-                class: PointText
-            })) {
-            if (item.name.replace(/[^a-z]/g, '') == 'text') {
-
-                var box = new Path.Rectangle({
-                    center: item.position,
-                    size: [diameter - 8, diameter - 8],
-                    fillColor: 'black'
-                });
-                item.fitBounds(box.bounds);
-                box.remove();
-
-            }
-        }
-        project.activeLayer.fitBounds(view.bounds);
-    }
-
-    function onKeyDown(event) {
-        if (event.key == '+') {
-            diameter = diameter + 2;
-            scaleAllItems();
-        }
-
-        if (event.key == '-') {
-            diameter = diameter - 2;
-            scaleAllItems();
-        }
-    }
+      for (var item of associated_paths){
+        item.position = nearestPoint;
+      }
+  }
+}
 </script>
   <canvas class=" min-h-full min-w-full" id="myCanvas"></canvas>
         
