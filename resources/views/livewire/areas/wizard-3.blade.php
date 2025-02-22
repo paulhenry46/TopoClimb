@@ -29,7 +29,7 @@ new class extends Component {
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines.svg',$this->removeClipPath($this->svg_lines));
       
       foreach ($lines_sectors as $key => $value)  {
-        if($value !== null){
+        if($value !== null and $key != 0){
           $line = new Line;
           $line->local_id = $key;
           $line->sector_id = $value;
