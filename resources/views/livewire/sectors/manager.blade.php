@@ -242,17 +242,7 @@ new class extends Component {
 
   <div class="pt-3 grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8" x-data="{currentLine: 0, selectLine(id){ this.currentLine = id; }}">
     <div class="max-w-7xl  sm:px-6 lg:px-8">
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-        <div class="px-4 sm:px-6 lg:px-8 py-8">
-          <div class="sm:flex sm:items-center">
-            <div class="sm:flex-auto stroke-indigo-500">
-              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
-              <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with lines ')}}</p>
-              <div class=" w-full rounded-xl object-contain pt-4"> {!!$this->map!!} </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
     <div class="max-w-7xl  sm:px-6 lg:px-8 lg:col-span-2">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
