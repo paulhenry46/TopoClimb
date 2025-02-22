@@ -14,63 +14,28 @@ new class extends Component {
 
     public Area $area;
     public Site $site;
-    public int $step;
-    public $number_sectors;
+    public $number_lines;
     public string $url;
-    public $svg_edited;
     public $svg_with_numbers;
-    #[Validate('mimes:svg|required')]
-    public $photo;
-
-    #[Validate('required')]
-    public $name;
-    #[Validate('required')]
-    public $type;
 
 
     public function mount(Site $site, Area $area){
       $this->site = $site;
       $this->area = $area;
-      $map = Storage::disk('public')->get('plans/site-'.$this->site->id.'-area-'.$this->site->id.'.svg');
-      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->area->id.'.svg');
-      $this->number_sectors = preg_match_all('<path.*\/>', $map, $matches);
-      
-    }
-
-    public function removeClipPath($svg){
-      $xml = simplexml_load_string($svg);
-      $dom = new DOMDocument('1.0');
-      $dom->preserveWhiteSpace = false;
-      $dom->formatOutput = true;
-      $dom->loadXML($xml->asXML());
-      $items = $dom->getElementsByTagName('defs');
-      foreach ($items as $item) {
-          $item->remove();
-      }
-      return $dom->saveXML();
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-edited.temp.svg');
     }
 
     public function save(){
       Storage::put('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-edited.temp.svg', $this->removeClipPath($this->svg_edited));
       Storage::put('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-numbers.temp.svg',$this->removeClipPath($this->svg_with_numbers));
       
-for ($i = 1; $i <= $this->number_sectors; $i++) {
-    $sector = new Sector;
-    $sector->local_id = $i;
-    $sector->name = ''.__('Sector ').''.$i.'';
-    $sector->slug = Str::slug($sector->name, '-');
-    $sector->area_id = $this->area->id;
-    $sector->save();
-    $line = new Line;
-    $line->sector_id = $sector->id;
-    $line->number = 0;
-    $line->save();
-}
-if($this->area->type == 'voie'){
-  $this->redirectRoute('areas.initialize.lines', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
-}else{
-$this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
-}
+      for ($i = 1; $i <= $this->number_lines; $i++) {
+        $line = new Line;
+        $line->local_id = $i;
+        $line->sector_id = $this->area->id;
+        $line->save();
+      }
+      $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
     }
 }; ?>
 
@@ -104,7 +69,7 @@ $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $th
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Upload map of the area')}}</h1>
+          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Add Lines to the area')}}</h1>
           <p class="mt-2 text-sm text-gray-700">{{$this->site->adress}}</p>
         </div>
       </div>
@@ -117,11 +82,12 @@ $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $th
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-indigo-800">{{__('We have detected')}} {{$this->number_sectors}} {{__('sectors according to your file. Now, you can attach the number of your sector to the part of the plan. ')}}</h3>
+              <h3 class="text-sm font-medium text-indigo-800">{{__('This is the last step ! Now, you can add lines to your area.')}}</h3>
               <div class="mt-2 text-sm text-indigo-700">
                 <ul role="list" class="list-disc space-y-1 pl-5">
-                  <li>{{__('Simply click on the part of the plan you want to attach to the sector.')}}</li>
-                  <li>{{__('You can scale the width of number with + and - key.')}}</li>
+                  <li>{{__('Simply click on the part of the plan you want to add a line.')}}</li>
+                  <li>{{__('You can scale the width of circle with + and - key.')}}</li>
+                  <li>{{__('You can move the number once it is placed.')}}</li>
                 </ul>
               </div>
               <div x-data="{message: ''}" @svg_with_numbers.window="$wire.svg_with_numbers = $event.detail.message" 

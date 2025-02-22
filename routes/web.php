@@ -35,6 +35,10 @@ Route::prefix('/admin/sites')->group(function () {
         Route::get('/areas/{area}/initialize/sectors', function (Site $site, Area $area) {
             return view('areas.initialize.step-2', compact('site', 'area'));
         })->name('areas.initialize.sectors');
+
+        Route::get('/areas/{area}/initialize/lines', function (Site $site, Area $area) {
+            return view('areas.initialize.step-3', compact('site', 'area'));
+        })->name('areas.initialize.lines');
         
         Route::get('/areas/{area}', function (Site $site, Area $area) {
             return view('sectors.index', compact('site', 'area'));

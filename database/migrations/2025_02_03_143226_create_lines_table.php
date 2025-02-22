@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('lines', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->integer('local_id');
             $table->foreignId('sector_id')->constrained()->onDelete('cascade');
             $table->integer('number');
         });
