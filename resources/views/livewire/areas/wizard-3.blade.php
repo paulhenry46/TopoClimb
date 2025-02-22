@@ -90,9 +90,9 @@ new class extends Component {
                   <li>{{__('You can move the number once it is placed.')}}</li>
                 </ul>
               </div>
-              <div x-data="{message: ''}" @svg_with_numbers.window="$wire.svg_with_numbers = $event.detail.message" 
+              <div x-data="{message: ''}" 
               @svg_edited.window="$wire.svg_edited = $event.detail.message"
-              @sent_to_wire.window="$wire.save()">
+              @sent_to_wire.window="$wire.save($event.detail.lines_sectors)">
                 <span x-text="message"></span>
             </div>
             </div>
@@ -131,7 +131,7 @@ new class extends Component {
       exportTheProject();
       var evt = new CustomEvent('sent_to_wire', {
           detail: {
-              message: 'ok',
+            lines_sectors: lines_sectors,
           }
       });
       window.dispatchEvent(evt);
@@ -199,29 +199,6 @@ new class extends Component {
   }
 
   function exportTheProject() {
-
-      var evt = new CustomEvent('svg_with_numbers', {
-          detail: {
-              message: project.activeLayer.exportSVG({
-                  asString: true
-              }),
-          }
-      });
-      window.dispatchEvent(evt);
-
-      for (var item of project.activeLayer.getItems({
-              class: Path
-          })) {
-          if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
-              item.remove();
-          }
-      }
-
-      for (var item of project.activeLayer.getItems({
-              class: PointText
-          })) {
-          item.remove();
-      }
       var evt = new CustomEvent('svg_edited', {
           detail: {
               message: project.activeLayer.exportSVG({
