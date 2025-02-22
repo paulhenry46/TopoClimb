@@ -43,6 +43,7 @@ new class extends Component {
         }
         
         $this->modal_open = false;
+        $this->site_id = $this->site->id;
         $this->render();
     }
 

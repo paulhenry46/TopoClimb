@@ -31,8 +31,8 @@ new class extends Component {
     public function mount(Site $site, Area $area){
       $this->site = $site;
       $this->area = $area;
-      $map = Storage::disk('public')->get('plans/site-'.$this->site->id.'-area-'.$this->site->id.'.svg');
-      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->area->id.'.svg');
+      $map = Storage::disk('public')->get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/original.svg');
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/original.svg');
       $this->number_sectors = preg_match_all('<path.*\/>', $map, $matches);
       
     }
@@ -51,8 +51,8 @@ new class extends Component {
     }
 
     public function save(){
-      Storage::put('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-edited.temp.svg', $this->removeClipPath($this->svg_edited));
-      Storage::put('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-numbers.temp.svg',$this->removeClipPath($this->svg_with_numbers));
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited.temp.svg', $this->removeClipPath($this->svg_edited));
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/numbers.temp.svg',$this->removeClipPath($this->svg_with_numbers));
       
 for ($i = 1; $i <= $this->number_sectors; $i++) {
     $sector = new Sector;
@@ -63,7 +63,7 @@ for ($i = 1; $i <= $this->number_sectors; $i++) {
     $sector->save();
     $line = new Line;
     $line->sector_id = $sector->id;
-    $line->number = 0;
+    $line->local_id = 0;
     $line->save();
 }
 if($this->area->type == 'voie'){

@@ -45,7 +45,7 @@ new class extends Component {
     #[Computed]
     public function sectors()
     {
-        return Sector::where('area_id', $this->area->id)->paginate(10);
+        return Sector::where('area_id', $this->area->id)->get();
     }
 
     public function open_item($id){
@@ -68,10 +68,10 @@ new class extends Component {
         
       }
       $this->area_id = $area->id;
-      if(Storage::missing('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg')){
+      if(Storage::missing('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg')){
         $this->ProcessMaps();
       }
-      $this->map = Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
+      $this->map = Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg');
     }
 
     public function open_modal(){
@@ -84,12 +84,12 @@ new class extends Component {
 
     public function ProcessMaps(){
       //Use inkscape to fit map to grid (don't keep blank space around map)
-      $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.temp.svg');
-      $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg');
+      $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.temp.svg');
+      $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg');
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
 
       
-      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg'));
+      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg'));
       $dom = new DOMDocument('1.0');
       $dom->preserveWhiteSpace = false;
       $dom->formatOutput = true;
@@ -113,7 +113,7 @@ new class extends Component {
         $item->setAttribute(":class", "currentSector == $sector->id ? 'stroke-indigo-500' : ''");
       }
 
-      Storage::put('plans/site-'.$this->area->site->id.'-area-'.$this->area->id.'-edited.svg', $dom->saveXML());
+      Storage::put('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg', $dom->saveXML());
         
     }
 }; ?>
@@ -158,7 +158,7 @@ new class extends Component {
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Local ID')}}</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Name')}}</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of routes')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of lines')}}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
                 </th>
@@ -175,7 +175,6 @@ new class extends Component {
               </tr> @endforeach
             </tbody>
           </table>
-          {{ $this->sectors->links() }}
         </div>
       </div>
     </div>

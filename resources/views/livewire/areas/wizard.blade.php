@@ -29,8 +29,8 @@ new class extends Component {
 
     public function save(){
       $this->validateOnly('photo');
-      $name = 'site-'.$this->site->id.'-area-'.$this->area->id.'.svg';
-      $this->photo->storeAs(path: 'plans', name: $name);
+      $name = 'original.svg';
+      $this->photo->storeAs(path: 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
       $this->redirectRoute('areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
     }
 }; ?>

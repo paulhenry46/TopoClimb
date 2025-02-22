@@ -16,7 +16,6 @@ return new class extends Migration
             $table->timestamps();
             $table->integer('local_id');
             $table->foreignId('sector_id')->constrained()->onDelete('cascade');
-            $table->integer('number');
         });
     }
 

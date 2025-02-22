@@ -14,28 +14,42 @@ new class extends Component {
 
     public Area $area;
     public Site $site;
-    public $number_lines;
+    public $lines_sectors;
     public string $url;
-    public $svg_with_numbers;
+    public $svg_lines;
 
 
     public function mount(Site $site, Area $area){
       $this->site = $site;
       $this->area = $area;
-      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-edited.temp.svg');
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited.temp.svg');
     }
 
-    public function save(){
-      Storage::put('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-edited.temp.svg', $this->removeClipPath($this->svg_edited));
-      Storage::put('plans/site-'.$this->site->id.'-area-'.$this->area->id.'-numbers.temp.svg',$this->removeClipPath($this->svg_with_numbers));
+    public function save(array $lines_sectors){
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines.svg',$this->removeClipPath($this->svg_lines));
       
-      for ($i = 1; $i <= $this->number_lines; $i++) {
-        $line = new Line;
-        $line->local_id = $i;
-        $line->sector_id = $this->area->id;
-        $line->save();
+      foreach ($lines_sectors as $key => $value)  {
+        if($value !== null){
+          $line = new Line;
+          $line->local_id = $key;
+          $line->sector_id = $value;
+          $line->save();
+        }
       }
       $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+    }
+
+    public function removeClipPath($svg){
+      $xml = simplexml_load_string($svg);
+      $dom = new DOMDocument('1.0');
+      $dom->preserveWhiteSpace = false;
+      $dom->formatOutput = true;
+      $dom->loadXML($xml->asXML());
+      $items = $dom->getElementsByTagName('defs');
+      foreach ($items as $item) {
+          $item->remove();
+      }
+      return $dom->saveXML();
     }
 }; ?>
 
@@ -52,7 +66,7 @@ new class extends Component {
       <li class="md:flex-1">
         <!-- Current Step -->
         <a class="flex flex-col border-l-4 border-indigo-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4" aria-current="step">
-          <span class="text-sm font-medium text-indigo-600">{{__('Step')}} 2</span>
+          <span class="text-sm font-medium text-gray-500">{{__('Step')}} 2</span>
           <span class="text-sm font-medium">{{__('Create sectors')}}</span>
         </a>
       </li>
@@ -91,7 +105,7 @@ new class extends Component {
                 </ul>
               </div>
               <div x-data="{message: ''}" 
-              @svg_edited.window="$wire.svg_edited = $event.detail.message"
+              @svg_lines.window="$wire.svg_lines = $event.detail.message"
               @sent_to_wire.window="$wire.save($event.detail.lines_sectors)">
                 <span x-text="message"></span>
             </div>
@@ -199,7 +213,7 @@ new class extends Component {
   }
 
   function exportTheProject() {
-      var evt = new CustomEvent('svg_edited', {
+      var evt = new CustomEvent('svg_lines', {
           detail: {
               message: project.activeLayer.exportSVG({
                   asString: true
