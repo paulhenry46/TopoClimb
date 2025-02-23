@@ -8,10 +8,11 @@ use App\Models\Site;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Process;
 new class extends Component {
-  use WithPagination;
+  use WithPagination, WithFileUploads;
 
     public Area $area;
     public Sector $sector;
@@ -26,6 +27,10 @@ new class extends Component {
     #[Validate('required')]
     public $name;
 
+    #[Validate(['schemas.*' => 'image|max:1024'])]
+    public $schemas = [];
+
+
     public $id;
 
     public $local_id;
@@ -35,7 +40,7 @@ new class extends Component {
 
     public function save()
     {
-        $this->validate(); 
+        $this->validateOnly('name'); 
         $this->sector->name = $this->name;
         $this->sector->slug = Str::slug($this->name, '-');
         $this->sector->save();
@@ -43,6 +48,14 @@ new class extends Component {
         
         $this->modal_open = false;
         $this->render();
+    }
+
+    public function saveSchema()
+    {
+      $this->validateOnly('schemas'); 
+        dd($this->schemas);
+      $name = 'schema.'.$file->getClientOriginalExtension().'';
+      $file->storeAs(path: 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector.'', name: $name);
     }
 
     #[Computed]
@@ -77,6 +90,10 @@ new class extends Component {
         $this->ProcessMaps();
       }
       $this->map = Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg');
+      foreach ($this->sectors as $sector) {
+        $this->schemas[$sector->id] = null;
+        $this->schemas[14] = null;
+      }
     }
 
     public function open_modal(){
@@ -193,63 +210,6 @@ new class extends Component {
             </div>
           </div>
         </div>
-        <div x-data="{ open: $wire.entangle('modal_open') }">
-          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
-            <!-- Background backdrop, show/hide based on slide-over state. -->
-            <div class="fixed inset-0"></div>
-            <div class="fixed inset-0 overflow-hidden">
-              <div class="absolute inset-0 overflow-hidden">
-                <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-                  <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                    <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
-                      <div class="flex-1">
-                        <!-- Header -->
-                        <div class="bg-gray-50 px-4 py-6 sm:px-6">
-                          <div class="flex items-start justify-between space-x-3">
-                            <div class="space-y-1">
-                              <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
-                              <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
-                            </div>
-                            <div class="flex h-7 items-center">
-                              <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- Divider container -->
-                        <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                          <!-- Project name -->
-                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                            <x-label for="name" value="{{ __('Sector name') }}" />
-                            <div class="sm:col-span-2">
-                              <x-input wire:model="name" type="text" name="name" id="project-name" class="block w-full" />
-                              <x-input-error for="name" class="mt-2" />
-                            </div>
-                          </div>
-                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                            <x-label for="id" value="{{ __('Sector ID') }}" />
-                            <div class="sm:col-span-2">
-                              <x-input disabled wire:model="local_id" type="text" name="id" id="project-name" class="block w-full" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <div class="flex justify-end space-x-3">
-                          <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
-                          <x-button type="submit">{{$this->modal_submit_message}}</x-button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -273,6 +233,44 @@ new class extends Component {
           </div>
         </div>
       </div>
+
+      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-3">
+
+        <div class="px-4 sm:px-6 lg:px-8 py-8">
+          <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto ">
+              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Schemas')}}</h1>
+              <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Schemas of the sectors of this area')}}</p>
+              @foreach ($this->sectors as $sector)
+              <h1 class="text-base font-semibold leading-6 mb-2 text-gray-900">{{$sector->name}}</h1>
+              <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Your schema :')}}</p>
+              @if ($schemas[$sector->id]) 
+              <img class="rounded-lg" src="{{$schemas[$sector->id]->temporaryUrl() }}">
+              <div class="mt-4 flex items-center justify-end gap-x-6">
+              <x-button wire:click="saveSchema()" class="mt-1">{{__('Validate')}}</x-button>
+              </div>
+          @else
+
+              <div class="relative block w-full rounded-lg border-2 border-dashed  p-12 text-center border-gray-400">
+                  <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
+                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
+                  </svg>
+                  <h3 class="mt-2 text-sm font-semibold text-gray-900">{{__('No schema')}}</h3>
+                  <p class="mt-1 text-sm text-gray-500">{{('Schemas allow to draw the route over a schema of the sector')}}</p>
+                  <div class="mt-6">
+                    <label for="file-upload" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
+                      <span>{{__('Add Schema')}}</span>
+                      <input wire:model="schemas.{{$sector->id}}" id="file-upload" name="file-upload" type="file" class="sr-only">
+                    </label>
+                  </div>
+              </div>
+              @endif
+
+              @endforeach
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="max-w-7xl  sm:px-6 lg:px-8 lg:col-span-2">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
@@ -283,7 +281,7 @@ new class extends Component {
               <p class="mt-2 text-sm text-gray-700">{{__('Registered sectors and lines in this area')}}</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <x-button wire:click="open_modal()" type="button">{{__('Add sector')}}</x-button>
+              <x-button wire:click="open_modal()" type="button">{{__('Edit')}}</x-button>
             </div>
           </div>
           <div class="mt-8 flow-root">
@@ -322,63 +320,7 @@ new class extends Component {
             </div>
           </div>
         </div>
-        <div x-data="{ open: $wire.entangle('modal_open') }">
-          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
-            <!-- Background backdrop, show/hide based on slide-over state. -->
-            <div class="fixed inset-0"></div>
-            <div class="fixed inset-0 overflow-hidden">
-              <div class="absolute inset-0 overflow-hidden">
-                <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-                  <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                    <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
-                      <div class="flex-1">
-                        <!-- Header -->
-                        <div class="bg-gray-50 px-4 py-6 sm:px-6">
-                          <div class="flex items-start justify-between space-x-3">
-                            <div class="space-y-1">
-                              <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
-                              <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
-                            </div>
-                            <div class="flex h-7 items-center">
-                              <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- Divider container -->
-                        <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                          <!-- Project name -->
-                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                            <x-label for="name" value="{{ __('Sector name') }}" />
-                            <div class="sm:col-span-2">
-                              <x-input wire:model="name" type="text" name="name" id="project-name" class="block w-full" />
-                              <x-input-error for="name" class="mt-2" />
-                            </div>
-                          </div>
-                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                            <x-label for="id" value="{{ __('Sector ID') }}" />
-                            <div class="sm:col-span-2">
-                              <x-input disabled wire:model="local_id" type="text" name="id" id="project-name" class="block w-full" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <div class="flex justify-end space-x-3">
-                          <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
-                          <x-button type="submit">{{$this->modal_submit_message}}</x-button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
