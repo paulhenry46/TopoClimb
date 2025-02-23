@@ -73,6 +73,12 @@ new class extends Component {
         return Line::whereIn('sector_id', $this->sectors);
     }
 
+     #[Computed]
+     public function Sectors()
+    {
+        return Sector::where('area_id', $this->area->id)->get();
+    }
+
     public function open_item($id){
       $item = Sector::find($id);
       $this->sector = $item;
@@ -187,7 +193,7 @@ new class extends Component {
               <p class="mt-2 text-sm text-gray-700">{{__('Registered sectors in this area')}}</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <x-button wire:click="open_modal()" type="button">{{__('Add sector')}}</x-button>
+              <x-button  type="button">{{__('Edit')}}</x-button>
             </div>
           </div>
           <div class="mt-8 flow-root">
@@ -204,7 +210,7 @@ new class extends Component {
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white"> @foreach ($this->sectors as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : 'even:bg-gray-50'">
+                  <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : 'even:bg-gray-50'">
                       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->name}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->lines->count()}}</td>
@@ -215,6 +221,63 @@ new class extends Component {
                       </td>
                     </tr> @endforeach </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div x-data="{ open: $wire.entangle('modal_open') }">
+          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+            <!-- Background backdrop, show/hide based on slide-over state. -->
+            <div class="fixed inset-0"></div>
+            <div class="fixed inset-0 overflow-hidden">
+              <div class="absolute inset-0 overflow-hidden">
+                <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
+                  <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                    <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
+                      <div class="flex-1">
+                        <!-- Header -->
+                        <div class="bg-gray-50 px-4 py-6 sm:px-6">
+                          <div class="flex items-start justify-between space-x-3">
+                            <div class="space-y-1">
+                              <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
+                              <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
+                            </div>
+                            <div class="flex h-7 items-center">
+                              <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Divider container -->
+                        <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                          <!-- Project name -->
+                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                            <x-label for="name" value="{{ __('Sector name') }}" />
+                            <div class="sm:col-span-2">
+                              <x-input wire:model="name" type="text" name="name" id="project-name" class="block w-full" />
+                              <x-input-error for="name" class="mt-2" />
+                            </div>
+                          </div>
+                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                            <x-label for="id" value="{{ __('Sector ID') }}" />
+                            <div class="sm:col-span-2">
+                              <x-input disabled wire:model="local_id" type="text" name="id" id="project-name" class="block w-full" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <div class="flex justify-end space-x-3">
+                          <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
+                          <x-button type="submit">{{$this->modal_submit_message}}</x-button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -299,7 +362,7 @@ new class extends Component {
               <p class="mt-2 text-sm text-gray-700">{{__('Registered sectors and lines in this area')}}</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <x-button wire:click="open_modal()" type="button">{{__('Edit')}}</x-button>
+              <x-button type="button">{{__('Edit')}}</x-button>
             </div>
           </div>
           <div class="mt-8 flow-root">
@@ -310,25 +373,26 @@ new class extends Component {
                     <tr>
                       <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Local ID')}}</th>
                       <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of routes')}}</th>
-                      <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                      
                         <span class="sr-only">Edit</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody class="bg-white"> 
-                    @foreach ($this->sectors as $sector) 
+                    @foreach ($this->sectors() as $sector) 
                     <tr class="border-t border-gray-200" x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : ''">
-                      <th colspan="5" scope="colgroup" class="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{$sector->name}} ({{$sector->local_id}})</th>
+                      <th colspan="1" scope="colgroup" class="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{$sector->name}} ({{$sector->local_id}})</th>
+                      <th scope="colgroup" class="bg-gray-50 relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                        <button wire:click="open_item({{$sector->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
+                          <x-icon-edit />
+                        </button>
+                      </th>
                     </tr>
                     @foreach($this->lines->where('sector_id', $sector->id)->all() as $line)
                     <tr x-on:mouseover="selectLine({{$line->id}})" :class="currentLine == {{$line->id}} ? 'bg-indigo-100' : ''">
                       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$line->local_id}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$line->routes->count()}}</td>
-                      <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                        <button wire:click="open_item({{$line->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
-                          <x-icon-edit />
-                        </button>
-                      </td>
+                      
                     </tr> 
                     @endforeach
                     @endforeach 
@@ -338,7 +402,63 @@ new class extends Component {
             </div>
           </div>
         </div>
-        
+        <div x-data="{ open: $wire.entangle('modal_open') }">
+          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+            <!-- Background backdrop, show/hide based on slide-over state. -->
+            <div class="fixed inset-0"></div>
+            <div class="fixed inset-0 overflow-hidden">
+              <div class="absolute inset-0 overflow-hidden">
+                <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
+                  <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                    <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
+                      <div class="flex-1">
+                        <!-- Header -->
+                        <div class="bg-gray-50 px-4 py-6 sm:px-6">
+                          <div class="flex items-start justify-between space-x-3">
+                            <div class="space-y-1">
+                              <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
+                              <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
+                            </div>
+                            <div class="flex h-7 items-center">
+                              <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Divider container -->
+                        <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                          <!-- Project name -->
+                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                            <x-label for="name" value="{{ __('Sector name') }}" />
+                            <div class="sm:col-span-2">
+                              <x-input wire:model="name" type="text" name="name" id="project-name" class="block w-full" />
+                              <x-input-error for="name" class="mt-2" />
+                            </div>
+                          </div>
+                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                            <x-label for="id" value="{{ __('Sector ID') }}" />
+                            <div class="sm:col-span-2">
+                              <x-input disabled wire:model="local_id" type="text" name="id" id="project-name" class="block w-full" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <div class="flex justify-end space-x-3">
+                          <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
+                          <x-button type="submit">{{$this->modal_submit_message}}</x-button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
