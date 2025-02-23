@@ -43,7 +43,7 @@ new class extends Component {
           $line->save();
         }
       }
-      $this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
     }
 
     public function removeClipPath($svg){

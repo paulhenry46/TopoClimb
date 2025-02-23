@@ -69,9 +69,9 @@ for ($i = 1; $i <= $this->number_sectors; $i++) {
     }
 }
 if($this->area->type == 'voie'){
-  $this->redirectRoute('areas.initialize.lines', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+  $this->redirectRoute('admin.areas.initialize.lines', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
 }else{
-$this->redirectRoute('sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+$this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
 }
 } 
 }; ?>

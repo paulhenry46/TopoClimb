@@ -18,7 +18,7 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
-Route::prefix('/admin/sites')->group(function () {
+Route::prefix('/admin/sites')->name('admin.')->group(function () {
     Route::get('/', function () {
         return view('sites.index');
     })->name('sites.manage');
