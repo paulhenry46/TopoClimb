@@ -71,12 +71,12 @@ new class extends Component {
         
       }
       $this->area_id = $area->id;
-      if(Storage::missing('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg')){
+      $this->sectors = Sector::where('area_id', $this->area->id)->get();
+      $this->lines = Line::whereIn('sector_id', $this->sectors->pluck('id'))->get();
+      if(Storage::missing('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg')){
         $this->ProcessMaps();
       }
-      $this->map = Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg');
-      $this->sectors = Sector::where('area_id', $this->area->id)->get();
-      $this->lines = Line::whereIn('sector_id', $this->sectors->pluck('id')->toArray())->get();
+      $this->map = Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg');
     }
 
     public function open_modal(){
@@ -89,12 +89,17 @@ new class extends Component {
 
     public function ProcessMaps(){
       //Use inkscape to fit map to grid (don't keep blank space around map)
-      $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.temp.svg');
-      $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg');
+      if($this->area->type == 'voie'){
+        $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/lines.svg');
+      }else{
+        $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sectors.svg');
+      }
+      
+      $output_file_path= storage_path('app/public/plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg');
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
 
       
-      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg'));
+      $xml = simplexml_load_string(Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg'));
       $dom = new DOMDocument('1.0');
       $dom->preserveWhiteSpace = false;
       $dom->formatOutput = true;
@@ -110,20 +115,29 @@ new class extends Component {
           $item->setAttribute("viewBox", "0 0 $width $height");
 
       }
-
-      foreach (Sector::where('area_id', $this->area->id)->get() as $sector) {
+      foreach ($this->sectors as $sector) {
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
         $item->setAttribute("x-on:mouseover", "selectSector($sector->id)");
         $item->setAttribute(":class", "currentSector == $sector->id ? 'stroke-indigo-500' : ''");
       }
 
-      Storage::put('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited.svg', $dom->saveXML());
+      if($this->area->type == 'voie'){
+        foreach ($this->lines as $line) {
+        $xpath = new DOMXPath($dom);
+        $item = $xpath->query("//*[@id='circle_$line->local_id']")->item(0);
+        $item->setAttribute("x-on:mouseover", "selectLine($line->id)");
+        $item->setAttribute(":class", "currentLine == $line->id ? 'fill-indigo-500' : ''");
+      }
+      }
+
+      Storage::put('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg', $dom->saveXML());
         
     }
 }; ?>
 
 <div class="py-12">
+  @if($this->area->type == 'bloc')
   <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
     <div class="max-w-7xl  sm:px-6 lg:px-8">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
@@ -239,21 +253,37 @@ new class extends Component {
       </div>
     </div>
   </div>
-
-  <div class="pt-3 grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8" x-data="{currentLine: 0, selectLine(id){ this.currentLine = id; }}">
+@else
+  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8" 
+  x-data="{
+  currentSector: 0, 
+  currentLine: 0, 
+  selectSector(id){ this.currentSector = id; this.currentLine = 0;},
+  selectLine(id){ this.currentLine = id; this.currentSector = 0; }
+  }">
     <div class="max-w-7xl  sm:px-6 lg:px-8">
-      
+      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+        <div class="px-4 sm:px-6 lg:px-8 py-8">
+          <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto stroke-indigo-500">
+              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
+              <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
+              <div class=" w-full rounded-xl object-contain pt-4"> {!!$this->map!!} </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="max-w-7xl  sm:px-6 lg:px-8 lg:col-span-2">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Lines')}}</h1>
-              <p class="mt-2 text-sm text-gray-700">{{__('Registered lines in this area')}}</p>
+              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Sectors and lines')}}</h1>
+              <p class="mt-2 text-sm text-gray-700">{{__('Registered sectors and lines in this area')}}</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <x-button wire:click="open_modal()" type="button">{{__('Add line')}}</x-button>
+              <x-button wire:click="open_modal()" type="button">{{__('Add sector')}}</x-button>
             </div>
           </div>
           <div class="mt-8 flow-root">
@@ -263,23 +293,30 @@ new class extends Component {
                   <thead>
                     <tr>
                       <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Local ID')}}</th>
-                     
                       <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of routes')}}</th>
                       <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                         <span class="sr-only">Edit</span>
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white"> @foreach ($this->lines as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : 'even:bg-gray-50'">
-                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
-                      
-                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->routes->count()}}</td>
+                  <tbody class="bg-white"> 
+                    @foreach ($this->sectors as $sector) 
+                    <tr class="border-t border-gray-200" x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : ''">
+                      <th colspan="5" scope="colgroup" class="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{$sector->name}} ({{$sector->local_id}})</th>
+                    </tr>
+                    @foreach($this->lines->where('sector_id', $sector->id)->all() as $line)
+                    <tr x-on:mouseover="selectLine({{$line->id}})" :class="currentLine == {{$line->id}} ? 'bg-indigo-100' : ''">
+                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$line->local_id}}</td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$line->routes->count()}}</td>
                       <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                        <button wire:click="open_item({{$sector->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
+                        <button wire:click="open_item({{$line->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
                           <x-icon-edit />
                         </button>
                       </td>
-                    </tr> @endforeach </tbody>
+                    </tr> 
+                    @endforeach
+                    @endforeach 
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -345,4 +382,5 @@ new class extends Component {
       </div>
     </div>
   </div>
+  @endif
 </div>

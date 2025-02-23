@@ -17,22 +17,29 @@ new class extends Component {
     public $lines_sectors;
     public string $url;
     public $svg_lines;
+    public $svg_lines_without_numbers;
 
 
     public function mount(Site $site, Area $area){
       $this->site = $site;
       $this->area = $area;
-      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited.temp.svg');
+      $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors.svg');
     }
 
     public function save(array $lines_sectors){
-      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines.svg',$this->removeClipPath($this->svg_lines));
       
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines-numbers.svg',$this->removeClipPath($this->svg_lines));
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines.svg',$this->removeClipPath($this->svg_lines_without_numbers));
+      
+      $localIDToID = Sector::where('area_id', $this->area->id)->pluck('id', 'local_id')->toArray();
+      
+
+
       foreach ($lines_sectors as $key => $value)  {
         if($value !== null and $key != 0){
           $line = new Line;
           $line->local_id = $key;
-          $line->sector_id = $value;
+          $line->sector_id = $localIDToID[$value];
           $line->save();
         }
       }
@@ -106,6 +113,7 @@ new class extends Component {
               </div>
               <div x-data="{message: ''}" 
               @svg_lines.window="$wire.svg_lines = $event.detail.message"
+              @svg_lines_without_numbers.window="$wire.svg_lines_without_numbers = $event.detail.message"
               @sent_to_wire.window="$wire.save($event.detail.lines_sectors)">
                 <span x-text="message"></span>
             </div>
@@ -117,10 +125,10 @@ new class extends Component {
       
   <script type="text/paperscript" canvas="myCanvas">
     var number_processing = 1;
+    var creating = false;
     var lines_sectors = [] //Array of type line_number => sector_number
     var diameter = 60;
     var fontsize = 12;
-    var num_line = 211;
     var color = 'white';
     var hitOptions = {
         segments: true,
@@ -192,6 +200,7 @@ new class extends Component {
       if (hitResult) {
           hit = true;
           path = hitResult.item;
+          creating = false;
 
           if(path.name.replace(/[^a-z]/g, '') == 'text'){
             var name = path.name.replace(/text/g, 'circle')
@@ -204,8 +213,8 @@ new class extends Component {
               name: name
           });
           }else if(path.name.replace(/[^a-z]/g, '') == 'sector'){
-
-          createTruc(event.point, path);
+            creating = true;
+          createTruc(path.getNearestPoint(event.point), path);
           number_processing++;
           project.activeLayer.fitBounds(view.bounds);
           }
@@ -213,17 +222,50 @@ new class extends Component {
   }
 
   function exportTheProject() {
-      var evt = new CustomEvent('svg_lines', {
-          detail: {
-              message: project.activeLayer.exportSVG({
-                  asString: true
-              }),
-          }
-      });
-      window.dispatchEvent(evt);
+    var evt = new CustomEvent('svg_lines', {
+      detail: {
+        message: project.exportSVG({
+          asString: true
+        }),
+      }
+    });
+    window.dispatchEvent(evt);
+    
+    for (var item of project.activeLayer.getItems({
+        class: Path
+      })) {
+      if (item.name.replace(/[^a-z]/g, '') == 'circle') {
+    
+        var box = new Path.Rectangle({
+          center: item.position,
+          size: [14, 14],
+          fillColor: 'black'
+        });
+        item.fitBounds(box.bounds);
+        box.remove();
+      }
+    }
+    
+    for (var item of project.activeLayer.getItems({
+        class: PointText
+      })) {
+      if (item.name.replace(/[^a-z]/g, '') == 'text') {
+        item.remove();
+      }
+    }
+    
+    var evt = new CustomEvent('svg_lines_without_numbers', {
+      detail: {
+        message: project.exportSVG({
+          asString: true
+        }),
+      }
+    });
+    window.dispatchEvent(evt);
   }
 
   function scaleAllItems() {
+    console.log(diameter);
       for (var item of project.activeLayer.getItems({
               class: Path
           })) {
@@ -269,7 +311,7 @@ new class extends Component {
   }
 
 function onMouseDrag(event) {
-  if (path) {
+  if (path && (creating == false)) {
       var sector_path = project.getItem({
         name: 'sector_' + lines_sectors[path.name.replace(/[^0-9]/g, '')]
       });

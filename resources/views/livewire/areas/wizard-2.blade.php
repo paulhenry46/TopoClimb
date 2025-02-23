@@ -51,8 +51,8 @@ new class extends Component {
     }
 
     public function save(){
-      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited.temp.svg', $this->removeClipPath($this->svg_edited));
-      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/numbers.temp.svg',$this->removeClipPath($this->svg_with_numbers));
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors.svg', $this->removeClipPath($this->svg_edited));
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors-numbers.svg',$this->removeClipPath($this->svg_with_numbers));
       
 for ($i = 1; $i <= $this->number_sectors; $i++) {
     $sector = new Sector;
@@ -61,10 +61,12 @@ for ($i = 1; $i <= $this->number_sectors; $i++) {
     $sector->slug = Str::slug($sector->name, '-');
     $sector->area_id = $this->area->id;
     $sector->save();
+    if($this->area->type == 'bloc'){
     $line = new Line;
     $line->sector_id = $sector->id;
     $line->local_id = 0;
     $line->save();
+    }
 }
 if($this->area->type == 'voie'){
   $this->redirectRoute('areas.initialize.lines', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
