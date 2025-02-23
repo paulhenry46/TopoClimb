@@ -53,9 +53,18 @@ new class extends Component {
     public function saveSchema()
     {
       $this->validateOnly('schemas'); 
-        dd($this->schemas);
-      $name = 'schema.'.$file->getClientOriginalExtension().'';
-      $file->storeAs(path: 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector.'', name: $name);
+        //dd($this->schemas);
+        foreach ($this->schemas as $key => $value) {
+          
+         if ($value != null){
+          $id = $key;
+         }
+        }
+        $file = $this->schemas[$id];
+        
+      $name = 'schema';
+      $file->storeAs(path: 'plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$id.'', name: $name);
+      $this->schemas[$id] = null;
     }
 
     #[Computed]
@@ -242,15 +251,24 @@ new class extends Component {
               <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Schemas')}}</h1>
               <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Schemas of the sectors of this area')}}</p>
               @foreach ($this->sectors as $sector)
-              <h1 class="text-base font-semibold leading-6 mb-2 text-gray-900">{{$sector->name}}</h1>
+              @if ($this->schemas[$sector->id]) 
+              <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
               <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Your schema :')}}</p>
-              @if ($schemas[$sector->id]) 
-              <img class="rounded-lg" src="{{$schemas[$sector->id]->temporaryUrl() }}">
+              <img class="rounded-lg" src="{{$this->schemas[$sector->id]->temporaryUrl() }}">
               <div class="mt-4 flex items-center justify-end gap-x-6">
               <x-button wire:click="saveSchema()" class="mt-1">{{__('Validate')}}</x-button>
               </div>
-          @else
-
+              @elseif(Storage::exists('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema'))
+              <div class="mt-4 mb-2 align-center flex items-center justify-between gap-x-6">
+                <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
+                <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
+                  <span>{{__('Edit')}}</span>
+                  <input wire:model="schemas.{{$sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
+                </label> 
+                </div>
+              <img class="rounded-lg" src="{{Storage::url('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')}}">
+              @else
+              <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
               <div class="relative block w-full rounded-lg border-2 border-dashed  p-12 text-center border-gray-400">
                   <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
                     <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
