@@ -141,7 +141,7 @@ $this->picture_url = Storage::url('pictures/site-'.$this->area->site->id.'/area-
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white"> @foreach ($this->areas as $area) <tr class="even:bg-gray-50">
+            <tbody class="bg-white"> @foreach ($this->areas as $area) <tr class="hover:bg-gray-50">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$area->name}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->type}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->sectors()->count()}}</td>
@@ -156,8 +156,8 @@ $this->picture_url = Storage::url('pictures/site-'.$this->area->site->id.'/area-
                   </span>
                    
                   @else
-                  <span class="inline-flex items-center gap-x-1.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
-                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                  <span class="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                    <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
                       <circle cx="3" cy="3" r="3"></circle>
                     </svg>
                     {{('OK')}}

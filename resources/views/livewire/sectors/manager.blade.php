@@ -363,8 +363,8 @@ new class extends Component {
               <div  @click="expanded = ! expanded" class="hover:cursor-pointer mt-4 mb-2 align-center flex items-center justify-between gap-x-6">
                 
                 <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
-                <span class="inline-flex items-center gap-x-1.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
-                  <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                <span class="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                  <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
                     <circle cx="3" cy="3" r="3"></circle>
                   </svg>
                   {{('OK')}}
