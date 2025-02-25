@@ -248,7 +248,7 @@ new class extends Component {
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : 'even:bg-gray-50'">
+                  <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-gray-100' : 'even:bg-gray-50'">
                       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->name}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->lines->count()}}</td>
@@ -430,7 +430,7 @@ new class extends Component {
                   </thead>
                   <tbody class="bg-white"> 
                     @foreach ($this->sectors() as $sector) 
-                    <tr class="border-t border-gray-200" x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-indigo-100' : ''">
+                    <tr class="border-t border-gray-200" x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-gray-100' : ''">
                       <th colspan="1" scope="colgroup" class="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{$sector->name}} ({{$sector->local_id}})</th>
                       <th scope="colgroup" class="bg-gray-50 relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <button wire:click="open_item({{$sector->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
@@ -439,7 +439,7 @@ new class extends Component {
                       </th>
                     </tr>
                     @foreach($this->lines->where('sector_id', $sector->id)->all() as $line)
-                    <tr x-on:mouseover="selectLine({{$line->id}})" :class="currentLine == {{$line->id}} ? 'bg-indigo-100' : ''">
+                    <tr x-on:mouseover="selectLine({{$line->id}})" :class="currentLine == {{$line->id}} ? 'bg-gray-100' : ''">
                       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$line->local_id}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$line->routes->count()}}</td>
                       
