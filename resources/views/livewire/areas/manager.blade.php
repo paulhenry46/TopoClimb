@@ -7,8 +7,9 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
+use Livewire\WithFileUploads;
 new class extends Component {
-  use WithPagination;
+  use WithPagination, WithFileUploads;
 
     public Area $area;
     public Site $site;
@@ -22,6 +23,12 @@ new class extends Component {
     public $name;
     #[Validate('required')]
     public $type;
+
+    #[Validate('image')]
+    public $picture;
+
+    public $picture_url;
+
     public $slug;
     public $id_editing;
     
@@ -31,14 +38,25 @@ new class extends Component {
         $this->validate(); 
         $this->slug = Str::slug($this->name, '-');
         if($this->id_editing == 0){
-          Area::create(
+          $area = Area::create(
             $this->pull(['name', 'type', 'slug', 'site_id'])
         );
+        if($this->picture !== null){
+          $this->picture->storeAs(path: 'pictures/site-'.$this->area->site->id.'/area-'.$area->id.'', name: 'picture');
+        $this->picture = null;
+        }
+        
         }else{
           $this->area->name = $this->name;
           $this->area->type = $this->type;
           $this->area->slug = $this->slug;
           $this->area->save();
+
+          if($this->picture !== null){
+        $this->picture->storeAs(path: 'pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'', name: 'picture');
+        $this->picture = null;
+        }
+
           $this->dispatch('action_ok', title: 'Area saved', message: 'Your modifications has been registered !');
         }
         
@@ -59,6 +77,12 @@ new class extends Component {
       $this->name = $item->name;
       $this->type = $item->type;
       $this->id_editing = $id;
+      if(Storage::exists('pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'/picture')){
+$this->picture_url = Storage::url('pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'/picture');
+      }else{
+        $this->picture_url = null;
+      }
+      
       $this->modal_title = __('Editing ').$this->name;
       $this->modal_subtitle = __('Check the informations about this area.');
       $this->modal_submit_message = __('Edit');
@@ -217,6 +241,14 @@ new class extends Component {
                       </fieldset>
                     </div>
                   </div>
+                  <div x-data="{picture_url: $wire.entangle('picture_url')}" class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="name" value="{{ __('Picture') }}" />
+                    <div class="sm:col-span-2">
+                    <x-input wire:model="picture" type="file" name="picture" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+                    <x-input-error for="picture" class="mt-2" />
+                    <img class="rounded-lg mt-2" x-bind:src="picture_url" />
+                  </div>
+                </div>
                 </div>
               </div>
               <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">

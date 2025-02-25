@@ -208,8 +208,8 @@ new class extends Component {
     </ol>
   </nav>
   @if($this->area->type == 'bloc')
-  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-3" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
-    <div class="max-w-7xl  sm:px-6 lg:px-8">
+  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
+    <div class="">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
@@ -222,7 +222,7 @@ new class extends Component {
         </div>
       </div>
     </div>
-    <div class="max-w-7xl  sm:px-6 lg:px-8 lg:col-span-2">
+    <div class="max-w-7xl lg:col-span-1">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
@@ -324,14 +324,14 @@ new class extends Component {
     </div>
   </div>
 @else
-  <div class="grid grid-cols-1 items-start lg:grid-cols-3" 
+  <div class="grid grid-cols-1 items-start lg:grid-cols-2" 
   x-data="{
   currentSector: 0, 
   currentLine: 0, 
   selectSector(id){ this.currentSector = id; this.currentLine = 0;},
   selectLine(id){ this.currentLine = id; this.currentSector = 0; }
   }">
-    <div class="max-w-7xl ">
+    <div class=" ">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
@@ -344,8 +344,7 @@ new class extends Component {
         </div>
       </div>
 
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-3">
-
+      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-8">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto ">
@@ -360,14 +359,27 @@ new class extends Component {
               <x-button wire:click="saveSchema()" class="mt-1">{{__('Validate')}}</x-button>
               </div>
               @elseif(Storage::exists('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema'))
-              <div class="mt-4 mb-2 align-center flex items-center justify-between gap-x-6">
+              <div x-data="{ expanded: false }">
+              <div  @click="expanded = ! expanded" class="hover:cursor-pointer mt-4 mb-2 align-center flex items-center justify-between gap-x-6">
+                
                 <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
-                <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
-                  <span>{{__('Edit')}}</span>
-                  <input wire:model="schemas.{{$sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
-                </label> 
+                <span class="inline-flex items-center gap-x-1.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                  <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                    <circle cx="3" cy="3" r="3"></circle>
+                  </svg>
+                  {{('OK')}}
+                </span>
                 </div>
+                <div x-show="expanded" x-collapse>
               <img class="rounded-lg" src="{{Storage::url('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')}}">
+              <div class="mt-4 flex items-center justify-end gap-x-6">
+              <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
+                <span>{{__('Edit')}}</span>
+                <input wire:model="schemas.{{$sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
+              </label>
+            </div>
+            </div>
+            </div>
               @else
               <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
               <div class="relative block w-full rounded-lg border-2 border-dashed  p-12 text-center border-gray-400">
@@ -391,7 +403,7 @@ new class extends Component {
         </div>
       </div>
     </div>
-    <div class="max-w-7xl  sm:pl-6 lg:pl-8 lg:col-span-2">
+    <div class=" sm:pl-6 lg:pl-8 lg:col-span-1">
       <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
