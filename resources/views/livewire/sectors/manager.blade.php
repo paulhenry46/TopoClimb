@@ -70,7 +70,7 @@ new class extends Component {
     #[Computed]
     public function lines()
     {
-        return Line::whereIn('sector_id', $this->sectors);
+        return Line::whereIn('sector_id', $this->sectors->pluck('id'));
     }
 
      #[Computed]
@@ -513,4 +513,7 @@ new class extends Component {
     </div>
   </div>
   @endif
+  <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-8">
+    <livewire:routes.manager :lines='$this->lines()->get()'>
+  </div>
 </div>
