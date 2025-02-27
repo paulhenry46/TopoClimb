@@ -5,6 +5,7 @@ use App\Models\Area;
 use App\Models\Site;
 use App\Models\Sector;
 use App\Models\Line;
+use App\Models\Route;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
@@ -22,7 +23,7 @@ new class extends Component {
     public $comment;
     #[Validate('required')]
     public $line;
-    #[Validate('required|regex:/[3-9][abc][+]?/g')]
+    #[Validate('required|regex:/[3-9][abc][+]?/')]
     public string $grade;
     #[Validate('required')]
     public string $color;
@@ -43,9 +44,20 @@ new class extends Component {
     }
 
     public function save(){
-      $this->validateOnly('photo');
-      
-      $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      $this->validate();
+      $route = new Route;
+      $route->name = $this->name;
+      $route->comment = $this->comment;
+      $route->line_id = $this->line;
+      $route->grade = $this->grade;
+      //$route->date = $this->date
+      $route->color = $this->color;
+      //$route->local_id = 1;
+      $route->number = 1;//Deprecated
+      $route->slug = Str::slug($this->name, '-');
+      $route->save();
+
+      $this->redirectRoute('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id], navigate: true);
     }
     public function with(){
         return ['lines' => Line::where('sector_id', $this->sector_id)->get() ];

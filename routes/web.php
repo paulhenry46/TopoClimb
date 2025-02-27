@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Area;
+use App\Models\Route as ModelsRoute;
 use App\Models\Site;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -46,7 +47,10 @@ Route::prefix('/admin/sites')->name('admin.')->group(function () {
 
         Route::get('/areas/{area}/routes/new', function (Site $site, Area $area) {
             return view('routes.edit-infos', compact('site', 'area'));
-        })->name('sectors.manage');
+        })->name('routes.new');
+        Route::get('/areas/{area}/routes/{route}/path', function (Site $site, Area $area, ModelsRoute $route) {
+            return view('routes.edit-path', compact('site', 'area', 'route'));
+        })->name('routes.path');
     });
     
 });

@@ -5,6 +5,7 @@ use App\Models\Area;
 use App\Models\Site;
 use App\Models\Sector;
 use App\Models\Line;
+use App\Models\Route as ModelRoute;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
@@ -14,15 +15,15 @@ new class extends Component {
 
     public Area $area;
     public Site $site;
-    public Line $line;
+    public ModelRoute $route;
     public $url;
     public $path;
 
-    public function mount(Site $site, Area $area, Line $line){
+    public function mount(Site $site, Area $area, ModelRoute $route){
       $this->site = $site;
       $this->area = $area;
-      $this->line = $line;
-      $this->url = Storage::url('plans/site-'.$line->sector->area->site->id.'/area-'.$line->sector->area->id.'/sector-'.$line->sector->id.'/schema')
+      $this->route = $route;
+      $this->url = Storage::url('plans/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/sector-'.$route->line->sector->id.'/schema');
     }
 
     public function save(){
@@ -78,13 +79,7 @@ new class extends Component {
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-indigo-800">{{__('We have detected')}} {{$this->number_sectors}} {{__('sectors according to your file. Now, you can attach the number of your sector to the part of the plan. ')}}</h3>
-              <div class="mt-2 text-sm text-indigo-700">
-                <ul role="list" class="list-disc space-y-1 pl-5">
-                  <li>{{__('Simply click on the part of the plan you want to attach to the sector.')}}</li>
-                  <li>{{__('You can scale the width of number with + and - key.')}}</li>
-                </ul>
-              </div>
+              
               <div x-data="{message: ''}" @svg.window="$wire.path = $event.detail.message"
               @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
@@ -96,10 +91,25 @@ new class extends Component {
         <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
         <script type="text/paperscript" canvas="myCanvas">
           var path;
-          const strokeWidth = 10;
-          const strokeColor = '{{$this->line->color}}';
+          const strokeWidth = 7;
+          const strokeColor = '{{$this->route->color}}';
           var group;
-          const num_line = '{{$this->line->id}}';
+          const num_line = '{{$this->route->id}}';
+
+          var raster = new Raster('schema');
+
+// Move the raster to the center of the view
+raster.position = view.center;
+project.activeLayer.fitBounds(view.bounds);
+view.bounds =  raster.internalBounds;
+
+rectangle = new Path.Rectangle(raster.bounds);
+rectangle.name = 'area';
+rectangle.strokeWidth = 1;
+rectangle.strokeColor = 'black';
+rectangle.fillColor = 'red';
+rectangle.opacity = 0;
+
 
           function onMouseDown(event) {
             // If we produced a path before, deselect it:
@@ -118,7 +128,11 @@ new class extends Component {
           // While the user drags the mouse, points are added to the path
           // at the position of the mouse:
           function onMouseDrag(event) {
+            console.log(rectangle.hitTest(event.point));
+            if(rectangle.hitTest(event.point)!= null){
+
             path.add(event.point);
+            }
           }
 
           // When the mouse is released, we simplify the path:
@@ -150,10 +164,11 @@ new class extends Component {
             window.dispatchEvent(evt);
         })
         </script>
+        <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
         <div class="relative min-h-60 md:min-h-72 w-full flex justify-center items-center">
-          <img class="rounded-lg" src="{{$url}}">
+          <img  id="schema" class="hidden rounded-lg" src="{{$url}}">
           <div class="absolute inset-0 flex justify-center items-center ">
-            <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
+            
           </div>
         </div>
       </div>
