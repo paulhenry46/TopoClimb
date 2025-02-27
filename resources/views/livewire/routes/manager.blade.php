@@ -21,9 +21,9 @@ new class extends Component {
     public $name;
     #[Validate('string')]
     public $comment;
-#[Validate('required')]
+    #[Validate('required')]
     public $line;
-#[Validate('required')]
+    #[Validate('required')]
     public string $grade;
     #[Validate('required')]
     public string $color;
@@ -281,22 +281,22 @@ new class extends Component {
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="creators" value="{{ __('Tags') }}" />
                       <div @click.outside="showListe = false" class="sm:col-span-2" x-data="{tags: [{ id: 1, tag: 'archées' },
-      { id: 2, tag: 'force' }, { id: 3, tag: 'devers' }], 
-       SelectedID: [], 
-       SelectedTags: [],
-       term : '',
-       showListe: false, 
-       toogle(id){
-                if (this.SelectedID.includes(id)) {
-                    this.SelectedID = this.SelectedID.filter(item => item !== id);
-                } else {
-                    this.SelectedID.push(id);
-                }
-                this.SelectedTags = this.tags.filter(obj => {
-                    return this.SelectedID.includes(obj.id)
-                  })
-            }
-        }">
+                          { id: 2, tag: 'force' }, { id: 3, tag: 'devers' }], 
+                          SelectedID: [], 
+                          SelectedTags: [],
+                          term : '',
+                          showListe: false, 
+                          toogle(id){
+                                    if (this.SelectedID.includes(id)) {
+                                        this.SelectedID = this.SelectedID.filter(item => item !== id);
+                                    } else {
+                                        this.SelectedID.push(id);
+                                    }
+                                    this.SelectedTags = this.tags.filter(obj => {
+                                        return this.SelectedID.includes(obj.id)
+                                      })
+                                }
+                            }">
                         <div>
                           <div class="relative mt-2 h-40">
                             <input x-model="term" @click="showListe = true" id="combobox" type="text" class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
@@ -329,23 +329,14 @@ new class extends Component {
                         <x-input-error for="tags" class="mt-2" />
                       </div>
                     </div>
-                    <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="drawing" value="{{ __('Drawing') }}" />
-                      <div class="sm:col-span-2">
-                        <img class="rounded-lg" src="{{$url_schema}}">
-              <div class="mt-4 flex items-center justify-end gap-x-6">
-                        <x-input-error for="drawing" class="mt-2" />
-                      </div>
+                      <!-- Tags pour le style de voie, combobox pour les ouvreurs, dessin sur schema selon le secteur-->
+                  </div>
+                  <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                    <div class="flex justify-end space-x-3">
+                      <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
+                      <x-button type="submit">{{$this->modal_submit_message}}</x-button>
                     </div>
-                    <!-- Tags pour le style de voie, combobox pour les ouvreurs, dessin sur schema selon le secteur-->
                   </div>
-                </div>
-                <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
-                  <div class="flex justify-end space-x-3">
-                    <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
-                    <x-button type="submit">{{$this->modal_submit_message}}</x-button>
-                  </div>
-                </div>
               </form>
             </div>
           </div>

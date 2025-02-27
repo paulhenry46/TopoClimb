@@ -43,6 +43,10 @@ Route::prefix('/admin/sites')->name('admin.')->group(function () {
         Route::get('/areas/{area}', function (Site $site, Area $area) {
             return view('sectors.index', compact('site', 'area'));
         })->name('sectors.manage');
+
+        Route::get('/areas/{area}/routes/new', function (Site $site, Area $area) {
+            return view('routes.edit-infos', compact('site', 'area'));
+        })->name('sectors.manage');
     });
     
 });
