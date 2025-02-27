@@ -137,7 +137,7 @@ new class extends Component {
     </div>
   </div>
 <div x-data="{ open: $wire.entangle('modal_open') }">
-  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+  <div class="relative z-10 overflow-y-auto" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
     <!-- Background backdrop, show/hide based on slide-over state. -->
     <div class="fixed inset-0"></div>
     <div class="fixed inset-0 overflow-hidden">
@@ -145,7 +145,7 @@ new class extends Component {
         <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
           <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
             <form wire:submit="saveRoute" class="flex h-full flex-col bg-white shadow-xl">
-              <div class="flex-1">
+              <div class="flex-1 overflow-y-auto">
                 <!-- Header -->
                 <div class="bg-gray-50 px-4 py-6 sm:px-6">
                   <div class="flex items-start justify-between space-x-3">
@@ -163,7 +163,7 @@ new class extends Component {
                   </div>
                 </div>
                 <!-- Divider container -->
-                <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                <div class="overflow-y-auto space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
                   <!-- Project name -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="name" value="{{ __('Name') }}" />
@@ -281,6 +281,7 @@ new class extends Component {
         x-data="{tags: [{ id: 1, tag: 'archées' },
       { id: 2, tag: 'force' }, { id: 3, tag: 'devers' }], 
        SelectedID: [], 
+       SelectedTags: [],
        term : '',
        showListe: false, 
        toogle(id){
@@ -289,18 +290,17 @@ new class extends Component {
                 } else {
                     this.SelectedID.push(id);
                 }
+                this.SelectedTags = this.tags.filter(obj => {
+                    return this.SelectedID.includes(obj.id)
+                  })
             }
         }"  >
           <div>
-            <div class="relative mt-2">
+            <div class="relative mt-2 h-40">
               <input x-model="term" @click="showListe = true"  id="combobox" type="text" class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
-              <button type="button" class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
-                </svg>
-              </button>
+             
           
-              <ul x-show="showListe" class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
+              <ul x-show="showListe" class="absolute z-20 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
                 
                 <template x-for="tag in tags">
                 <li x-show="!(term.length > 0 && !tag['tag'].includes(term))" :class="SelectedID.includes(tag['id']) ? 'font-semibold' : 'text-gray-900'"  @click="toogle(tag['id'])" class="hover:bg-gray-100 relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" id="option-0" role="option" tabindex="-1">
@@ -315,9 +315,19 @@ new class extends Component {
               </template>
                 <!-- More items... -->
               </ul>
+              <div class="mt-2">
+              {{__('Choosen tags :')}} 
+              <template x-for="tag in SelectedTags">
+                <span x-text="tag['tag']" class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                  <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+                    <circle cx="3" cy="3" r="3"></circle>
+                  </svg>
+                </span>
+              </template>
+            </div>
             </div>
           </div>
-          <x-input-error for="date" class="mt-2" />
+          <x-input-error for="tags" class="mt-2" />
         </div>
       </div>
           <!-- Tags pour le style de voie, combobox pour les ouvreurs, dessin sur schema selon le secteur-->
