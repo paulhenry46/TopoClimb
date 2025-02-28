@@ -24,6 +24,9 @@ new class extends Component {
       $this->area = $area;
       $this->route = $route;
       $this->url = Storage::url('plans/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/sector-'.$route->line->sector->id.'/schema');
+      if($this->area->type == 'bloc'){
+        $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      }
     }
 
     public function save(){
@@ -40,14 +43,14 @@ new class extends Component {
       <li class="md:flex-1">
         <!-- Current Step -->
         <a class="flex flex-col border-l-4 border-indigo-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4" aria-current="step">
-          <span class="text-sm font-medium text-indigo-600">{{__('Step')}} 1</span>
+          <span class="text-sm font-medium text-gray-500">{{__('Step')}} 1</span>
           <span class="text-sm font-medium">{{__('Add informations')}}</span>
         </a>
       </li>
       <li class="md:flex-1">
         <!-- Upcoming Step -->
-        <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-          <span class="text-sm font-medium text-gray-500 group-hover:text-gray-700">{{__('Step')}} 2</span>
+        <a class="group flex flex-col border-l-4 border-indigo-600 py-2 pl-4 hover:border-indigo-500 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-indigo-600 group-hover:text-indigo-700">{{__('Step')}} 2</span>
           <span class="text-sm font-medium">{{__('Draw path')}}</span>
         </a>
       </li>
@@ -67,11 +70,11 @@ new class extends Component {
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Draw path of the route')}}</h1>
-          <p class="mt-2 text-sm text-gray-700">{{$this->site->adress}}</p>
+          <p class="mt-2 text-sm text-gray-700">{{$this->route->name}}</p>
         </div>
       </div>
               
-              <div x-data="{message: ''}" @svg.window="$wire.path = $event.detail.message"
+              <div x-data="{message: ''}" @svg_sent.window="$wire.path = $event.detail.message"
               @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
         <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
@@ -84,26 +87,22 @@ new class extends Component {
           const num_line = '{{$this->route->id}}';
 
           var raster = new Raster('schema');
+          raster.position = view.center;
+          project.activeLayer.fitBounds(view.bounds);
+          view.bounds =  raster.internalBounds;
 
-// Move the raster to the center of the view
-raster.position = view.center;
-project.activeLayer.fitBounds(view.bounds);
-view.bounds =  raster.internalBounds;
-
-rectangle = new Path.Rectangle(raster.bounds);
-rectangle.name = 'area';
-rectangle.strokeWidth = 1;
-rectangle.strokeColor = 'black';
-rectangle.fillColor = 'red';
-rectangle.opacity = 0;
+          rectangle = new Path.Rectangle(raster.bounds);
+          rectangle.name = 'area';
+          rectangle.strokeWidth = 1;
+          rectangle.strokeColor = 'black';
+          rectangle.fillColor = 'red';
+          rectangle.opacity = 0;
 
 
           function onMouseDown(event) {
-            // If we produced a path before, deselect it:
             if (path) {
               path.remove();
             }
-            // Create a new path and set its stroke color to black:
             path = new Path({
               segments: [event.point],
               strokeColor: strokeColor,
@@ -112,37 +111,31 @@ rectangle.opacity = 0;
             });
           }
 
-          // While the user drags the mouse, points are added to the path
-          // at the position of the mouse:
           function onMouseDrag(event) {
-            console.log(rectangle.hitTest(event.point));
             if(rectangle.hitTest(event.point)!= null){
 
             path.add(event.point);
             }
           }
 
-          // When the mouse is released, we simplify the path:
           function onMouseUp(event) {
-            // When the mouse is released, simplify it:
             path.simplify(10);
             group = new Group([path]);
               group.name = 'id_' + num_line;
           }
 
-          function exportToJSON(){
-              console.log(group.exportJSON());
-          }
 
           document.addEventListener('terminated', () => {
-            
-            var evt = new CustomEvent('svg', {
+            raster.remove();
+            var evt = new CustomEvent('svg_sent', {
               detail: {
-                  message: project.activeLayer.exportSVG({
+                  message: project.exportSVG({
                       asString: true
                   }),
               }
           });
+          window.dispatchEvent(evt);
+          
             var evt = new CustomEvent('sent_to_wire', {
                 detail: {
                     message: 'ok',
@@ -152,16 +145,11 @@ rectangle.opacity = 0;
         })
         </script>
         <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
-        <div class="relative min-h-60 md:min-h-72 w-full flex justify-center items-center">
           <img  id="schema" class="hidden rounded-lg" src="{{$url}}">
-          <div class="absolute inset-0 flex justify-center items-center ">
-            
-          </div>
-        </div>
       </div>
     </div>
     <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
-      <div class="flex justify-end space-x-3" x-data="{svg_edited : '', svg_with_numbers : ''}">
+      <div class="flex justify-end space-x-3">
         <x-secondary-button type="button">{{__('Cancel')}}</x-secondary-button>
         <x-button @click="$dispatch('terminated')">{{__('Continue')}}</x-button>
       </div>
