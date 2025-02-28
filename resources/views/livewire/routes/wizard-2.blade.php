@@ -31,7 +31,7 @@ new class extends Component {
       }
       $this->edit = $edit;
       if(Storage::exists('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg')){
-        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.temp.svg'));
+        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg'));
       }
     }
 
@@ -39,9 +39,9 @@ new class extends Component {
       //dd($this->path);
      
       $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
-      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.temp.svg', $this->path);
+      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
 
-      $input_file_path = Storage::path('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.temp.svg');
+      $input_file_path = Storage::path('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
       $output_file_path= storage_path('app/public/'.$filePath.'');
       
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
