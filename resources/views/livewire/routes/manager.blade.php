@@ -138,8 +138,15 @@ new class extends Component {
                   <button wire:click="open_item({{$route->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
                     <x-icon-edit />
                   </button>
-                  <a href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" >
-                    <x-icon-edit />
+                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class=mr-2 "text-gray-600 hover:text-gray-900" >
+                    <button>
+                    <x-icon-path />
+                    </button>
+                  </a>
+                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="text-gray-600 hover:text-gray-900" >
+                    <button>
+                    <x-icon-picture />
+                    </button>
                   </a>
                 </td>
               </tr> @endforeach </tbody>

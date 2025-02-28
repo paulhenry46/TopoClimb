@@ -16,10 +16,11 @@ new class extends Component {
     public Area $area;
     public Site $site;
     public ModelRoute $route;
+    public $edit;
     public $url;
     public $path;
 
-    public function mount(Site $site, Area $area, ModelRoute $route){
+    public function mount(Site $site, Area $area, ModelRoute $route, $edit = false){
       $this->site = $site;
       $this->area = $area;
       $this->route = $route;
@@ -27,17 +28,39 @@ new class extends Component {
       if($this->area->type == 'bloc'){
         $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
       }
+      $this->edit = $edit;
     }
 
     public function save(){
-      dd($this->path);
-      $this->validateOnly('photo');
+      //dd($this->path);
+     
+      $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
+      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.temp.svg', $this->path);
+
+      $input_file_path = Storage::path('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.temp.svg');
+      $output_file_path= storage_path('app/public/'.$filePath.'');
       
+      $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
+
+      $xml = simplexml_load_string(Storage::get($filePath));
+      $dom = new DOMDocument('1.0');
+      $dom->preserveWhiteSpace = false;
+      $dom->formatOutput = true;
+      $dom->loadXML($xml->asXML());
+
+      $xpath = new DOMXPath($dom);
+      $item = $xpath->query("//*[@id='area']")->item(0);
+      $item->remove();
+
+      Storage::put($filePath, $dom->saveXML());
+      dd(Storage::get($filePath));
+
       $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
     }
 }; ?>
 
 <div>
+  @if(!$this->edit)
   <nav aria-label="Progress" class="p-4">
     <ol role="list" class="space-y-4 md:flex md:space-x-8 md:space-y-0"> 
       <li class="md:flex-1">
@@ -65,6 +88,7 @@ new class extends Component {
       @endif
     </ol>
   </nav>
+  @endif
   <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
