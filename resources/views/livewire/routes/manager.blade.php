@@ -113,24 +113,46 @@ new class extends Component {
     <div class="mt-8 flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <table class="min-w-full divide-y divide-gray-300">
+          <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
             <thead>
               <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('ID')}}</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Name')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Opener')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Tags')}}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="even:bg-gray-50">
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$route->id}}</td>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$route->name}}</td>
+                
+                <td class="rounded-l-md text-xl text-center w-4 bg-{{$route->color}}-500 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                 
+                  {{$route->grade}}
+                </td>
+                <td class="whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                  <div class="flex items-center">
+                    <div>
+                      <div class="font-bold pb-1">{{$route->name}}</div>
+                      <div class="text-sm opacity-50">{{__('Line')}} {{$route->line->id}}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                 
+                  Paulhenry
+                </td>
+                <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">prises de merde</span>
+                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">devers</span>
+                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">archées</span>
+                </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <button wire:click="open_item({{$route->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
                     <x-icon-edit />
                   </button>
-                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class=mr-2 "text-gray-600 hover:text-gray-900" >
+                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="mr-2 text-gray-600 hover:text-gray-900" >
                     <button>
                     <x-icon-path />
                     </button>
