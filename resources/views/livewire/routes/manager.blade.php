@@ -42,17 +42,12 @@ new class extends Component {
     {
         $this->validate(); 
         $this->slug = Str::slug($this->name, '-');
-        if($this->id_editing == 0){
-          Route::create(
-            $this->pull(['name', 'adress', 'slug'])
-        );
-        }else{
+
           $this->site->name = $this->name;
           $this->site->adress = $this->adress;
           $this->site->slug = $this->slug;
           $this->site->save();
-          $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
-        }
+          $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
         
         $this->modal_open = false;
         $this->render();
@@ -79,7 +74,7 @@ new class extends Component {
     public function delete_item($id){
       $item = Route::find($id);
       $item->delete();
-      $this->dispatch('action_ok', title: 'Site deleted', message: 'Your modifications has been registered !');
+      $this->dispatch('action_ok', title: 'Route deleted', message: 'Your modifications has been registered !');
       $this->render();
     }
 
@@ -102,15 +97,6 @@ new class extends Component {
     public function saveRoute(){
       dd($this->color);
     }
-
-    public function with(){
-      if($this->line !== null){
-      $line = Line::where('id', $this->line)->first();
-      return ['url_schema' => Storage::url('plans/site-'.$line->sector->area->site->id.'/area-'.$line->sector->area->id.'/sector-'.$line->sector->id.'/schema')];
-    }else{
-      return ['url_schema' => ''];
-    }
-  }
 }; ?>
 
 <div>
