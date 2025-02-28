@@ -112,7 +112,7 @@ new class extends Component {
         @if($this->file_content)
         <script type="text/paperscript" canvas="myCanvas">
           var path;
-          const strokeWidth = 7;
+          const strokeWidth = 3;
           const strokeColor = '{{$this->route->color}}';
           var group;
           const num_line = '{{$this->route->id}}';
@@ -129,8 +129,10 @@ new class extends Component {
           rectangle.fillColor = 'red';
           rectangle.opacity = 0;
 
-          project.importSVG('{!! $this->file_content !!}');
-    //Penser à rescale quand on agrandit/rapetit
+          item = project.importSVG('{!! $this->file_content !!}');
+          item.position = view.center;
+          item.opacity = 0.5;
+          item.fitBounds(view.bounds);
 
 
           function onMouseDown(event) {
@@ -161,6 +163,7 @@ new class extends Component {
 
           document.addEventListener('terminated', () => {
             raster.remove();
+            item.remove();
             var evt = new CustomEvent('svg_sent', {
               detail: {
                   message: project.exportSVG({
