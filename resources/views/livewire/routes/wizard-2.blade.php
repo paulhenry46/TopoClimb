@@ -19,6 +19,7 @@ new class extends Component {
     public $edit;
     public $url;
     public $path;
+    public $file_content;
 
     public function mount(Site $site, Area $area, ModelRoute $route, $edit = false){
       $this->site = $site;
@@ -29,6 +30,9 @@ new class extends Component {
         $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
       }
       $this->edit = $edit;
+      if(Storage::exists('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg')){
+        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.temp.svg'));
+      }
     }
 
     public function save(){
@@ -103,6 +107,9 @@ new class extends Component {
                 <span x-text="message"></span>
         <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
+        
+
+        @if($this->file_content)
         <script type="text/paperscript" canvas="myCanvas">
           var path;
           const strokeWidth = 7;
@@ -121,6 +128,9 @@ new class extends Component {
           rectangle.strokeColor = 'black';
           rectangle.fillColor = 'red';
           rectangle.opacity = 0;
+
+          project.importSVG('{!! $this->file_content !!}');
+    //Penser à rescale quand on agrandit/rapetit
 
 
           function onMouseDown(event) {
@@ -168,6 +178,72 @@ new class extends Component {
             window.dispatchEvent(evt);
         })
         </script>
+        @else
+        <script type="text/paperscript" canvas="myCanvas">
+          var path;
+          const strokeWidth = 7;
+          const strokeColor = '{{$this->route->color}}';
+          var group;
+          const num_line = '{{$this->route->id}}';
+
+          var raster = new Raster('schema');
+          raster.position = view.center;
+          project.activeLayer.fitBounds(view.bounds);
+          view.bounds =  raster.internalBounds;
+
+          rectangle = new Path.Rectangle(raster.bounds);
+          rectangle.name = 'area';
+          rectangle.strokeWidth = 1;
+          rectangle.strokeColor = 'black';
+          rectangle.fillColor = 'red';
+          rectangle.opacity = 0;
+
+          function onMouseDown(event) {
+            if (path) {
+              path.remove();
+            }
+            path = new Path({
+              segments: [event.point],
+              strokeColor: strokeColor,
+              strokeWidth : strokeWidth,
+              name : 'path_' + num_line
+            });
+          }
+
+          function onMouseDrag(event) {
+            if(rectangle.hitTest(event.point)!= null){
+
+            path.add(event.point);
+            }
+          }
+
+          function onMouseUp(event) {
+            path.simplify(10);
+            group = new Group([path]);
+              group.name = 'id_' + num_line;
+          }
+
+
+          document.addEventListener('terminated', () => {
+            raster.remove();
+            var evt = new CustomEvent('svg_sent', {
+              detail: {
+                  message: project.exportSVG({
+                      asString: true
+                  }),
+              }
+          });
+          window.dispatchEvent(evt);
+          
+            var evt = new CustomEvent('sent_to_wire', {
+                detail: {
+                    message: 'ok',
+                }
+            });
+            window.dispatchEvent(evt);
+        })
+        </script>
+        @endif
         <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
           <img  id="schema" class="hidden rounded-lg" src="{{$url}}">
       </div>

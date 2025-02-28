@@ -97,14 +97,6 @@ new class extends Component {
       $this->site = $site;
       $this->area = $area;
     }
-
-    public function open_modal(){
-      $this->modal_subtitle = __('Get started by filling in the information below to create a new route.');
-      $this->modal_title = __('New route');
-      $this->id_editing = 0;
-      $this->modal_submit_message = __('Create');
-      $this->modal_open = true;
-    }
 }; ?>
 
 <div>
@@ -115,7 +107,7 @@ new class extends Component {
         <p class="mt-2 text-sm text-gray-700">{{__('Registered routes')}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <x-button wire:click="open_modal()" type="button">{{__('Add route')}}</x-button>
+       <a href="{{route('admin.routes.new', ['site' => $this->site->id, 'area' => $this->area->id])}}" wire:navigate> <x-button type="button">{{__('Add route')}}</x-button></a>
       </div>
     </div>
     <div class="mt-8 flow-root">
