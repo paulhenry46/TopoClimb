@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('line_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
-            $table->integer('number');
+            $table->integer('local_id');
             $table->string('comment');
             $table->string('grade');
             $table->string('color');

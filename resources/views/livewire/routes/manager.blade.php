@@ -3,6 +3,7 @@
 use Livewire\Volt\Component;
 use App\Models\Site;
 use App\Models\Route;
+use App\Models\Area;
 use App\Models\Line;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
@@ -12,6 +13,9 @@ new class extends Component {
   use WithPagination;
 
     public Site $site;
+    public Area $area;
+    public Route $route;
+
     public $modal_open;
     public $modal_title;
     public $modal_subtitle;
@@ -38,15 +42,19 @@ new class extends Component {
     public $lines;
     
 
-    public function save()
+    public function saveRoute()
     {
-        $this->validate(); 
-        $this->slug = Str::slug($this->name, '-');
+      $this->validate(); 
+      $this->route->slug = Str::slug($this->name, '-');
+      $this->route->name = $this->name;
+      $this->route->comment = $this->comment;
+      $this->route->line_id = $this->line;
+      $this->route->grade = $this->grade;
+      $this->route->color = $this->color;
+      $this->route->created_at = $this->date;
 
-          $this->site->name = $this->name;
-          $this->site->adress = $this->adress;
-          $this->site->slug = $this->slug;
-          $this->site->save();
+
+          $this->route->save();
           $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
         
         $this->modal_open = false;
@@ -61,13 +69,14 @@ new class extends Component {
 
     public function open_item($id){
       $item = Route::find($id);
-      $this->site = $item;
+      $this->route = $item;
       $this->name = $item->name;
-      $this->adress = $item->adress;
-      $this->id_editing = $id;
-      $this->modal_title = __('Editing ').$this->name;
-      $this->modal_subtitle = __('Check the informations about this site.');
-      $this->modal_submit_message = __('Edit');
+      $this->comment = $item->comment;
+      $this->line = $item->line_id;
+      $this->grade = $item->grade;
+      $this->color = $item->color;
+      $this->date = $item->created_at->format('Y-m-d');
+
       $this->modal_open = true;
     }
 
@@ -78,13 +87,15 @@ new class extends Component {
       $this->render();
     }
 
-    public function mount($lines){
-      $this->modal_subtitle = __('Get started by filling in the information below to create a new route.');
-      $this->modal_title = __('New route');
-      $this->modal_submit_message = __('Create');
+    public function mount($lines, Site $site, Area $area){
+      $this->modal_title = __('Editing route ').$this->name;
+      $this->modal_subtitle = __('Check the informations about this route.');
+      $this->modal_submit_message = __('Edit');
       
       $this->lines  = $lines;
       $this->line = null;
+      $this->site = $site;
+      $this->area = $area;
     }
 
     public function open_modal(){
@@ -93,9 +104,6 @@ new class extends Component {
       $this->id_editing = 0;
       $this->modal_submit_message = __('Create');
       $this->modal_open = true;
-    }
-    public function saveRoute(){
-      dd($this->color);
     }
 }; ?>
 
@@ -118,11 +126,22 @@ new class extends Component {
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('ID')}}</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Name')}}</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                  <span class="sr-only">Edit</span>
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="even:bg-gray-50">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$route->id}}</td>
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$route->name}}</td>
+                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                  <button wire:click="open_item({{$route->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
+                    <x-icon-edit />
+                  </button>
+                  <a href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" >
+                    <x-icon-edit />
+                  </a>
+                </td>
               </tr> @endforeach </tbody>
           </table>
           {{ $this->routes->links() }}
@@ -168,7 +187,7 @@ new class extends Component {
                     </div>
                     <!-- Project description -->
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="comment" value="{{ __('Comment') }}" />
+                      <x-label for="comment" value="{{ __('Comments') }}" />
                       <div class="sm:col-span-2">
                         <textarea wire:model="comment" id="comment" name="comment" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
                         <x-input-error for="comment" class="mt-2" />

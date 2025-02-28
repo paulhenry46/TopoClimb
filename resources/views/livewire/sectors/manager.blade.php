@@ -514,6 +514,6 @@ new class extends Component {
   </div>
   @endif
   <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-8">
-    <livewire:routes.manager :lines='$this->lines()->get()'>
+    <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
   </div>
 </div>
