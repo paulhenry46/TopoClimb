@@ -15,6 +15,7 @@ new class extends Component {
     public Site $site;
     public Area $area;
     public Route $route;
+    public $lines;
 
     public $modal_open;
     public $modal_title;
@@ -39,7 +40,6 @@ new class extends Component {
 
     public $slug;
     public $id_editing;
-    public $lines;
     
 
     public function saveRoute()
@@ -64,7 +64,7 @@ new class extends Component {
     #[Computed]
     public function routes()
     {
-        return Route::paginate(10);
+        return Route::whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
     }
 
     public function open_item($id){
@@ -118,14 +118,14 @@ new class extends Component {
               <tr>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Opener')}}</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Tags')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="even:bg-gray-50">
+            <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="">
                 
                 <td class="rounded-l-md text-xl text-center w-4 bg-{{$route->color}}-500 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                  

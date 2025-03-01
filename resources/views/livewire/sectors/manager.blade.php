@@ -248,7 +248,7 @@ new class extends Component {
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-gray-100' : 'even:bg-gray-50'">
+                  <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-gray-100' : ''">
                       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->name}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->lines->count()}}</td>
