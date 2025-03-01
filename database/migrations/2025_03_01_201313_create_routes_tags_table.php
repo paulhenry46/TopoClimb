@@ -9,22 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::create('route_user', function (Blueprint $table) {
-        $table->id();
-        $table->unsignedBigInteger('route_id');
-        $table->unsignedBigInteger('user_id');
-    
-    });
-}
-
+    public function up(): void
+    {
+        Schema::create('routes_tags', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('route_id');
+            $table->unsignedBigInteger('tag_id');
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('route_user');
+        Schema::dropIfExists('routes_tags');
     }
 };
