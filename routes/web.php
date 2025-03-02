@@ -51,6 +51,12 @@ Route::prefix('/admin/sites')->name('admin.')->group(function () {
         Route::get('/areas/{area}/routes/{route}/path', function (Site $site, Area $area, ModelsRoute $route) {
             return view('routes.edit-path', compact('site', 'area', 'route'));
         })->name('routes.path');
+        Route::get('/areas/{area}/routes/{route}/photo', function (Site $site, Area $area, ModelsRoute $route) {
+            return view('routes.edit-photo', compact('site', 'area', 'route'));
+        })->name('routes.photo');
+        Route::get('/areas/{area}/routes/{route}/photo/circle', function (Site $site, Area $area, ModelsRoute $route) {
+            return view('routes.edit-photo-circle', compact('site', 'area', 'route'));
+        })->name('routes.circle');
     });
     
 });
