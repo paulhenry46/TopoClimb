@@ -59,7 +59,7 @@ new class extends Component {
       Storage::put($filePath, $dom->saveXML());
       dd(Storage::get($filePath));
 
-      $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
 }; ?>
 

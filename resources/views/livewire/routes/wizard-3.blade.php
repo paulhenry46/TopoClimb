@@ -17,49 +17,23 @@ new class extends Component {
     public Site $site;
     public ModelRoute $route;
     public $edit;
-    public $url;
-    public $path;
-    public $file_content;
+
+    #[Validate('image|required')]
+    public $photo;
 
     public function mount(Site $site, Area $area, ModelRoute $route, $edit = false){
       $this->site = $site;
       $this->area = $area;
       $this->route = $route;
-      $this->url = Storage::url('plans/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/sector-'.$route->line->sector->id.'/schema');
-      if($this->area->type == 'bloc'){
-        $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
-      }
-      $this->edit = $edit;
-      if(Storage::exists('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg')){
-        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg'));
-      }
     }
 
     public function save(){
-      //dd($this->path);
      
-      $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
-      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
+      $this->validateOnly('photo');
+      $name = 'route-'.$this->route->id.'';
+      $this->photo->storeAs(path: 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
 
-      $input_file_path = Storage::path('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
-      $output_file_path= storage_path('app/public/'.$filePath.'');
-      
-      $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-
-      $xml = simplexml_load_string(Storage::get($filePath));
-      $dom = new DOMDocument('1.0');
-      $dom->preserveWhiteSpace = false;
-      $dom->formatOutput = true;
-      $dom->loadXML($xml->asXML());
-
-      $xpath = new DOMXPath($dom);
-      $item = $xpath->query("//*[@id='area']")->item(0);
-      $item->remove();
-
-      Storage::put($filePath, $dom->saveXML());
-      dd(Storage::get($filePath));
-
-      $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      $this->redirectRoute('admin.routes.circle', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
 }; ?>
 
@@ -77,19 +51,24 @@ new class extends Component {
       <li class="md:flex-1">
         <!-- Upcoming Step -->
         <a class="group flex flex-col border-l-4 border-indigo-600 py-2 pl-4 hover:border-indigo-500 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-          <span class="text-sm font-medium text-indigo-600 group-hover:text-indigo-700">{{__('Step')}} 2</span>
+          <span class="text-sm font-medium text-gray-500">{{__('Step')}} 2</span>
           <span class="text-sm font-medium">{{__('Draw path')}}</span>
         </a>
       </li>
-      @if($this->area->type == 'voie')
       <li class="md:flex-1">
         <!-- Upcoming Step -->
-        <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-          <span class="text-sm font-medium text-gray-500 group-hover:text-gray-700">{{__('Step')}} 3</span>
+        <a class="group flex flex-col border-l-4 border-indigo-600 py-2 pl-4 hover:border-indigo-500 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-indigo-600 group-hover:text-indigo-700">{{__('Step')}} 3</span>
           <span class="text-sm font-medium">{{__('Upload photo')}}</span>
         </a>
       </li>
-      @endif
+      <li class="md:flex-1">
+        <!-- Upcoming Step -->
+        <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-gray-500 group-hover:text-gray-700">{{__('Step')}} 4</span>
+          <span class="text-sm font-medium">{{__('Identify start')}}</span>
+        </a>
+      </li>
     </ol>
   </nav>
   @endif
@@ -97,164 +76,48 @@ new class extends Component {
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Draw path of the route')}}</h1>
-          <p class="mt-2 text-sm text-gray-700">{{$this->route->name}}</p>
+          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Add photo of the route')}}</h1>
+          <p class="mt-2 text-sm text-gray-700">{{$this->route->name}} ({{__('Line')}} {{$this->route->line->id}})</p>
         </div>
       </div>
-              
-              <div x-data="{message: ''}" @svg_sent.window="$wire.path = $event.detail.message"
-              @sent_to_wire.window="$wire.save()">
-                <span x-text="message"></span>
-        <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
-        
-
-        @if($this->file_content)
-        <script type="text/paperscript" canvas="myCanvas">
-          var path;
-          const strokeWidth = 3;
-          const strokeColor = '{{$this->route->color}}';
-          var group;
-          const num_line = '{{$this->route->id}}';
-
-          var raster = new Raster('schema');
-          raster.position = view.center;
-          project.activeLayer.fitBounds(view.bounds);
-          view.bounds =  raster.internalBounds;
-
-          rectangle = new Path.Rectangle(raster.bounds);
-          rectangle.name = 'area';
-          rectangle.strokeWidth = 1;
-          rectangle.strokeColor = 'black';
-          rectangle.fillColor = 'red';
-          rectangle.opacity = 0;
-
-          item = project.importSVG('{!! $this->file_content !!}');
-          item.position = view.center;
-          item.opacity = 0.5;
-          item.fitBounds(view.bounds);
-
-
-          function onMouseDown(event) {
-            if (path) {
-              path.remove();
-            }
-            path = new Path({
-              segments: [event.point],
-              strokeColor: strokeColor,
-              strokeWidth : strokeWidth,
-              name : 'path_' + num_line
-            });
-          }
-
-          function onMouseDrag(event) {
-            if(rectangle.hitTest(event.point)!= null){
-
-            path.add(event.point);
-            }
-          }
-
-          function onMouseUp(event) {
-            path.simplify(10);
-            group = new Group([path]);
-              group.name = 'id_' + num_line;
-          }
-
-
-          document.addEventListener('terminated', () => {
-            raster.remove();
-            item.remove();
-            var evt = new CustomEvent('svg_sent', {
-              detail: {
-                  message: project.exportSVG({
-                      asString: true
-                  }),
-              }
-          });
-          window.dispatchEvent(evt);
-          
-            var evt = new CustomEvent('sent_to_wire', {
-                detail: {
-                    message: 'ok',
-                }
-            });
-            window.dispatchEvent(evt);
-        })
-        </script>
-        @else
-        <script type="text/paperscript" canvas="myCanvas">
-          var path;
-          const strokeWidth = 7;
-          const strokeColor = '{{$this->route->color}}';
-          var group;
-          const num_line = '{{$this->route->id}}';
-
-          var raster = new Raster('schema');
-          raster.position = view.center;
-          project.activeLayer.fitBounds(view.bounds);
-          view.bounds =  raster.internalBounds;
-
-          rectangle = new Path.Rectangle(raster.bounds);
-          rectangle.name = 'area';
-          rectangle.strokeWidth = 1;
-          rectangle.strokeColor = 'black';
-          rectangle.fillColor = 'red';
-          rectangle.opacity = 0;
-
-          function onMouseDown(event) {
-            if (path) {
-              path.remove();
-            }
-            path = new Path({
-              segments: [event.point],
-              strokeColor: strokeColor,
-              strokeWidth : strokeWidth,
-              name : 'path_' + num_line
-            });
-          }
-
-          function onMouseDrag(event) {
-            if(rectangle.hitTest(event.point)!= null){
-
-            path.add(event.point);
-            }
-          }
-
-          function onMouseUp(event) {
-            path.simplify(10);
-            group = new Group([path]);
-              group.name = 'id_' + num_line;
-          }
-
-
-          document.addEventListener('terminated', () => {
-            raster.remove();
-            var evt = new CustomEvent('svg_sent', {
-              detail: {
-                  message: project.exportSVG({
-                      asString: true
-                  }),
-              }
-          });
-          window.dispatchEvent(evt);
-          
-            var evt = new CustomEvent('sent_to_wire', {
-                detail: {
-                    message: 'ok',
-                }
-            });
-            window.dispatchEvent(evt);
-        })
-        </script>
-        @endif
-        <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
-          <img  id="schema" class="hidden rounded-lg" src="{{$url}}">
+      <div class="mt-4 flow-root">
+        <div class="space-y-2 px-2 sm:gap-4 sm:space-y-0  sm:py-5">
+          <div class="">
+            <div class="col-span-full" x-data="{ uploading: false, progress: 0, uploaded: false }" x-on:livewire-upload-start="uploading = true, uploaded = false" x-on:livewire-upload-finish="uploading = false, uploaded = true" x-on:livewire-upload-cancel="uploading = false" x-on:livewire-upload-error="uploading = false" x-on:livewire-upload-progress="progress = 'width: ' + $event.detail.progress + '%'">
+              <x-label for="name" value="{{ __('Photo') }}" />
+              <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                <div class="text-center">
+                  <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                  </svg>
+                  <div class="mt-4 flex text-sm leading-6 text-gray-600">
+                    <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"> 
+                      @if ($this->photo !== null) {{$this->photo->getClientOriginalName()}}
+                      @else <span>{{__('Upload a file')}}</span> 
+                      @endif 
+                      <input id="file-upload" wire:model="photo" name="file-upload" type="file" class="sr-only">
+                    </label>
+                  </div>
+                  <p class="text-xs leading-5 text-gray-600">{{__('Image up to 10MB')}}</p>
+                </div>
+              </div>
+              <div x-show="uploading">
+                <div class="mt-6" aria-hidden="true">
+                  <div class="overflow-hidden rounded-full bg-gray-200">
+                    <div class="h-2 rounded-full bg-indigo-600" x-bind:style="progress" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+              <x-input-error  for="photo" class="mt-2" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
       <div class="flex justify-end space-x-3">
-        <x-secondary-button type="button">{{__('Cancel')}}</x-secondary-button>
-        <x-button @click="$dispatch('terminated')">{{__('Continue')}}</x-button>
+        <x-secondary-button type="button">{{__('Cancel')}}</x-secondary-button> 
+        <x-button wire:click="save">{{('Continue')}}</x-button> 
       </div>
     </div>
   </div>

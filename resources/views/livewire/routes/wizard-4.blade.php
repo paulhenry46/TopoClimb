@@ -25,23 +25,21 @@ new class extends Component {
       $this->site = $site;
       $this->area = $area;
       $this->route = $route;
-      $this->url = Storage::url('plans/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/sector-'.$route->line->sector->id.'/schema');
-      if($this->area->type == 'bloc'){
-        $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
-      }
+      $this->url = Storage::url('photos/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/route-'.$route->id.'');
       $this->edit = $edit;
-      if(Storage::exists('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg')){
-        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg'));
+
+      if(Storage::exists('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'/.svg')){
+        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.original.svg'));
       }
     }
 
     public function save(){
       //dd($this->path);
      
-      $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
-      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
+      $filePath = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.svg';
+      Storage::put('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.original.svg', $this->path);
 
-      $input_file_path = Storage::path('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
+      $input_file_path = Storage::path('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
       $output_file_path= storage_path('app/public/'.$filePath.'');
       
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
@@ -77,19 +75,24 @@ new class extends Component {
       <li class="md:flex-1">
         <!-- Upcoming Step -->
         <a class="group flex flex-col border-l-4 border-indigo-600 py-2 pl-4 hover:border-indigo-500 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-          <span class="text-sm font-medium text-indigo-600 group-hover:text-indigo-700">{{__('Step')}} 2</span>
+          <span class="text-sm font-medium text-gray-500 group-hover:text-gray-700">{{__('Step')}} 2</span>
           <span class="text-sm font-medium">{{__('Draw path')}}</span>
         </a>
       </li>
-      @if($this->area->type == 'voie')
       <li class="md:flex-1">
         <!-- Upcoming Step -->
-        <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+        <a class="group flex flex-col border-l-4 border-indigo-600 py-2 pl-4 hover:border-indigo-500 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
           <span class="text-sm font-medium text-gray-500 group-hover:text-gray-700">{{__('Step')}} 3</span>
           <span class="text-sm font-medium">{{__('Upload photo')}}</span>
         </a>
       </li>
-      @endif
+      <li class="md:flex-1">
+        <!-- Upcoming Step -->
+        <a class="group flex flex-col border-l-4 border-indigo-600 py-2 pl-4 hover:border-indigo-500 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-indigo-600 group-hover:text-indigo-700">{{__('Step')}} 4</span>
+          <span class="text-sm font-medium">{{__('Identify start')}}</span>
+        </a>
+      </li>
     </ol>
   </nav>
   @endif
@@ -97,8 +100,8 @@ new class extends Component {
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Draw path of the route')}}</h1>
-          <p class="mt-2 text-sm text-gray-700">{{$this->route->name}}</p>
+          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Identify start zone')}}</h1>
+          <p class="mt-2 text-sm text-gray-700">{{$this->route->name}} ({{__('Line')}} {{$this->route->line->id}})</p>
         </div>
       </div>
               
@@ -111,13 +114,11 @@ new class extends Component {
 
         @if($this->file_content)
         <script type="text/paperscript" canvas="myCanvas">
-          var path;
-          const strokeWidth = 3;
-          const strokeColor = '{{$this->route->color}}';
-          var group;
-          const num_line = '{{$this->route->id}}';
+          const diameter = 70;
+          const num_line = {{$this->route->id}};
+          const color = '{{$this->route->color}}';
 
-          var raster = new Raster('schema');
+          var raster = new Raster('photo');
           raster.position = view.center;
           project.activeLayer.fitBounds(view.bounds);
           view.bounds =  raster.internalBounds;
@@ -128,42 +129,35 @@ new class extends Component {
           rectangle.strokeColor = 'black';
           rectangle.fillColor = 'red';
           rectangle.opacity = 0;
-
+          
           item = project.importSVG('{!! $this->file_content !!}');
           item.position = view.center;
           item.opacity = 0.5;
           item.fitBounds(view.bounds);
 
+          function createTruc(event) {
+              point_cool = event.point;
+
+              var circle = new Path.Circle({
+                  center: point_cool,
+                  radius: diameter / 2,
+                  strokeColor : color,
+                  strokeWidth : 7,
+                  opacity : 0.5
+              });
+              circle.name = 'circle_' + num_line;
+              group = new Group([circle]);
+              group.name = 'group_' + num_line;
+          }
 
           function onMouseDown(event) {
-            if (path) {
-              path.remove();
-            }
-            path = new Path({
-              segments: [event.point],
-              strokeColor: strokeColor,
-              strokeWidth : strokeWidth,
-              name : 'path_' + num_line
-            });
-          }
-
-          function onMouseDrag(event) {
-            if(rectangle.hitTest(event.point)!= null){
-
-            path.add(event.point);
-            }
-          }
-
-          function onMouseUp(event) {
-            path.simplify(10);
-            group = new Group([path]);
-              group.name = 'id_' + num_line;
+                  project.activeLayer.removeChildren();
+                  createTruc(event);
           }
 
 
           document.addEventListener('terminated', () => {
             raster.remove();
-            item.remove();
             var evt = new CustomEvent('svg_sent', {
               detail: {
                   message: project.exportSVG({
@@ -183,13 +177,11 @@ new class extends Component {
         </script>
         @else
         <script type="text/paperscript" canvas="myCanvas">
-          var path;
-          const strokeWidth = 7;
-          const strokeColor = '{{$this->route->color}}';
-          var group;
-          const num_line = '{{$this->route->id}}';
+          const diameter = 70;
+          const num_line = {{$this->route->id}};
+          const color = '{{$this->route->color}}';
 
-          var raster = new Raster('schema');
+          var raster = new Raster('photo');
           raster.position = view.center;
           project.activeLayer.fitBounds(view.bounds);
           view.bounds =  raster.internalBounds;
@@ -201,31 +193,26 @@ new class extends Component {
           rectangle.fillColor = 'red';
           rectangle.opacity = 0;
 
+
+          function createTruc(event) {
+              point_cool = event.point;
+
+              var circle = new Path.Circle({
+                  center: point_cool,
+                  radius: diameter / 2,
+                  strokeColor : color,
+                  strokeWidth : 7,
+                  opacity : 0.5
+              });
+              circle.name = 'circle_' + num_line;
+              group = new Group([circle]);
+              group.name = 'group_' + num_line;
+          }
+
           function onMouseDown(event) {
-            if (path) {
-              path.remove();
-            }
-            path = new Path({
-              segments: [event.point],
-              strokeColor: strokeColor,
-              strokeWidth : strokeWidth,
-              name : 'path_' + num_line
-            });
-          }
-
-          function onMouseDrag(event) {
-            if(rectangle.hitTest(event.point)!= null){
-
-            path.add(event.point);
-            }
-          }
-
-          function onMouseUp(event) {
-            path.simplify(10);
-            group = new Group([path]);
-              group.name = 'id_' + num_line;
-          }
-
+                  project.activeLayer.removeChildren();
+                  createTruc(event);
+              }
 
           document.addEventListener('terminated', () => {
             raster.remove();
@@ -248,7 +235,7 @@ new class extends Component {
         </script>
         @endif
         <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
-          <img  id="schema" class="hidden rounded-lg" src="{{$url}}">
+          <img  id="photo" class="hidden rounded-lg" src="{{$url}}">
       </div>
     </div>
     <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">

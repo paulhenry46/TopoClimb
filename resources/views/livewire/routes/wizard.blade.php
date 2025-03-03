@@ -60,7 +60,7 @@ new class extends Component {
       $this->redirectRoute('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id], navigate: true);
     }
     public function with(){
-        return ['lines' => Line::where('sector_id', $this->sector_id)->get() ];
+        return ['lines' => Line::where('sector_id', $this->sector_id)->get()];
     }
 }; ?>
 
