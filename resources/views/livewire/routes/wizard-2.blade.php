@@ -57,7 +57,7 @@ new class extends Component {
       $item->remove();
 
       Storage::put($filePath, $dom->saveXML());
-      dd(Storage::get($filePath));
+      //dd(Storage::get($filePath));
 
       $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }

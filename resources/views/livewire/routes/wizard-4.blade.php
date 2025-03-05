@@ -36,14 +36,14 @@ new class extends Component {
     public function save(){
       //dd($this->path);
      
-      $filePath = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.svg';
-      Storage::put('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.original.svg', $this->path);
+      $filePath = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
+      Storage::put('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
 
       $input_file_path = Storage::path('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
       $output_file_path= storage_path('app/public/'.$filePath.'');
       
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-
+      //dd($result);
       $xml = simplexml_load_string(Storage::get($filePath));
       $dom = new DOMDocument('1.0');
       $dom->preserveWhiteSpace = false;
@@ -55,9 +55,9 @@ new class extends Component {
       $item->remove();
 
       Storage::put($filePath, $dom->saveXML());
-      dd(Storage::get($filePath));
+      //dd(Storage::get($filePath));
 
-      $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
     }
 }; ?>
 
@@ -193,6 +193,8 @@ new class extends Component {
           rectangle.fillColor = 'red';
           rectangle.opacity = 0;
 
+          var group = null;
+
 
           function createTruc(event) {
               point_cool = event.point;
@@ -207,11 +209,14 @@ new class extends Component {
               circle.name = 'circle_' + num_line;
               group = new Group([circle]);
               group.name = 'group_' + num_line;
+              return group;
           }
 
           function onMouseDown(event) {
-                  project.activeLayer.removeChildren();
-                  createTruc(event);
+            if(group){
+                  group.remove();
+          }
+                group = createTruc(event);
               }
 
           document.addEventListener('terminated', () => {
