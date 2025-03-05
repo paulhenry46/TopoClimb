@@ -25,6 +25,11 @@ new class extends Component {
       $this->site = $site;
       $this->area = $area;
       $this->route = $route;
+      if($this->route->id == session('route_creating')){
+        $this->edit = false;
+      }else{
+        $this->edit = true;
+      }
     }
 
     public function save(){

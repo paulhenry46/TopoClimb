@@ -56,6 +56,7 @@ new class extends Component {
       $route->number = 1;//Deprecated
       $route->slug = Str::slug($this->name, '-');
       $route->save();
+      session(['route_creating' => $route->id]);
 
       $this->redirectRoute('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id], navigate: true);
     }

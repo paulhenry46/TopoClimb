@@ -110,7 +110,7 @@ new class extends Component {
        <a href="{{route('admin.routes.new', ['site' => $this->site->id, 'area' => $this->area->id])}}" wire:navigate> <x-button type="button">{{__('Add route')}}</x-button></a>
       </div>
     </div>
-    <div class="mt-8 flow-root">
+    <div class=" flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
@@ -157,7 +157,7 @@ new class extends Component {
                     <x-icon-path />
                     </button>
                   </a>
-                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="text-gray-600 hover:text-gray-900" >
+                  <a wire:navigate href="{{Route('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="text-gray-600 hover:text-gray-900" >
                     <button>
                     <x-icon-picture />
                     </button>

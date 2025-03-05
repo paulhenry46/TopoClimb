@@ -33,6 +33,11 @@ new class extends Component {
       if(Storage::exists('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg')){
         $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg'));
       }
+      if($this->route->id == session('route_creating')){
+        $this->edit = false;
+      }else{
+        $this->edit = true;
+      }
     }
 
     public function save(){

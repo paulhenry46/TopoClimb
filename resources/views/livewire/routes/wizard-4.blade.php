@@ -21,15 +21,20 @@ new class extends Component {
     public $path;
     public $file_content;
 
-    public function mount(Site $site, Area $area, ModelRoute $route, $edit = false){
+    public function mount(Site $site, Area $area, ModelRoute $route){
       $this->site = $site;
       $this->area = $area;
       $this->route = $route;
       $this->url = Storage::url('photos/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/route-'.$route->id.'');
-      $this->edit = $edit;
+      
 
       if(Storage::exists('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'/.svg')){
         $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.original.svg'));
+      }
+      if($this->route->id == session('route_creating')){
+        $this->edit = false;
+      }else{
+        $this->edit = true;
       }
     }
 
@@ -56,6 +61,10 @@ new class extends Component {
 
       Storage::put($filePath, $dom->saveXML());
       //dd(Storage::get($filePath));
+
+      if($this->route->id == session('route_creating')){
+        session()->forget('route_creating');
+      }
 
       $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
     }
