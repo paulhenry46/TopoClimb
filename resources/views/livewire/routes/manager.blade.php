@@ -5,6 +5,7 @@ use App\Models\Site;
 use App\Models\Route;
 use App\Models\Area;
 use App\Models\Line;
+use App\Models\Tag;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
@@ -39,6 +40,13 @@ new class extends Component {
     public $creators;
 
     public $slug;
+
+    public array $tags_id;
+
+    public array $tags_choosen;
+
+    public $tags_available;
+
     public $id_editing;
     
 
@@ -52,10 +60,9 @@ new class extends Component {
       $this->route->grade = $this->grade;
       $this->route->color = $this->color;
       $this->route->created_at = $this->date;
-
-
-          $this->route->save();
-          $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
+      $this->route->save();
+      $this->route->tags()->sync($this->tags_id);
+      $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
         
         $this->modal_open = false;
         $this->render();
@@ -78,6 +85,20 @@ new class extends Component {
       $this->date = $item->created_at->format('Y-m-d');
 
       $this->modal_open = true;
+
+      $tags_temp = $this->route->tags()->pluck('tags.id', 'name')->toArray();
+    
+
+      $tags = [];
+      $tags_id = [];
+     foreach($tags_temp as $name => $key){
+      array_push($tags, ['name' => $name, 'id' => $key]);
+      array_push($tags_id, $key);
+     }
+
+     $this->tags_id = $tags_id;
+     $this->tags_choosen = $tags;
+     //dd($this->tags_id);
     }
 
     public function delete_item($id){
@@ -96,6 +117,16 @@ new class extends Component {
       $this->line = null;
       $this->site = $site;
       $this->area = $area;
+
+      $tags_temp = Tag::all()->pluck('id', 'name')->toArray();
+    
+
+      $tags = [];
+     foreach($tags_temp as $name => $key){
+      array_push($tags, ['name' => $name, 'id' => $key]);
+     }
+
+     $this->tags_available = $tags;
     }
 }; ?>
 
@@ -144,9 +175,11 @@ new class extends Component {
                   Paulhenry
                 </td>
                 <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">prises de merde</span>
-                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">devers</span>
-                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">archées</span>
+                  @forelse ($route->tags as $tag)
+                  
+                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">{{$tag->name}}</span>
+                  @empty
+                  @endforelse
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <button wire:click="open_item({{$route->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
@@ -306,10 +339,9 @@ new class extends Component {
                     </div>
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="creators" value="{{ __('Tags') }}" />
-                      <div @click.outside="showListe = false" class="sm:col-span-2" x-data="{tags: [{ id: 1, tag: 'archées' },
-                          { id: 2, tag: 'force' }, { id: 3, tag: 'devers' }], 
-                          SelectedID: [], 
-                          SelectedTags: [],
+                      <div @click.outside="showListe = false" class="sm:col-span-2" x-data="{tags: $wire.tags_available, 
+                          SelectedID: $wire.entangle('tags_id'), 
+                          SelectedTags: $wire.entangle('tags_choosen'),
                           term : '',
                           showListe: false, 
                           toogle(id){
@@ -321,16 +353,24 @@ new class extends Component {
                                     this.SelectedTags = this.tags.filter(obj => {
                                         return this.SelectedID.includes(obj.id)
                                       })
+                                    this.term = '';
                                 }
                             }">
                         <div>
                           <div class="relative mt-2 h-40">
-                            <input x-model="term" @click="showListe = true" id="combobox" type="text" class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
-                            <ul x-show="showListe" class="absolute z-20 mt-1 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
+                            {{__('Choosen tags :')}}
+                            <template x-for="tag in SelectedTags">
+                              <span x-text="tag['name']" class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                                <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+                                  <circle cx="3" cy="3" r="3"></circle>
+                                </svg>
+                              </span>
+                            </template>
+                            <input placeholder="Add a tag" x-model="term" @click="showListe = true" id="combobox" type="text" class="mt-2 w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
+                            <ul x-show="showListe" class="absolute z-20 mt-1 max-h-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
                               <template x-for="tag in tags">
-                                <li x-show="!(term.length > 0 && !tag['tag'].includes(term))" :class="SelectedID.includes(tag['id']) ? 'font-semibold' : 'text-gray-900'" @click="toogle(tag['id'])" class="hover:bg-gray-100 relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" id="option-0" role="option" tabindex="-1">
-                                  <!-- Selected: "font-semibold" -->
-                                  <span class="block truncate" x-text="tag['tag']"></span>
+                                <li x-show="!(term.length > 0 && !tag['name'].includes(term))" :class="SelectedID.includes(tag['id']) ? 'font-semibold' : 'text-gray-900'" @click="toogle(tag['id'])" class="hover:bg-gray-100 relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" id="option-0" role="option" tabindex="-1">
+                                  <span class="block truncate" x-text="tag['name']"></span>
                                   <span :class="SelectedID.includes(tag['id']) ? 'text-gray-600' : ' hidden'" class="absolute inset-y-0 left-0 flex items-center pl-1.5 text-gray-600">
                                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                       <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
@@ -340,16 +380,6 @@ new class extends Component {
                               </template>
                               <!-- More items... -->
                             </ul>
-                            <div class="mt-2">
-                              {{__('Choosen tags :')}}
-                              <template x-for="tag in SelectedTags">
-                                <span x-text="tag['tag']" class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                                  <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
-                                    <circle cx="3" cy="3" r="3"></circle>
-                                  </svg>
-                                </span>
-                              </template>
-                            </div>
                           </div>
                         </div>
                         <x-input-error for="tags" class="mt-2" />

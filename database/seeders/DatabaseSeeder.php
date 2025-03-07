@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Tag;
+use Illuminate\Support\Str;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,9 +17,23 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+      
+
+        $default_tags = [
+            __('Technic'), 
+            __('Devers'),
+            __('Dalle'),
+            __('Archées'),
+            __('Jetés'),
+            __('Astuce'),
+            __('Bacs')
+
+        ];
+        foreach ($default_tags as $tag) {
+            $tag1 = new Tag;
+            $tag1->name = $tag;
+            $tag1->slug = Str::slug($tag);
+            $tag1->save();
+        }
     }
 }

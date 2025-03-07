@@ -14,4 +14,8 @@ class Route extends Model
     {
         return $this->belongsToMany(User::class);
     }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 }
