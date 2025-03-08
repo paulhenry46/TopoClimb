@@ -5,6 +5,7 @@ use App\Models\Area;
 use App\Models\Site;
 use App\Models\Sector;
 use App\Models\Line;
+use App\Models\User;
 use App\Models\Tag;
 use App\Models\Route;
 use Livewire\Attributes\Validate; 
@@ -34,11 +35,12 @@ new class extends Component {
     public $sector_id;
 
     public array $tags_id;
-
     public $tags_available;
 
     
-    public $creators;
+    public $opener_search;
+    public $opener_selected  = [];
+    public $error_user;
 
 
     public function mount(Site $site, Area $area){
@@ -77,6 +79,28 @@ new class extends Component {
     }
     public function with(){
         return ['lines' => Line::where('sector_id', $this->sector_id)->get()];
+    }
+
+    public function add_opener(){
+      $user = User::where('name', $this->opener_search)->first();
+      //dd($this->opener_search);
+      if($user != null){
+        array_push($this->opener_selected, ['name' => $user->name, 'id' => $user->id, 'url' => $user->profile_photo_url]);
+        $this->opener_search = null;
+        $this->error_user = false;
+      }else{
+        $this->error_user = true;
+      }
+
+    }
+
+    public function remove_opener($id)
+    {
+      foreach ($this->opener_selected as $subKey => $opener){
+        if($opener['id'] == $id){
+          unset($this->opener_selected[$subKey]);
+        }
+      }
     }
 }; ?>
 
@@ -255,7 +279,7 @@ new class extends Component {
                     <input placeholder="Add a tag" x-model="term" @click="showListe = true" id="combobox" type="text" class="mt-2 w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
                     <ul x-show="showListe" class="absolute z-20 mt-1 max-h-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
                       <template x-for="tag in tags">
-                        <li x-show="!(term.length > 0 && !tag['name'].includes(term))" :class="SelectedID.includes(tag['id']) ? 'font-semibold' : 'text-gray-900'" @click="toogle(tag['id'])" class="hover:bg-gray-100 relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" id="option-0" role="option" tabindex="-1">
+                        <li x-show="!(term.length > 0 && !tag['name'].toLowerCase().includes(term.toLowerCase()))" :class="SelectedID.includes(tag['id']) ? 'font-semibold' : 'text-gray-900'" @click="toogle(tag['id'])" class="hover:bg-gray-100 relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" id="option-0" role="option" tabindex="-1">
                           <span class="block truncate" x-text="tag['name']"></span>
                           <span :class="SelectedID.includes(tag['id']) ? 'text-gray-600' : ' hidden'" class="absolute inset-y-0 left-0 flex items-center pl-1.5 text-gray-600">
                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -269,6 +293,38 @@ new class extends Component {
                   </div>
                 </div>
                 <x-input-error for="tags" class="mt-2" />
+              </div>
+            </div>
+
+            <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+              <x-label for="opener_search" value="{{ __('Openers') }}" />
+              <div class=" sm:col-span-2">
+                <div class="mt-2 flex rounded-md">
+                  <div class="flex-auto relative flex flex-grow items-stretch focus-within:z-10">
+                    @foreach ( $this->opener_selected as $opener)
+                <span wire:click="remove_opener({{$opener['id']}})" class="cursor-pointer flex-none mr-2 inline-flex items-center gap-x-1.5 rounded-md ring-1 ring-gray-100 px-2 py-1.5 text-sm font-medium text-gray-700">
+                  <img
+      alt="tania andrew"
+      src="{{ $opener['url'] }}"
+      class=" h-6 w-6  rounded-md object-cover object-center"
+    />
+                  {{ $opener['name'] }}
+                </span>
+                @endforeach
+                    
+                    <input wire:model="opener_search" type="text" name="opener_search" id="opener_search" class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" placeholder="John Smith">
+                  </div>
+                  <button type="button" @click="$wire.add_opener()" class="flex-none relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    <svg class="-ml-0.5 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M2 3.75A.75.75 0 012.75 3h11.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zM2 7.5a.75.75 0 01.75-.75h6.365a.75.75 0 010 1.5H2.75A.75.75 0 012 7.5zM14 7a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02l-1.95-2.1v6.59a.75.75 0 01-1.5 0V9.66l-1.95 2.1a.75.75 0 11-1.1-1.02l3.25-3.5A.75.75 0 0114 7zM2 11.25a.75.75 0 01.75-.75H7A.75.75 0 017 12H2.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                    </svg>
+                    {{__('Add')}}
+                  </button>
+                  
+                </div>
+                @if($this->error_user)
+                    <p class="text-sm text-red-600 mt-2">{{__('No users with this name were found.')}}</p>
+                    @endif
               </div>
             </div>
             
