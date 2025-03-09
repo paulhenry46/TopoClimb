@@ -38,7 +38,7 @@
                   </li>
                 </ol>
               </nav>
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+            <div class="bg-white overflow-hidden  sm:rounded-lg">
                <livewire:areas.manager :$site/>
             </div>
         </div>

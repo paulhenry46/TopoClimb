@@ -193,7 +193,7 @@ new class extends Component {
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="">
+            <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="hover:bg-gray-50">
                 
                 <td class="rounded-l-md text-xl text-center w-4 bg-{{$route->color}}-500 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                  

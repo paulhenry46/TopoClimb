@@ -210,7 +210,7 @@ new class extends Component {
   @if($this->area->type == 'bloc')
   <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
     <div class="">
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+      <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto stroke-indigo-500">
@@ -223,7 +223,7 @@ new class extends Component {
       </div>
     </div>
     <div class="max-w-7xl lg:col-span-1">
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+      <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
@@ -271,7 +271,7 @@ new class extends Component {
               <div class="absolute inset-0 overflow-hidden">
                 <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
                   <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                    <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
+                    <form wire:submit="save" class="flex h-full flex-col bg-white /*shadow-xl*/">
                       <div class="flex-1">
                         <!-- Header -->
                         <div class="bg-gray-50 px-4 py-6 sm:px-6">
@@ -332,7 +332,7 @@ new class extends Component {
   selectLine(id){ this.currentLine = id; this.currentSector = 0; }
   }">
     <div class=" ">
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+      <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto stroke-indigo-500">
@@ -344,7 +344,7 @@ new class extends Component {
         </div>
       </div>
 
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-8">
+      <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto ">
@@ -404,7 +404,7 @@ new class extends Component {
       </div>
     </div>
     <div class=" sm:pl-6 lg:pl-8 lg:col-span-1">
-      <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+      <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
@@ -513,7 +513,7 @@ new class extends Component {
     </div>
   </div>
   @endif
-  <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg mt-8">
+  <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8">
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
   </div>
 </div>
