@@ -6,6 +6,7 @@ use App\Models\Route;
 use App\Models\Area;
 use App\Models\Line;
 use App\Models\Tag;
+use App\Models\User;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
@@ -37,7 +38,9 @@ new class extends Component {
     #[Validate('required')]
     public $date;
 
-    public $creators;
+    public $opener_search;
+    public $opener_selected  = [];
+    public $error_user;
 
     public $slug;
 
@@ -62,6 +65,13 @@ new class extends Component {
       $this->route->created_at = $this->date;
       $this->route->save();
       $this->route->tags()->sync($this->tags_id);
+      $temp_openers_id = [];
+
+      foreach ($this->opener_selected as $key => $opener) {
+        array_push($temp_openers_id, $opener['id']);
+      }
+      $this->route->users()->sync($temp_openers_id);
+
       $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
         
         $this->modal_open = false;
@@ -99,7 +109,13 @@ new class extends Component {
      $this->tags_id = $tags_id;
      $this->tags_choosen = $tags;
      //dd($this->tags_id);
+     $this->opener_selected = [];
+     $users_temp = $this->route->users;
+     foreach($users_temp as $user){
+      array_push($this->opener_selected, ['name' => $user->name, 'id' => $user->id, 'url' => $user->profile_photo_url]);
+      
     }
+  }
 
     public function delete_item($id){
       $item = Route::find($id);
@@ -127,6 +143,27 @@ new class extends Component {
      }
 
      $this->tags_available = $tags;
+    }
+
+    public function add_opener(){
+      $user = User::where('name', $this->opener_search)->first();
+      if($user != null){
+        array_push($this->opener_selected, ['name' => $user->name, 'id' => $user->id, 'url' => $user->profile_photo_url]);
+        $this->opener_search = null;
+        $this->error_user = false;
+      }else{
+        $this->error_user = true;
+      }
+
+    }
+
+    public function remove_opener($id)
+    {
+      foreach ($this->opener_selected as $subKey => $opener){
+        if($opener['id'] == $id){
+          unset($this->opener_selected[$subKey]);
+        }
+      }
     }
 }; ?>
 
@@ -162,7 +199,7 @@ new class extends Component {
                  
                   {{$route->grade}}
                 </td>
-                <td class="whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   <div class="flex items-center">
                     <div>
                       <div class="font-bold pb-1">{{$route->name}}</div>
@@ -170,9 +207,19 @@ new class extends Component {
                     </div>
                   </div>
                 </td>
-                <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                <td class=" relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                  
-                  Paulhenry
+                  @forelse ( $route->users as $opener)
+                            <span class=" flex-none mr-2 inline-flex items-center gap-x-1.5 rounded-md  px-2 text-sm font-medium text-gray-700">
+                              <img
+                                alt="{{ $opener->name }}"
+                                src="{{ $opener->profile_photo_url }}"
+                                class=" h-8 w-8  rounded-md object-cover object-center"
+                              />
+                              {{ $opener->name }}
+                            </span>
+                            @empty
+                        @endforelse
                 </td>
                 <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   @forelse ($route->tags as $tag)
@@ -211,7 +258,7 @@ new class extends Component {
         <div class="absolute inset-0 overflow-hidden">
           <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
             <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-              <form wire:submit="saveRoute" class="flex h-full flex-col bg-white shadow-xl">
+              <form x-on:keydown.prevent.enter="" wire:submit="saveRoute" class="flex h-full flex-col bg-white shadow-xl">
                 <div class="flex-1 overflow-y-auto">
                   <!-- Header -->
                   <div class="bg-gray-50 px-4 py-6 sm:px-6">
@@ -268,54 +315,54 @@ new class extends Component {
                           <div class="mt-4 flex items-center space-x-3">
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-lime-500" x-on:click="colorChosen = 'lime'" :class="colorChosen == 'lime' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
-                              <span id="color-choice-4-label" class="sr-only">Yellow</span>
+                              <span id="color-choice-4-label" class="sr-only bg-lime-50">Yellow</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-lime-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-emerald-500" x-on:click="colorChosen = 'emerald'" :class="colorChosen == 'emerald' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
-                              <span id="color-choice-4-label" class="sr-only">Yellow</span>
+                              <span id="color-choice-4-label" class="sr-only bg-emerald-50">Yellow</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-emerald-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-yellow-500" x-on:click="colorChosen = 'yellow'" :class="colorChosen == 'yellow' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
-                              <span id="color-choice-4-label" class="sr-only">Yellow</span>
+                              <span id="color-choice-4-label" class="sr-only bg-yellow-50">Yellow</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-yellow-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-orange-500" x-on:click="colorChosen = 'orange'" :class="colorChosen == 'orange' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
-                              <span id="color-choice-4-label" class="sr-only">Yellow</span>
+                              <span id="color-choice-4-label" class="sr-only bg-orange-50">Yellow</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-orange-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-amber-500" x-on:click="colorChosen = 'amber'" :class="colorChosen == 'amber' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
-                              <span id="color-choice-4-label" class="sr-only">Yellow</span>
+                              <span id="color-choice-4-label" class="sr-only bg-amber-50">Yellow</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-amber-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                           </div>
                           <div class="mt-4 flex items-center space-x-3">
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-red-500" x-on:click="colorChosen = 'red'" :class="colorChosen == 'red' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="pink" class="sr-only" aria-labelledby="color-choice-0-label">
-                              <span id="color-choice-0-label" class="sr-only">Pink</span>
+                              <span id="color-choice-0-label" class="sr-only bg-red-50">Pink</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-red-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-pink-500" x-on:click="colorChosen = 'pink'" :class="colorChosen == 'pink' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="pink" class="sr-only" aria-labelledby="color-choice-0-label">
-                              <span id="color-choice-0-label" class="sr-only">Pink</span>
+                              <span id="color-choice-0-label" class="sr-only bg-pink-50">Pink</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-pink-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-purple-500" x-on:click="colorChosen = 'purple'" :class="colorChosen == 'purple' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Purple" class="sr-only" aria-labelledby="color-choice-1-label">
-                              <span id="color-choice-1-label" class="sr-only">Purple</span>
+                              <span id="color-choice-1-label" class="sr-only bg-purple-50">Purple</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-purple-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-blue-500" x-on:click="colorChosen = 'blue'" :class="colorChosen == 'blue' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Blue" class="sr-only" aria-labelledby="color-choice-2-label">
-                              <span id="color-choice-2-label" class="sr-only">Blue</span>
+                              <span id="color-choice-2-label" class="sr-only bg-blue-50">Blue</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-blue-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                             <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-green-500" x-on:click="colorChosen = 'green'" :class="colorChosen == 'green' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Green" class="sr-only" aria-labelledby="color-choice-3-label">
-                              <span id="color-choice-3-label" class="sr-only">Green</span>
+                              <span id="color-choice-3-label" class="sr-only bg-green-50">Green</span>
                               <span aria-hidden="true" class="h-8 w-8 bg-green-500 rounded-full border border-black border-opacity-10"></span>
                             </label>
                           </div>
@@ -327,13 +374,6 @@ new class extends Component {
                       <x-label for="name" value="{{ __('Date') }}" />
                       <div class="sm:col-span-2">
                         <x-input wire:model="date" type="date" name="date" id="project-name" class="block w-full" />
-                        <x-input-error for="date" class="mt-2" />
-                      </div>
-                    </div>
-                    <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="creators" value="{{ __('Others opener') }}" />
-                      <div class="sm:col-span-2">
-                        <x-input wire:model="creators" type="text" name="creators" id="project-name" class="block w-full" />
                         <x-input-error for="date" class="mt-2" />
                       </div>
                     </div>
@@ -383,6 +423,41 @@ new class extends Component {
                           </div>
                         </div>
                         <x-input-error for="tags" class="mt-2" />
+                      </div>
+                    </div>
+                    <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                      <x-label for="opener_search" value="{{ __('Openers') }}" />
+                      <div class=" sm:col-span-2">
+                        <div class=" flex rounded-md">
+                          <div class="flex-auto relative flex flex-grow items-stretch focus-within:z-10">
+                            @forelse ( $this->opener_selected as $opener)
+                            <span wire:click="remove_opener({{$opener['id']}})" class="group cursor-pointer flex-none mr-2 inline-flex items-center gap-x-1.5 rounded-md ring-1 ring-gray-300 px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                              <img
+                                alt="{{ $opener['name'] }}"
+                                src="{{ $opener['url'] }}"
+                                class="group-hover:hidden h-6 w-6  rounded-md object-cover object-center"
+                              />
+                              <svg class="h-6 w-6 hidden group-hover:block fill-gray-800 stroke-gray-800" fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                                <path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+                              </svg>
+                              {{ $opener['name'] }}
+                            </span>
+                            @empty
+                        @endforelse
+                            <input @keyup.enter.prevent="$wire.add_opener()" wire:model="opener_search" type="text" name="opener_search" id="opener_search" class="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" placeholder="John Smith">
+                          </div>
+                          <button type="button" @click="$wire.add_opener()" class="flex-none relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            
+                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-0.5 h-5 w-5 text-gray-400" viewBox="0 -960 960 960" fill="currentColor">
+                              <path d="M720-520h-80q-17 0-28.5-11.5T600-560q0-17 11.5-28.5T640-600h80v-80q0-17 11.5-28.5T760-720q17 0 28.5 11.5T800-680v80h80q17 0 28.5 11.5T920-560q0 17-11.5 28.5T880-520h-80v80q0 17-11.5 28.5T760-400q-17 0-28.5-11.5T720-440v-80Zm-360 40q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-240v-32q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v32q0 33-23.5 56.5T600-160H120q-33 0-56.5-23.5T40-240Zm80 0h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm0 400Z"/>
+                            </svg>
+                            {{__('Add')}}
+                          </button>
+                          
+                        </div>
+                        @if($this->error_user)
+                            <p class="text-sm text-red-600 mt-2">{{__('No users with this name were found.')}}</p>
+                        @endif
                       </div>
                     </div>
                       <!-- Tags pour le style de voie, combobox pour les ouvreurs, dessin sur schema selon le secteur-->
