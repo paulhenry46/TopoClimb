@@ -6,6 +6,7 @@ use App\Models\Route;
 use App\Models\Area;
 use App\Models\Line;
 use App\Models\Tag;
+use App\Models\Sector;
 use App\Models\User;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
@@ -18,6 +19,7 @@ new class extends Component {
     public Area $area;
     public Route $route;
     public $lines;
+    public $lines_available;
 
     public $modal_open;
     public $modal_title;
@@ -38,6 +40,9 @@ new class extends Component {
     #[Validate('required')]
     public $date;
 
+    public $sector;
+    public $sectors;
+
     public $opener_search;
     public $opener_selected  = [];
     public $error_user;
@@ -52,6 +57,13 @@ new class extends Component {
 
     public $id_editing;
     
+    public function updated($property, $value)
+    {
+        if ($property === 'sector') {
+            $this->line = Line::where('sector_id', $this->sector)->first()->id;
+            $this->lines_available = Line::where('sector_id', $this->sector)->get();
+        }
+    }
 
     public function saveRoute()
     {
@@ -90,6 +102,8 @@ new class extends Component {
       $this->name = $item->name;
       $this->comment = $item->comment;
       $this->line = $item->line_id;
+      $this->sector = $item->line->sector_id;
+      $this->lines_available = Line::where('sector_id', $this->sector)->get();
       $this->grade = $item->grade;
       $this->color = $item->color;
       $this->date = $item->created_at->format('Y-m-d');
@@ -129,7 +143,8 @@ new class extends Component {
       $this->modal_subtitle = __('Check the informations about this route.');
       $this->modal_submit_message = __('Edit');
       
-      $this->lines  = $lines;
+      $this->lines = $lines;
+      $this->lines_available = $lines;
       $this->line = null;
       $this->site = $site;
       $this->area = $area;
@@ -140,6 +155,9 @@ new class extends Component {
       $tags = [];
      foreach($tags_temp as $name => $key){
       array_push($tags, ['name' => $name, 'id' => $key]);
+
+      $this->sectors = Sector::where('area_id', $this->area->id)->get();
+      $this->sector = Sector::where('area_id', $this->area->id)->first()->id;
      }
 
      $this->tags_available = $tags;
@@ -203,7 +221,11 @@ new class extends Component {
                   <div class="flex items-center">
                     <div>
                       <div class="font-bold pb-1">{{$route->name}}</div>
-                      <div class="text-sm opacity-50">{{__('Line')}} {{$route->line->id}}</div>
+                      @if($route->line->local_id == 0)
+                      <div class="text-sm opacity-50">{{__('Sector')}} {{$route->line->sector->local_id}}</div>
+                      @else
+                      <div class="text-sm opacity-50">{{__('Line')}} {{$route->line->local_id}}</div>
+                      @endif
                     </div>
                   </div>
                 </td>
@@ -294,13 +316,24 @@ new class extends Component {
                         <x-input-error for="comment" class="mt-2" />
                       </div>
                     </div>
+                    @if($this->sectors->count() >1)
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="line" value="{{ __('Line') }}" />
+                      <x-label for="line" value="{{ __('Sector') }}" />
                       <div class="sm:col-span-2">
-                        <select wire:model.live="line" id="line" name="line" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($this->lines as $line) <option value="{{$line->id}}">{{__('Line ')}}{{$line->local_id}}</option> @endforeach </select>
+                        <select wire:model.live="sector" id="sector" name="sector" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($this->sectors as $line) <option value="{{$line->id}}">{{__('Sector ')}}{{$line->local_id}}</option> @endforeach </select>
                         <x-input-error for="adress" class="mt-2" />
                       </div>
                     </div>
+                    @endif
+                    @if($this->lines_available->count() > 1)
+                    <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                      <x-label for="line" value="{{ __('Line') }}" />
+                      <div class="sm:col-span-2">
+                        <select wire:model.live="line" id="line" name="line" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($this->lines_available as $line) <option value="{{$line->id}}">{{__('Line ')}}{{$line->local_id}}</option> @endforeach </select>
+                        <x-input-error for="adress" class="mt-2" />
+                      </div>
+                    </div>
+                    @endif
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="grade" value="{{ __('Grade') }}" />
                       <div class="sm:col-span-2">

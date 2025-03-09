@@ -18,4 +18,6 @@ class Route extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    public $fillable=['created_at'];
 }

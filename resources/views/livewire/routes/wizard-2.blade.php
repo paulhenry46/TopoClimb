@@ -27,7 +27,7 @@ new class extends Component {
       $this->route = $route;
       $this->url = Storage::url('plans/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/sector-'.$route->line->sector->id.'/schema');
       if($this->area->type == 'bloc'){
-        $this->redirectRoute('admin.areas.initialize.sectors', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+        $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
       }
       $this->edit = $edit;
       if(Storage::exists('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg')){

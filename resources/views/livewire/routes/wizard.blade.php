@@ -32,8 +32,8 @@ new class extends Component {
     public string $color;
     #[Validate('required')]
     public $date;
-    #[Validate('required')]
-    public $sector_id;
+
+    public $sector;
 
     public array $tags_id;
     public $tags_available;
@@ -47,20 +47,27 @@ new class extends Component {
     public function mount(Site $site, Area $area){
       $this->site = $site;
       $this->area = $area;
+
       $this->sectors = Sector::where('area_id', $this->area->id)->get();
-      $this->sector_id = Sector::where('area_id', $this->area->id)->first()->id;
+      $this->sector = Sector::where('area_id', $this->area->id)->first()->id;
+
+      $this->line = Line::where('sector_id', $this->sector)->first()->id;
+
       $tags_temp = Tag::all()->pluck('id', 'name')->toArray();
-    
-
       $tags = [];
-     foreach($tags_temp as $name => $key){
-      array_push($tags, ['name' => $name, 'id' => $key]);
-     }
-
+      foreach($tags_temp as $name => $key){
+        array_push($tags, ['name' => $name, 'id' => $key]);
+      }
      $this->tags_available = $tags;
-     $this->line = Line::where('sector_id', $this->sector_id)->first()->id;
-
+     
      $this->date = Carbon::today()->format('Y-m-d');
+    }
+
+    public function updating($property, $value)
+    {
+        if ($property === 'sector') {
+            $this->line = Line::where('sector_id', $this->sector)->first()->id;
+        }
     }
 
     public function save(){
@@ -76,6 +83,7 @@ new class extends Component {
       $route->number = 1;//Deprecated
       $route->slug = Str::slug($this->name, '-');
       $route->save();
+      $route->update(['created_at' => Carbon::createFromFormat('Y-m-d', $this->date)->toDateTimeString()]);
       
       $route->tags()->attach($this->tags_id);
       //dd($route);
@@ -92,7 +100,7 @@ new class extends Component {
       $this->redirectRoute('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id], navigate: true);
      }
     public function with(){
-        return ['lines' => Line::where('sector_id', $this->sector_id)->get()];
+        return ['lines' => Line::where('sector_id', $this->sector)->get()];
     }
 
     public function add_opener(){
@@ -155,12 +163,22 @@ new class extends Component {
                           <x-input-error for="comment" class="mt-2" />
                       </div>
                   </div>
+                  @if($this->sectors->count() >1)
+                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="line" value="{{ __('Sector') }}" />
+                    <div class="sm:col-span-2"> <select wire:model.live="sector" id="sector" name="sector" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($this->sectors as $sector) <option value="{{$sector->id}}">{{__('Sector ')}}{{$sector->local_id}}</option> @endforeach </select>
+                        <x-input-error for="adress" class="mt-2" />
+                    </div>
+                </div>
+                @endif
+                @if($lines->count() >1)
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="line" value="{{ __('Line') }}" />
                       <div class="sm:col-span-2"> <select wire:model.live="line" id="line" name="line" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($lines as $line) <option value="{{$line->id}}">{{__('Line ')}}{{$line->local_id}}</option> @endforeach </select>
                           <x-input-error for="adress" class="mt-2" />
                       </div>
                   </div>
+                  @endif
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="grade" value="{{ __('Grade') }}" />
                       <div class="sm:col-span-2">
