@@ -168,7 +168,7 @@ new class extends Component {
     }
 }; ?>
 <div class="py-12  mx-auto " >
-<div class="relative grid min-h-screen grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:var(--color-gray-950)]/5 ">
+<div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:var(--color-gray-950)]/5 ">
 <div class="col-start-3 row-start-3 " >
   <nav class="flex ml-4 my-4" aria-label="Breadcrumb">
     <ol role="list" class="flex items-center space-x-4">
@@ -211,7 +211,7 @@ new class extends Component {
   @if($this->area->type == 'bloc')
   <div class="relative grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
     <div class="absolute">
-      <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors') }}</p>
+      <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors') }}</p>
       
       </div>
     <div class="">
@@ -337,7 +337,7 @@ new class extends Component {
   selectLine(id){ this.currentLine = id; this.currentSector = 0; }
   }">
   <div class="absolute">
-  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Lines') }}</p>
+  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Lines') }}</p>
   
   </div>
   <div class=" ">
