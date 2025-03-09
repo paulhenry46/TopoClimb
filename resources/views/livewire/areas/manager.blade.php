@@ -145,7 +145,7 @@ $this->picture_url = Storage::url('pictures/site-'.$this->area->site->id.'/area-
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$area->name}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->type}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->sectors()->count()}}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">0</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$area->routes()->count()}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                   @if($area->sectors()->count() == 0) 
                   <span class="inline-flex items-center gap-x-1.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700">

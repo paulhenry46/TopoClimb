@@ -22,4 +22,9 @@ class Area extends Model
         'type',
         'site_id'
     ];
+
+    public function routes(){
+        $lines_id = Line::whereIn('sector_id', $this->sectors()->pluck('id'))->pluck('id');
+        return Route::whereIn('line_id', $lines_id)->get();
+    }
 }
