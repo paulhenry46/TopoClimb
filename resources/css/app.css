@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --pattern-fg: color-mix(in oklab,oklch(.13 .028 261.692)5%,transparent);
+  }
+
 [x-cloak] {
     display: none;
 }
