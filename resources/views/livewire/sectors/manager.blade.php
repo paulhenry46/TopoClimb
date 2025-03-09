@@ -170,7 +170,7 @@ new class extends Component {
 <div class="py-12  mx-auto " >
 <div class="relative grid min-h-screen grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:var(--color-gray-950)]/5 ">
 <div class="col-start-3 row-start-3 " >
-  <nav class="flex my-4" aria-label="Breadcrumb">
+  <nav class="flex ml-4 my-4" aria-label="Breadcrumb">
     <ol role="list" class="flex items-center space-x-4">
       <li>
         <div>
@@ -325,17 +325,18 @@ new class extends Component {
     </div>
   </div>
 @else
-<div class="relative">
-  <p class="text-right text-sky-500 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase text-gray-600 min-[105rem]:absolute min-[105rem]:top-0 min-[105rem]:-left-10 min-[105rem]:origin-bottom-right min-[105rem]:-translate-x-full min-[105rem]:-translate-y-full min-[105rem]:-rotate-90 min-[105rem]:pr-2 max-[105rem]:hidden">Templates
-  </p></div>
-  <div class="grid grid-cols-1 items-start lg:grid-cols-2" 
+  <div class="relative grid grid-cols-1 items-start lg:grid-cols-2" 
   x-data="{
   currentSector: 0, 
   currentLine: 0, 
   selectSector(id){ this.currentSector = id; this.currentLine = 0;},
   selectLine(id){ this.currentLine = id; this.currentSector = 0; }
   }">
-    <div class=" ">
+  <div class="absolute">
+  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors / Lines') }}</p>
+  
+  </div>
+  <div class=" ">
       <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
           <div class="sm:flex sm:items-center">
@@ -517,6 +518,10 @@ new class extends Component {
     </div>
   </div>
   @endif
+  <div class="absolute">
+    <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Routes') }}</p>
+    
+    </div>
   <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8">
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
   </div>
