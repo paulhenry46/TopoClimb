@@ -209,7 +209,11 @@ new class extends Component {
     </ol>
   </nav>
   @if($this->area->type == 'bloc')
-  <div class="grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
+  <div class="relative grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
+    <div class="absolute">
+      <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors') }}</p>
+      
+      </div>
     <div class="">
       <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
@@ -333,7 +337,7 @@ new class extends Component {
   selectLine(id){ this.currentLine = id; this.currentSector = 0; }
   }">
   <div class="absolute">
-  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors / Lines') }}</p>
+  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Lines') }}</p>
   
   </div>
   <div class=" ">
