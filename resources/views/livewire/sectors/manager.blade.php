@@ -168,7 +168,7 @@ new class extends Component {
     }
 }; ?>
 <div class="py-12  mx-auto " >
-<div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr] [--pattern-fg:var(--color-gray-950)]/5 ">
+<div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr]  ">
 <div class="col-start-3 row-start-3 " >
   <nav class="flex ml-4 my-4" aria-label="Breadcrumb">
     <ol role="list" class="flex items-center space-x-4">
