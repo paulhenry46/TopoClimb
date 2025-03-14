@@ -32,11 +32,10 @@ new class extends Component {
     public $comment;
     #[Validate('required')]
     public $line;
-    #[Validate('required')]
+    #[Validate('required|regex:/[3-9][abc][+]?/')]
     public string $grade;
     #[Validate('required')]
     public string $color;
-
     #[Validate('required')]
     public $date;
 
