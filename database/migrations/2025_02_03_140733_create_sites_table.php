@@ -17,6 +17,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('adress');
+            $table->string('state')->nullable();
+            $table->string('coord')->nullable();
+            $table->string('mail')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('website')->nullable();
+            $table->string('description')->nullable();
         });
     }
 

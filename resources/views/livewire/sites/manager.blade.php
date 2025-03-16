@@ -15,10 +15,23 @@ new class extends Component {
     public $modal_subtitle;
     public $modal_submit_message;
 
-    #[Validate('required')]
+    #[Validate('required|string')]
     public $name;
-    #[Validate('required')]
+    #[Validate('required|string')]
     public $adress;
+    #[Validate('string|nullable')]
+    public $state;
+    #[Validate('email|nullable')]
+    public $mail;
+    #[Validate('string|nullable')]
+    public $coord;
+    #[Validate('string|nullable')]
+    public $phone;
+    #[Validate('string|nullable')]
+    public $website;
+    #[Validate('string|nullable')]
+    public $description;
+    
     public $slug;
     public $id_editing;
     
@@ -28,13 +41,26 @@ new class extends Component {
         $this->validate(); 
         $this->slug = Str::slug($this->name, '-');
         if($this->id_editing == 0){
-          Site::create(
+          $this->site = Site::create(
             $this->pull(['name', 'adress', 'slug'])
         );
+        $this->site->state = $this->state;
+        $this->site->coord = $this->coord;
+        $this->site->description = $this->description;
+        $this->site->mail = $this->mail;
+        $this->site->phone = $this->phone;
+        $this->site->website = $this->website;
+        $this->site->save();
         }else{
           $this->site->name = $this->name;
           $this->site->adress = $this->adress;
           $this->site->slug = $this->slug;
+          $this->site->state = $this->state;
+          $this->site->coord = $this->coord;
+          $this->site->description = $this->description;
+          $this->site->mail = $this->mail;
+          $this->site->phone = $this->phone;
+          $this->site->website = $this->website;
           $this->site->save();
           $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
         }
@@ -54,6 +80,12 @@ new class extends Component {
       $this->site = $item;
       $this->name = $item->name;
       $this->adress = $item->adress;
+      $this->state = $item->state;
+        $this->coord = $item->coord;
+        $this->description = $item->description;
+        $this->mail = $item->mail;
+        $this->phone = $item->phone;
+        $this->website = $item->website;
       $this->id_editing = $id;
       $this->modal_title = __('Editing ').$this->name;
       $this->modal_subtitle = __('Check the informations about this site.');
@@ -129,7 +161,7 @@ new class extends Component {
     </div>
   </div>
 <div x-data="{ open: $wire.entangle('modal_open') }">
-  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;" x-trap.noscroll="open">
     <!-- Background backdrop, show/hide based on slide-over state. -->
     <div class="fixed inset-0"></div>
     <div class="fixed inset-0 overflow-hidden">
@@ -164,14 +196,58 @@ new class extends Component {
                       <x-input-error for="name" class="mt-2" />
                     </div>
                   </div>
+                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="description" value="{{ __('Description') }}" />
+                  <div class="sm:col-span-2">
+                    <textarea wire:model="description" id="description" name="description" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+                    <x-input-error for="description" class="mt-2" />
+                  </div>
+                </div>
                   <!-- Project description -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="adress" value="{{ __('Adress') }}" />
                     <div class="sm:col-span-2">
-                      <textarea wire:model="adress" id="adress" name="adress" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                      <textarea wire:model="adress" id="adress" name="adress" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
                       <x-input-error for="adress" class="mt-2" />
                     </div>
                   </div>
+                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="name" value="{{ __('Coordinates') }}" />
+                  <div class="sm:col-span-2">
+                    <x-input wire:model="coord" type="text" name="coord" id="project-coord" class="block w-full" />
+                    <x-input-error for="coord" class="mt-2" />
+                  </div>
+                </div>
+                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="name" value="{{ __('Website') }}" />
+                    <div class="sm:col-span-2">
+                      <x-input wire:model="website" type="url" name="website" id="project-website" class="block w-full" />
+                      <x-input-error for="website" class="mt-2" />
+                    </div>
+                  </div>
+                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="mail" value="{{ __('Email') }}" />
+                    <div class="sm:col-span-2">
+                      <x-input wire:model="mail" type="email" name="mail" id="project-mail" class="block w-full" />
+                      <x-input-error for="mail" class="mt-2" />
+                    </div>
+                  </div>
+                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                    <x-label for="name" value="{{ __('Phone number') }}" />
+                  <div class="sm:col-span-2">
+                    <x-input wire:mode="phone" type="tel" name="phone" id="project-phone" class="block w-full" />
+                    <x-input-error for="phone" class="mt-2" />
+                  </div>
+                </div>
+                <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                  <x-label for="name" value="{{ __('State') }}" />
+                <div class="sm:col-span-2">
+                  <x-input wire:model="state" type="text" name="state" id="project-state" class="block w-full" />
+                  <x-input-error for="state" class="mt-2" />
+                </div>
+              </div>
+              
+            
                 </div>
               </div>
               <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
