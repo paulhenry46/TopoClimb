@@ -9,9 +9,16 @@
     <div class="py-12  mx-auto max-w-7xl" >
       <div class=" ">
         <div>
-          <x-site.banner />
+          <x-site.banner :name='$site->name' :adress='$site->adress'/>
             <div>
-                
+              <div class="grid grid-cols-3 mt-8">
+                <div class="col-span-2">
+                </div>
+                <div>
+                  <x-site.infobox />
+                  <x-site.map class="mt-3"/>
+                </div>
+              </div>
             
           </div>
         </div>
