@@ -5,7 +5,6 @@
             {{ __('Administration Area') }}
         </h2>
     </x-slot>
-
     <div class="py-12  mx-auto " >
       <div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr]  ">
         <div class="col-start-3 row-start-3 " >
@@ -53,7 +52,6 @@
                 
                 </div>
             <div class=" bg-white overflow-hidden  sm:rounded-lg">
-              
                <livewire:areas.manager :$site/>
             </div>
           </div>
