@@ -11,14 +11,15 @@
         <div>
           <x-site.banner :name='$site->name' :adress='$site->adress'/>
             <div>
-              <div class="grid grid-cols-3 mt-8">
-                <div class="col-span-2">
+              <div class="grid grid-cols-3 mt-8 gap-4">
+                <div class="col-span-2 flex flex-col">
+                  <x-site.desc />
                 </div>
-                <div>
+                <div class="flex flex-col">
                   <x-site.infobox />
-                  <x-site.map class="mt-3"/>
                 </div>
               </div>
+              <x-site.areas />
             
           </div>
         </div>
