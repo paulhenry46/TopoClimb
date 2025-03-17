@@ -5,9 +5,10 @@ use App\Models\Site;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 new class extends Component {
-  use WithPagination;
+  use WithPagination, WithFileUploads;
 
     public Site $site;
     public $modal_open;
@@ -31,6 +32,14 @@ new class extends Component {
     public $website;
     #[Validate('string|nullable')]
     public $description;
+
+    #[Validate('image')]
+    public $picture;
+    public $picture_url;
+
+    #[Validate('image')]
+    public $banner;
+    public $banner_url;
     
     public $slug;
     public $id_editing;
@@ -64,6 +73,15 @@ new class extends Component {
           $this->site->save();
           $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
         }
+        if($this->picture !== null){
+          $this->picture->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'profile');
+        $this->picture = null;
+        }
+
+        if($this->banner !== null){
+          $this->banner->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'banner');
+        $this->banner = null;
+        }
         
         $this->modal_open = false;
         $this->render();
@@ -91,6 +109,18 @@ new class extends Component {
       $this->modal_subtitle = __('Check the informations about this site.');
       $this->modal_submit_message = __('Edit');
       $this->modal_open = true;
+
+      if(Storage::exists('pictures/site-'.$this->site->id.'/profile')){
+$this->picture_url = Storage::url('pictures/site-'.$this->site->id.'/profile');
+      }else{
+        $this->picture_url = null;
+      }
+
+      if(Storage::exists('pictures/site-'.$this->site->id.'/banner')){
+$this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
+      }else{
+        $this->banner_url = null;
+      }
     }
 
     public function delete_item($id){
@@ -161,7 +191,7 @@ new class extends Component {
     </div>
   </div>
 <div x-data="{ open: $wire.entangle('modal_open') }">
-  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;" x-trap.noscroll="open">
+  <div class="relative z-10 overflow-y-auto" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;" x-trap.noscroll="open">
     <!-- Background backdrop, show/hide based on slide-over state. -->
     <div class="fixed inset-0"></div>
     <div class="fixed inset-0 overflow-hidden">
@@ -169,7 +199,7 @@ new class extends Component {
         <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
           <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
             <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
-              <div class="flex-1">
+              <div class="flex-1 overflow-y-auto">
                 <!-- Header -->
                 <div class="bg-gray-50 px-4 py-6 sm:px-6">
                   <div class="flex items-start justify-between space-x-3">
@@ -187,7 +217,7 @@ new class extends Component {
                   </div>
                 </div>
                 <!-- Divider container -->
-                <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+                <div class="overflow-y-auto space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
                   <!-- Project name -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="name" value="{{ __('Site name') }}" />
@@ -246,6 +276,22 @@ new class extends Component {
                   <x-input-error for="state" class="mt-2" />
                 </div>
               </div>
+              <div x-data="{banner_url: $wire.entangle('banner_url')}" class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                <x-label for="banner" value="{{ __('Banner image') }}" />
+                <div class="sm:col-span-2">
+                <x-input wire:model="banner" type="file" name="banner" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+                <x-input-error for="banner" class="mt-2" />
+                <img class="rounded-lg mt-2" x-bind:src="banner_url" />
+              </div>
+            </div>
+            <div x-data="{picture_url: $wire.entangle('picture_url')}" class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+              <x-label for="name" value="{{ __('Picture') }}" />
+              <div class="sm:col-span-2">
+              <x-input wire:model="picture" type="file" name="picture" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+              <x-input-error for="picture" class="mt-2" />
+              <img class="rounded-lg mt-2" x-bind:src="picture_url" />
+            </div>
+          </div>
               
             
                 </div>
