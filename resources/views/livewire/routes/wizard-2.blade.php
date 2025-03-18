@@ -64,7 +64,28 @@ new class extends Component {
       Storage::put($filePath, $dom->saveXML());
       //dd(Storage::get($filePath));
 
+      $path = $xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);
+$this->addPathToCommonPaths($path);
       $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
+    }
+
+    public function addPathToCommonPaths($path){
+      $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg';
+      if(Storage::exists($filePath)){
+       
+        $dom_common = new DOMDocument('1.0');
+        $dom_common->preserveWhiteSpace = false;
+        $dom_common->formatOutput = true;
+        $dom_common->loadXML(simplexml_load_string(Storage::get($filePath))->asXML());
+        $newPath = $dom_common->importNode($path);
+
+        $xpath = new DOMXPath($dom_common);
+        $item_common = $xpath->query("//*[@id='g1']")->item(0);
+        $item_common->appendChild($newPath);
+        Storage::put($filePath, $dom_common->saveXML());
+      }else{
+        Storage::put($filePath, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'));
+      }
     }
 }; ?>
 
