@@ -39,7 +39,6 @@ new class extends Component {
     }
 
     public function save(){
-      //dd($this->path);
      
       $filePath = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
       Storage::put('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
@@ -48,7 +47,6 @@ new class extends Component {
       $output_file_path= storage_path('app/public/'.$filePath.'');
       
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-      //dd($result);
       $xml = simplexml_load_string(Storage::get($filePath));
       $dom = new DOMDocument('1.0');
       $dom->preserveWhiteSpace = false;
@@ -60,7 +58,6 @@ new class extends Component {
       $item->remove();
 
       Storage::put($filePath, $dom->saveXML());
-      //dd(Storage::get($filePath));
 
       if($this->route->id == session('route_creating')){
         session()->forget('route_creating');
