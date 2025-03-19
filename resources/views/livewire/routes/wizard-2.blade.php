@@ -65,7 +65,8 @@ new class extends Component {
       //dd(Storage::get($filePath));
 
       $path = $xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);
-$this->addPathToCommonPaths($path);
+      $this->addPathToCommonPaths($path);
+      $this->ProcessCommonPaths();
       $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
 
@@ -86,6 +87,23 @@ $this->addPathToCommonPaths($path);
       }else{
         Storage::put($filePath, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'));
       }
+
+    }
+
+    public function ProcessCommonPaths(){
+        $route = $this->route;
+        $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg';
+        $dom_common = new DOMDocument('1.0');
+        $dom_common->preserveWhiteSpace = false;
+        $dom_common->formatOutput = true;
+        $dom_common->loadXML(simplexml_load_string(Storage::get($filePath))->asXML());
+
+        $xpath = new DOMXPath($dom_common);
+        $item = $xpath->query("//*[@id='path_$route->id']")->item(0);
+        $item->setAttribute("x-on:mouseover", "selectSector($route->id)");
+        $item->setAttribute(":class", "currentSector == $route->id ? 'stroke-width-8' : ''");
+
+      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg', $dom_common->saveXML());
     }
 }; ?>
 
