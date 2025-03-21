@@ -147,6 +147,8 @@ new class extends Component {
           $item->setAttribute("viewBox", "0 0 $width $height");
 
       }
+      $original_dom = $dom;
+      //-------------------------------ADMIN MAP----------------------------------
       foreach ($this->sectors as $sector) {
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
@@ -162,8 +164,18 @@ new class extends Component {
         $item->setAttribute(":class", "currentLine == $line->id ? 'fill-indigo-500' : ''");
       }
       }
-
       Storage::put('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg', $dom->saveXML());
+      //----------------------------USER MAP-------------------------------------------------
+      $dom = $original_dom;
+      foreach ($this->sectors as $sector) {
+        $xpath = new DOMXPath($dom);
+        $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
+        $item->setAttribute("x-on:click", "selectSector($sector->id)");
+        $item->setAttribute(":class", "selectedSector == $sector->id ? 'stroke-width-10' : ''");
+        $item->setAttribute("class", "hover:stroke-width-10");
+      }
+
+      Storage::put('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/users.svg', $dom->saveXML());
         
     }
 }; ?>
