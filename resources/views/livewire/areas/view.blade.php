@@ -25,8 +25,9 @@ new class extends Component {
     public array $tags_choosen;
     public array $tags_id;
     public $search;
-    public $cotation_from;
-    public $cotation_to;
+    public int $cotation_from;
+    public int $cotation_to;
+
 
 
     public function mount(Area $area){
@@ -35,7 +36,14 @@ new class extends Component {
         foreach ($area->sectors as $sector) {
             array_push($this->url_map, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg'));
         }
-        $this->cotations = ['3a', '3b', '3c', '4a', '4b', '4c', '5a', '5b', '5c', '6a', '6b', '6c', '7a', '7b', '7c', '8a', '8b', '8c', '9a', '9b', '9c',];
+        $this->cotations = [
+        '3a' => 300, '3a+' => 310, '3b' => 320, '3b+' => 330, '3c' => 340, '3c+' => 350, 
+        '4a' => 400, '4a+' => 410, '4b' => 420, '4b+' => 430, '4c' => 440, '4c+' => 450, 
+        '5a' => 500, '5a+' => 510, '5b' => 520, '5b+' => 530, '5c' => 540, '5c+' => 550, 
+        '6a' => 600, '6a+' => 610, '6b' => 620, '6b+' => 630, '6c' => 640, '6c+' => 650, 
+        '7a' => 700, '7a+' => 710, '7b' => 720, '7b+' => 730, '7c' => 740, '7c+' => 750, 
+        '8a' => 800, '8a+' => 810, '8b' => 820, '8b+' => 830, '8c' => 840, '8c+' => 850, 
+        '9a' => 900, '9a+' => 910, '9b' => 920, '9b+' => 930, '9c' => 940, '9c+' => 950,];
         
       $tags_temp = Tag::all()->pluck('id', 'name')->toArray();
       $tags = [];
@@ -44,9 +52,12 @@ new class extends Component {
       }
       $this->tags_available = $tags;
       $this->tags_id = [];
+      $this->cotation_to = 0;
+      $this->cotation_from = 0;
       }
 
     public function with(){
+      dump($this->cotation_from);
       if($this->selected_sector != null and $this->selected_sector != '0'){
         $lines = Line::where('sector_id', $this->selected_sector)->pluck('id');
       }else{
@@ -56,6 +67,12 @@ new class extends Component {
     $routesQuery = Route::whereIn('line_id', $lines)
       ->when($this->search, function($query, $search) {
           return $query->where('name', 'LIKE', "%{$this->search}%");
+      })
+      ->when($this->cotation_to != 0, function($query, $cotation) {
+          return $query->where('grade', '=<', $cotation);
+      })
+      ->when($this->cotation_from != 0, function($query, $cotation) {
+          return $query->where('grade', '>=', $cotation);
       })
       ->when(!empty($this->tags_id), function($query) {
           return $query->whereHas('tags', function ($query) {
@@ -114,15 +131,15 @@ new class extends Component {
                      {{ __('From') }} 
                      <select wire:model.live='cotation_from' id="location" name="location" class=" block w-24 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
                       <option value="0">0</option>
-                      @foreach ($this->cotations as $cotation)
-                      <option value="{{ $cotation }}">{{ $cotation }}</option>
+                      @foreach ($this->cotations as $key => $value)
+                      <option value="{{ $value }}">{{ $key }}</option>
                       @endforeach
                     </select>
                      {{ __('to') }} 
                      <select wire:model.live='cotation_to' id="location" name="location" class=" block w-24 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
                       <option value="0">+ ∞</option>
-                      @foreach ($this->cotations as $cotation)
-                      <option value="{{ $cotation }}">{{ $cotation }}</option>
+                      @foreach ($this->cotations as $key => $value)
+                      <option value="{{ $value }}">{{ $key }}</option>
                       @endforeach
                     </select>
                       <x-input-error for="name" class="mt-2" />

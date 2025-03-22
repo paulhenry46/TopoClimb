@@ -76,7 +76,7 @@ new class extends Component {
       $route->name = $this->name;
       $route->comment = $this->comment;
       $route->line_id = $this->line;
-      $route->grade = $this->grade;
+      $route->grade = $this->gradeToInt($this->grade);
       //$route->date = $this->date
       $route->color = $this->color;
       //$route->local_id = 1;
@@ -123,6 +123,36 @@ new class extends Component {
           unset($this->opener_selected[$subKey]);
         }
       }
+    }
+    protected function gradeToInt($grade){
+        $array = [
+        '3a' => 300, '3a+' => 310, '3b' => 320, '3b+' => 330, '3c' => 340, '3c+' => 350, 
+        '4a' => 400, '4a+' => 410, '4b' => 420, '4b+' => 430, '4c' => 440, '4c+' => 450, 
+        '5a' => 500, '5a+' => 510, '5b' => 520, '5b+' => 530, '5c' => 540, '5c+' => 550, 
+        '6a' => 600, '6a+' => 610, '6b' => 620, '6b+' => 630, '6c' => 640, '6c+' => 650, 
+        '7a' => 700, '7a+' => 710, '7b' => 720, '7b+' => 730, '7c' => 740, '7c+' => 750, 
+        '8a' => 800, '8a+' => 810, '8b' => 820, '8b+' => 830, '8c' => 840, '8c+' => 850, 
+        '9a' => 900, '9a+' => 910, '9b' => 920, '9b+' => 930, '9c' => 940, '9c+' => 950,];
+        return $array[$grade];
+       /* if (preg_match('/^([3-9][abc])(\+?)$/', $grade, $matches)) {
+            $base = (int)$matches[1][0] * 100 + (ord($matches[1][1]) - ord('a')) * 20;
+            $modifier = $matches[2] === '+' ? 10 : 0;
+            return $base + $modifier;
+        }*/
+    }
+
+    protected function intToGrade($int){
+        $grades = [
+            300 => '3a', 310 => '3a+', 320 => '3b', 330 => '3b+', 340 => '3c', 350 => '3c+',
+            400 => '4a', 410 => '4a+', 420 => '4b', 430 => '4b+', 440 => '4c', 450 => '4c+',
+            500 => '5a', 510 => '5a+', 520 => '5b', 530 => '5b+', 540 => '5c', 550 => '5c+',
+            600 => '6a', 610 => '6a+', 620 => '6b', 630 => '6b+', 640 => '6c', 650 => '6c+',
+            700 => '7a', 710 => '7a+', 720 => '7b', 730 => '7b+', 740 => '7c', 750 => '7c+',
+            800 => '8a', 810 => '8a+', 820 => '8b', 830 => '8b+', 840 => '8c', 850 => '8c+',
+            900 => '9a', 910 => '9a+', 920 => '9b', 930 => '9b+', 940 => '9c', 950 => '9c+',
+        ];
+
+        return $grades[$grade] ?? null;
     }
 }; ?>
 
