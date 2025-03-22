@@ -57,7 +57,6 @@ new class extends Component {
       }
 
     public function with(){
-      dump($this->cotation_from);
       if($this->selected_sector != null and $this->selected_sector != '0'){
         $lines = Line::where('sector_id', $this->selected_sector)->pluck('id');
       }else{
@@ -69,10 +68,10 @@ new class extends Component {
           return $query->where('name', 'LIKE', "%{$this->search}%");
       })
       ->when($this->cotation_to != 0, function($query, $cotation) {
-          return $query->where('grade', '=<', $cotation);
+          return $query->where('grade', '<=', $this->cotation_to);
       })
       ->when($this->cotation_from != 0, function($query, $cotation) {
-          return $query->where('grade', '>=', $cotation);
+          return $query->where('grade', '>=', $this->cotation_from);
       })
       ->when(!empty($this->tags_id), function($query) {
           return $query->whereHas('tags', function ($query) {
@@ -234,7 +233,7 @@ new class extends Component {
             <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
               <tbody class="bg-white"> @foreach ($routes as $route) <tr x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" class="hover:bg-gray-50">
                   <td class="rounded-l-md text-xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                    {{$route->grade}}
+                    {{$route->gradeFormated()}}
                   </td>
                   <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                     <div class="flex items-center">

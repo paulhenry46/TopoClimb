@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug');
             $table->integer('local_id');
             $table->string('comment');
-            $table->string('grade');
+            $table->integer('grade');
             $table->string('color');
         });
     }

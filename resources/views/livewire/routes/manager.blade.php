@@ -71,7 +71,7 @@ new class extends Component {
       $this->route->name = $this->name;
       $this->route->comment = $this->comment;
       $this->route->line_id = $this->line;
-      $this->route->grade = $this->grade;
+      $this->route->grade = $this->gradeToInt($this->grade);
       $this->route->color = $this->color;
       $this->route->created_at = $this->date;
       $this->route->save();
@@ -103,7 +103,7 @@ new class extends Component {
       $this->line = $item->line_id;
       $this->sector = $item->line->sector_id;
       $this->lines_available = Line::where('sector_id', $this->sector)->get();
-      $this->grade = $item->grade;
+      $this->grade = $this->IntToGrade($item->grade);
       $this->color = $item->color;
       $this->date = $item->created_at->format('Y-m-d');
 
@@ -182,6 +182,37 @@ new class extends Component {
         }
       }
     }
+
+    protected function gradeToInt($grade){
+        $array = [
+        '3a' => 300, '3a+' => 310, '3b' => 320, '3b+' => 330, '3c' => 340, '3c+' => 350, 
+        '4a' => 400, '4a+' => 410, '4b' => 420, '4b+' => 430, '4c' => 440, '4c+' => 450, 
+        '5a' => 500, '5a+' => 510, '5b' => 520, '5b+' => 530, '5c' => 540, '5c+' => 550, 
+        '6a' => 600, '6a+' => 610, '6b' => 620, '6b+' => 630, '6c' => 640, '6c+' => 650, 
+        '7a' => 700, '7a+' => 710, '7b' => 720, '7b+' => 730, '7c' => 740, '7c+' => 750, 
+        '8a' => 800, '8a+' => 810, '8b' => 820, '8b+' => 830, '8c' => 840, '8c+' => 850, 
+        '9a' => 900, '9a+' => 910, '9b' => 920, '9b+' => 930, '9c' => 940, '9c+' => 950,];
+        return $array[$grade];
+       /* if (preg_match('/^([3-9][abc])(\+?)$/', $grade, $matches)) {
+            $base = (int)$matches[1][0] * 100 + (ord($matches[1][1]) - ord('a')) * 20;
+            $modifier = $matches[2] === '+' ? 10 : 0;
+            return $base + $modifier;
+        }*/
+    }
+
+    protected function intToGrade($int){
+        $grades = [
+            300 => '3a', 310 => '3a+', 320 => '3b', 330 => '3b+', 340 => '3c', 350 => '3c+',
+            400 => '4a', 410 => '4a+', 420 => '4b', 430 => '4b+', 440 => '4c', 450 => '4c+',
+            500 => '5a', 510 => '5a+', 520 => '5b', 530 => '5b+', 540 => '5c', 550 => '5c+',
+            600 => '6a', 610 => '6a+', 620 => '6b', 630 => '6b+', 640 => '6c', 650 => '6c+',
+            700 => '7a', 710 => '7a+', 720 => '7b', 730 => '7b+', 740 => '7c', 750 => '7c+',
+            800 => '8a', 810 => '8a+', 820 => '8b', 830 => '8b+', 840 => '8c', 850 => '8c+',
+            900 => '9a', 910 => '9a+', 920 => '9b', 930 => '9b+', 940 => '9c', 950 => '9c+',
+        ];
+
+        return $grades[$int] ?? null;
+    }
 }; ?>
 
 <div>
@@ -214,7 +245,7 @@ new class extends Component {
                 
                 <td class="rounded-l-md text-xl text-center w-4 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                  
-                  {{$route->grade}}
+                  {{$route->gradeFormated()}}
                 </td>
                 <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   <div class="flex items-center">
