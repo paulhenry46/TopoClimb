@@ -17,6 +17,7 @@ new class extends Component {
   
     public Area $area;
     public Site $site;
+    public Route $route;
     public array $url_map = [];
     public $cotations = [];
     public $tags_available;
@@ -54,6 +55,7 @@ new class extends Component {
       $this->tags_id = [];
       $this->cotation_to = 0;
       $this->cotation_from = 0;
+      $this->route = Route::find(4);
       }
 
     public function with(){
@@ -255,7 +257,21 @@ new class extends Component {
       </div>
     </div>
   </div>
-  <div class="flex flex-col">
-    <x-site.infobox :site='$site' />
+  <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto stroke-indigo-500">
+          <div class=" flex items-center p-0 overflow-hidden bg-center bg-cover h-96 rounded-2xl" style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(37.9%) grayscale(100%);">
+
+          </div>
+          <div class="rounded-2xl bg-center bg-cover *bg-gradient-to-tl *from-gray-600 *to-gray-400  z-10 h-96 -mt-96" style="
+              background-image: url('http://127.0.0.1:8000/storage/photos/site-1/area-1/route-4.svg');">
+              
+          </div>
+          </div>
+          
+          
+      </div>
+
   </div>
 </div>

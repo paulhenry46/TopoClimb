@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Route extends Model
 {
@@ -34,5 +35,13 @@ class Route extends Model
 
         return $grades[$this->grade] ?? null;
 
+    }
+
+    public function picture(){
+        if(Storage::exists('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id)){
+            return Storage::url('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id);
+        }else{
+            return null;
+        }
     }
 }
