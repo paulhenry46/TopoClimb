@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->foreignId('site_id')->constrained()->onDelete('cascade');
-            $table->string('type');
+            $table->enum('type', ['bouldering', 'trad']);
         });
     }
 

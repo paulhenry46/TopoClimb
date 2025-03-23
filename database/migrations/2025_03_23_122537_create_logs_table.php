@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('routes', function (Blueprint $table) {
+        Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('line_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('slug');
-            $table->integer('local_id');
-            $table->string('comment');
+            $table->foreignId('route_id')->constrained()->onDelete('cascade');
+            $table->text('comment');
             $table->smallInteger('grade');
-            $table->string('color');
+            $table->enum('type', ['work', 'flash', 'view']);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('routes');
+        Schema::dropIfExists('logs');
     }
 };
