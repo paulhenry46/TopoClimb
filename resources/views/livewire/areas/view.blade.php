@@ -257,21 +257,50 @@ new class extends Component {
       </div>
     </div>
   </div>
-  <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
-      <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto stroke-indigo-500">
-          <div class=" flex items-center p-0 overflow-hidden bg-center bg-cover h-96 rounded-2xl" style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(37.9%) grayscale(100%);">
-
+        <div>
+          <div class="bg-center bg-cover h-96 rounded-t-2xl" style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(37.9%) grayscale(100%);">
           </div>
           <div class="rounded-2xl bg-center bg-cover *bg-gradient-to-tl *from-gray-600 *to-gray-400  z-10 h-96 -mt-96" style="
               background-image: url('http://127.0.0.1:8000/storage/photos/site-1/area-1/route-4.svg');">
-              
-          </div>
           </div>
           
-          
-      </div>
-
-  </div>
+          <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
+            <div class="px-4 sm:px-6 lg:px-8 py-8">
+              <div class="sm:flex sm:items-center">
+                <div class="sm:flex-auto">
+                  <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{$this->route->name}}</h1>
+                  <p class="mt-1 text-sm text-gray-700">{{$this->route->line->sector->name}}</p>
+                </div>
+                <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                  <button type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m480-240-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v519q0 43-36 66.5t-76 6.5l-168-72Zm0-88 200 86v-518H280v518l200-86Zm0-432H280h400-200Z"/></svg>
+                  </button>  
+                  <button type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"  fill="currentColor"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
+                  </button>                  
+                </div>
+              </div>
+              <div class="grid grid-cols-2 mt-4 gap-x-6">
+                <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-4">
+                  <dt class="flex-none">
+                    <span class="sr-only">Mail</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-440q58 0 99-41t41-99q0-58-41-99t-99-41q-58 0-99 41t-41 99q0 58 41 99t99 41ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-46q-54-53-125.5-83.5T480-360q-83 0-154.5 30.5T200-246v46Z"/></svg>
+                  </dt>
+                  <dd class="text-sm leading-6 ">
+                    By 
+                    @foreach ($this->route->users as $user)
+                      {{ $user->name }}
+                    @endforeach
+                  </dd>
+                </div>
+                <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-4">
+                  <dt class="flex-none">
+                    <span class="sr-only">Mail</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M360-300q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg>
+                  </dt>
+                  <dd class="text-sm leading-6 ">The {{ $this->route->created_at->format('d/m/y') }}</dd>
+                </div>
+              </div>
+            </div>
+          </div>
 </div>
