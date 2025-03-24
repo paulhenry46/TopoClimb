@@ -258,10 +258,10 @@ new class extends Component {
     </div>
   </div>
         <div>
-          <div class="bg-center bg-cover h-96 rounded-t-2xl" style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(37.9%) grayscale(100%);">
+          <div class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(99.9%) grayscale(100%);">
           </div>
-          <div class="rounded-2xl bg-center bg-cover *bg-gradient-to-tl *from-gray-600 *to-gray-400  z-10 h-96 -mt-96" style="
-              background-image: url('http://127.0.0.1:8000/storage/photos/site-1/area-1/route-4.svg');">
+          <div class="rounded-2xl bg-center bg-cover  z-10 h-96 -mt-96" style="
+              background-image: url('http://127.0.0.1:8000/storage/photos/site-1/area-1/route-4.svg'); filter: opacity(99.9%);">
           </div>
           
           <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
@@ -324,6 +324,30 @@ new class extends Component {
                   </dd>
                 </div>
               </div>
+              
+              <div class="mt-12" x-data="{ activeTab:  0 }">
+                <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{__('Activity')}}</h1>
+                <div class="hidden sm:block">
+                  <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex justify-between" aria-label="Tabs">
+                      <a @click="activeTab = 0" :class="activeTab == 0 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                        {{ __('Comments') }}
+                        <span :class="activeTab == 0 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">52</span>
+                      </a>
+                      <a @click="activeTab = 1" :class="activeTab == 1 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class=" flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                        {{ __('Ascents') }}
+                        <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">6</span>
+                      </a>
+                      <a @click="activeTab = 2" :class="activeTab == 2 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium" aria-current="page">
+                        {{ __('Video') }}
+                        <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">4</span>
+                      </a>
+                    </nav>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </div>
 </div>
