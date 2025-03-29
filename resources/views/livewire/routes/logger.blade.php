@@ -2,7 +2,7 @@
 
 use Livewire\Volt\Component;
 use App\Models\Log;
-use App\Models\Site;
+use App\Models\Area;
 use App\Models\Sector;
 use App\Models\Line;
 use App\Models\User;
@@ -18,13 +18,15 @@ new class extends Component {
 
     public Route $route;
     public User $user;
+    public Area $area;
 
     #[Validate('required')]
     public Int $cotation;
     #[Validate('required')]
-    public string $type;
+    public $type;
     #[Validate('string')]
     public string $way;
+    #[Validate('string')]
     public  $comment;
     #[Validate('url')]
     public string $videoUrl;
@@ -35,6 +37,7 @@ new class extends Component {
 
     public function mount(Route $route){
       $this->route = $route;
+      $this->area = $route->line->sector->area;
       $this->user = Auth::user();
       $this->comment = null;
       $this->cotations = [
@@ -46,22 +49,28 @@ new class extends Component {
         '8a' => 800, '8a+' => 810, '8b' => 820, '8b+' => 830, '8c' => 840, '8c+' => 850, 
         '9a' => 900, '9a+' => 910, '9b' => 920, '9b+' => 930, '9c' => 940, '9c+' => 950,];
         $this->cotation = $this->route->grade;
-      
+        $this->type = 'view';
+        if($this->area->type == 'trad'){
+          $this->way = 'top-rope';
+        }else{
+          $this->way = 'bouldering';
+        }
+        $this->comment = '';
+        $this->videoUrl = '';
     }
 
     public function save(){
-        ///$this->validate();
+        $this->validate();
         $log = new Log;
         $log->user_id = $this->user->id;
+        
         $log->route_id = $this->route->id;
         $log->type = $this->type;
         $log->comment = $this->comment;
+        $log->grade = $this->cotation;
+        $log->way = $this->way;
         $log->save();
     }
-
-
-
-
     protected function gradeToInt($grade){
         $array = [
         '3a' => 300, '3a+' => 310, '3b' => 320, '3b+' => 330, '3c' => 340, '3c+' => 350, 
@@ -132,27 +141,29 @@ new class extends Component {
                       </fieldset>
                     </div>
                     <div class="space-y-2 px-4">
+                      @if ($this->area->type == 'trad')
                       <div class="w-full">
                         <x-label for="name" value="{{ __('Type') }}" />
                         <div class="mt-2">
-                          <select wire:model.live="selected_sector" id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
+                          <select wire:model="way" id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
                             <option value="moul">{{__('Moulinette')}}</option>
                             <option value="tete">{{ __('En tete') }}</option>
                           </select>
                           <x-input-error for="name" class="mt-2" />
                         </div>
                       </div>
+                      @endif
                       <div class="w-full mt-3">
                         <x-label for="adress" value="{{ __('Comments') }}" />
                         <div class="mt-2">
-                          <textarea wire:model="adress" id="adress" name="adress" rows="2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+                          <textarea wire:model="comment" id="adress" name="adress" rows="2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
                           <x-input-error for="adress" class="mt-2" />
                         </div>
                       </div>
                       <div class="w-full">
                         <x-label for="name" value="{{ __('Your cotation') }}" />
                         <div class="mt-2 flex items-center gap-2">
-                       <select wire:model.live='cotation' id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
+                       <select wire:model='cotation' id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
                         <option value="0">+ ∞</option>
                         @foreach ($this->cotations as $key => $value)
                         <option @if ($value == $this->cotation)
@@ -179,7 +190,7 @@ new class extends Component {
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 sm:gap-x-1">
             <x-secondary-button x-on:click="open = false" type="button">{{__('Cancel')}}</x-secondary-button>
-            <x-button type="submit">{{__('Save')}}</x-button>
+            <x-button @click="$wire.save()">{{__('Save')}}</x-button>
           </div>
         </div>
       </div>

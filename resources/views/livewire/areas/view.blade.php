@@ -6,6 +6,7 @@ use App\Models\Site;
 use App\Models\Line;
 use App\Models\Route;
 use App\Models\Tag;
+use App\Models\Log;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
@@ -82,7 +83,7 @@ new class extends Component {
               $query->whereIn('tags.id', $this->tags_id);
           }, '>=', count($this->tags_id));
       });
-    return ['routes' => $routesQuery->paginate(10)];
+    return ['routes' => $routesQuery->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->get()];
     }
 
     public function selectSector($id){
@@ -348,7 +349,68 @@ new class extends Component {
                   Comments
                 </div>
                 <div x-show="activeTab == 1">
-                  Ascents
+
+                          @foreach ($logs as $log)
+                            
+                          <div class=" mt-2 flex items-center items-start space-x-3">
+                            <div>
+                              <div class=" px-1">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                                  <img class="rounded-md" src="{{ $log->user->profile_photo_url }}"/>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="min-w-0 flex-1 py-0">
+                              <div class="text-sm leading-6 text-gray-500">
+                                <span class="">
+                                  <a href="#" class="font-medium text-gray-900">{{ $log->user->name }}</a>
+                                  <span class="whitespace-nowrap">{{ $log->created_at->format('d/m/Y') }}</span></br>
+                                </span>
+
+                                <span class="">
+                                  @if($log->way == 'top-rope')
+                                  <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                    <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
+                                      <circle cx="3" cy="3" r="3" />
+                                    </svg>
+                                    {{ __('Top-rope') }}
+                                  </a>
+                                  @elseif($log->way == 'leading')
+                                  <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                                      <circle cx="3" cy="3" r="3" />
+                                    </svg>
+                                    {{ __('Leading') }}
+                                  </a>
+                                  @endif
+                                  @if($log->type == 'view')
+                                  <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                    <svg class="h-1.5 w-1.5 fill-indigo-500" viewBox="0 0 6 6" aria-hidden="true">
+                                      <circle cx="3" cy="3" r="3" />
+                                    </svg>
+                                    {{ __('View') }}
+                                  </a>
+                                  @elseif($log->type == 'work')
+                                  <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                                      <circle cx="3" cy="3" r="3" />
+                                    </svg>
+                                    {{ __('After work') }}
+                                  </a>
+                                  @elseif($log->type == 'flash')
+                                  <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                    <svg class="h-1.5 w-1.5 fill-amber-500" viewBox="0 0 6 6" aria-hidden="true">
+                                      <circle cx="3" cy="3" r="3" />
+                                    </svg>
+                                    {{ __('Flash') }}
+                                  </a>
+                                  @endif
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          @endforeach
+                          
                 </div>
                 <div x-show="activeTab == 2">
                   Videos

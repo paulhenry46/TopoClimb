@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('comment');
             $table->smallInteger('grade');
             $table->enum('type', ['work', 'flash', 'view']);
+            $table->enum('way', ['top-rope', 'lead', 'bouldering']);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
