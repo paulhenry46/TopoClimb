@@ -29,7 +29,9 @@ new class extends Component {
     public int $cotation_from;
     public int $cotation_to;
 
-
+  public function open_route($id){
+    $this->route = Route::find($id);
+  }
 
     public function mount(Area $area){
       $this->area = $area;
@@ -233,7 +235,7 @@ new class extends Component {
             <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Routes')}}</h1>
             <p class="mt-2 text-sm text-gray-700 mb-2">{{__('Routes of the area')}}</p>
             <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
-              <tbody class="bg-white"> @foreach ($routes as $route) <tr x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" class="hover:bg-gray-50">
+              <tbody class="bg-white"> @foreach ($routes as $route) <tr @click="$wire.open_route({{$route->id}})" x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" class="hover:bg-gray-50 cursor-pointer">
                   <td class="rounded-l-md text-xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                     {{$route->gradeFormated()}}
                   </td>
@@ -261,9 +263,8 @@ new class extends Component {
           <div class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(99.9%) grayscale(100%);">
           </div>
           <div class="rounded-2xl bg-center bg-cover  z-10 h-96 -mt-96" style="
-              background-image: url('http://127.0.0.1:8000/storage/photos/site-1/area-1/route-4.svg'); filter: opacity(99.9%);">
+              background-image: url('{{$this->route->circle()}}'); filter: opacity(99.9%);">
           </div>
-          
           <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
             <div class="px-4 sm:px-6 lg:px-8 py-8">
               <div class="sm:flex sm:items-center">
@@ -271,13 +272,11 @@ new class extends Component {
                   <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{$this->route->name}}</h1>
                   <p class="mt-1 text-sm text-gray-700">{{$this->route->line->sector->name}}</p>
                 </div>
-                <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <div class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
                   <button type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m480-240-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v519q0 43-36 66.5t-76 6.5l-168-72Zm0-88 200 86v-518H280v518l200-86Zm0-432H280h400-200Z"/></svg>
-                  </button>  
-                  <button type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"  fill="currentColor"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg>
-                  </button>                  
+                  </button>      
+                  <livewire:routes.logger :route='$this->route' />       
                 </div>
               </div>
               <div class="grid grid-cols-3 mt-4 gap-x-2">
@@ -345,7 +344,15 @@ new class extends Component {
                     </nav>
                   </div>
                 </div>
-
+                <div x-show="activeTab == 0">
+                  Comments
+                </div>
+                <div x-show="activeTab == 1">
+                  Ascents
+                </div>
+                <div x-show="activeTab == 2">
+                  Videos
+                </div>
               </div>
 
             </div>
