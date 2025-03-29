@@ -13,13 +13,14 @@ use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 use Carbon\Carbon;
+use Livewire\Attributes\Reactive;
 new class extends Component {
   use WithFileUploads;
-
+    #[Reactive]
     public Route $route;
     public User $user;
     public Area $area;
-
+    
     #[Validate('required')]
     public Int $cotation;
     #[Validate('required')]
@@ -86,6 +87,9 @@ new class extends Component {
             $modifier = $matches[2] === '+' ? 10 : 0;
             return $base + $modifier;
         }*/
+    }
+    public function rendering(){
+      $this->cotation = $this->route->grade;
     }
 }; ?>
 

@@ -52,4 +52,8 @@ class Route extends Model
             return null;
         }
     }
+    public function logs()
+    {
+        return $this->hasMany(Log::class);
+    }
 }
