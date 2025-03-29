@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->foreignId('route_id')->constrained()->onDelete('cascade');
-            $table->text('comment');
+            $table->text('comment')->nullable();
+            $table->string('video_url')->nullable();
             $table->smallInteger('grade');
             $table->enum('type', ['work', 'flash', 'view']);
             $table->enum('way', ['top-rope', 'lead', 'bouldering']);

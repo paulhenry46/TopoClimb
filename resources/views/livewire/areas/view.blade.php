@@ -332,21 +332,45 @@ new class extends Component {
                     <nav class="-mb-px flex justify-between" aria-label="Tabs">
                       <a @click="activeTab = 0" :class="activeTab == 0 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
                         {{ __('Comments') }}
-                        <span :class="activeTab == 0 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">52</span>
+                        <span :class="activeTab == 0 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('comment', '!=', null)->count()}}</span>
                       </a>
                       <a @click="activeTab = 1" :class="activeTab == 1 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class=" flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
                         {{ __('Ascents') }}
-                        <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">6</span>
+                        <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->count()}}</span>
                       </a>
                       <a @click="activeTab = 2" :class="activeTab == 2 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium" aria-current="page">
                         {{ __('Video') }}
-                        <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">4</span>
+                        <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('video_url', '!=', null)->count()}}</span>
                       </a>
                     </nav>
                   </div>
                 </div>
                 <div x-show="activeTab == 0">
-                  Comments
+                  @foreach ($logs->where('comment','!=', null) as $log)
+                            
+                          <div class=" mt-2 flex  items-start space-x-3">
+                            <div>
+                              <div class=" px-1">
+                                <div class="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                                  <img class="rounded-md" src="{{ $log->user->profile_photo_url }}"/>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="min-w-0 flex-1 py-0">
+                              <div class="text-sm leading-6 text-gray-500">
+                                <span class="">
+                                  <a href="#" class="font-medium text-gray-900">{{ $log->user->name }}</a>
+                                  <span class="whitespace-nowrap">{{ $log->created_at->format('d/m/Y') }}</span></br>
+                                </span>
+
+                                <span class="">
+                                  {{ $log->comment }}
+                                  
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          @endforeach
                 </div>
                 <div x-show="activeTab == 1">
 

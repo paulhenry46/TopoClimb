@@ -95,7 +95,7 @@ new class extends Component {
       <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
     </svg>
   </button>
-  <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
+  <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
       <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
