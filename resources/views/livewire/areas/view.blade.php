@@ -60,7 +60,7 @@ new class extends Component {
       $this->cotation_to = 0;
       $this->cotation_from = 0;
       $this->route = Route::find(4);
-      $this->user_state = 'fail';
+      $this->user_state = 'all';
       }
 
     public function with(){
@@ -236,11 +236,6 @@ new class extends Component {
                   </div>
                 </div>
               </div>
-              <!--  Secteur sur map 
-              Difficulté sur curseur
-              Tags (meme composant que pour la création)
-              Recherche (barre de recherche)
-              Personnel : Réusssi/projet/non réussi-->
             </div>
           </div>
         </div>
@@ -268,7 +263,21 @@ new class extends Component {
                       <img alt="{{ $opener->name }}" src="{{ $opener->profile_photo_url }}" class=" h-8 w-8  rounded-md object-cover object-center" />
                       {{ $opener->name }}
                     </span> @empty @endforelse </td>
-                  <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3"></td>
+                  <td class=" justify-end whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-500 sm:pl-3 flex">
+
+                    <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                      <path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/>
+                    </svg>
+                    {{ $route->logs->count() }}
+                    <svg class="ml-4 mr-2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                      <path d="M840-136q-8 0-15-3t-13-9l-92-92H320q-33 0-56.5-23.5T240-320v-40h440q33 0 56.5-23.5T760-440v-280h40q33 0 56.5 23.5T880-640v463q0 18-12 29.5T840-136ZM120-336q-16 0-28-11.5T80-377v-423q0-33 23.5-56.5T160-880h440q33 0 56.5 23.5T680-800v280q0 33-23.5 56.5T600-440H240l-92 92q-6 6-13 9t-15 3Z"/>
+                    </svg>
+                    {{ $route->logs->where('comment', '!=', null)->count() }}
+                    <svg class="ml-4 mr-2" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                      <path d="m426-330 195-125q14-9 14-25t-14-25L426-630q-15-10-30.5-1.5T380-605v250q0 18 15.5 26.5T426-330Zm54 250q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/>
+                    </svg>
+                    {{ $route->logs->where('video_url', '!=', null)->count() }}
+                  </td>
                 </tr> @endforeach </tbody>
             </table>
             {{ $routes->links() }}
