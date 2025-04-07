@@ -107,8 +107,38 @@ new class extends Component {
           <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                <svg class="h-7 w-7"
+                  viewBox="0 0 389 515"
+                  id="svg2"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlns:svg="http://www.w3.org/2000/svg">
+                  <defs
+                    id="defs17" />
+                  <g
+                    id="g1"
+                    transform="translate(-984.5876,180.9994)">
+                    <path
+                      id="path5040"
+                      d="m 1185.0503,160.80697 c -4.8166,1.77753 -10.2066,2.80966 -15.7113,2.80966 -5.906,0 -11.7548,-0.68808 -17.1448,-2.23626 l -60.8955,139.96802 c -5.562,12.90161 -20.8719,17.25946 -34.2322,9.74786 -13.303,-7.5116 -19.6105,-23.96832 -13.8764,-36.8699 l 74.6572,-171.21854 h 95.1852 V 87.00982 l 48.1659,-22.42013 c 12.6149,-6.13541 29.0143,4.35788 32.34,17.7182 l 23.6243,94.72641 c 3.3831,13.41766 -4.8166,27.00735 -18.2343,30.3331 -13.475,3.38309 -27.122,-4.81659 -30.4477,-18.23425 l -15.0233,-60.37949 z"
+                      style="fill:#231f20;fill-rule:nonzero" />
+                    <path
+                      id="path5042"
+                      d="M 1228.9158,62.69748 C 1333.218,10.97639 1373.643,-166.20556 1373.643,-180.9994 h -14.3351 c -5.39,36.92725 -50.1729,184.80823 -130.3921,227.69889 z"
+                      style="fill:#231f20;fill-rule:nonzero" />
+                    <path
+                      id="path5044"
+                      d="m 1036.4812,23.93533 c 5.4474,8.54373 16.4568,12.32819 26.2046,8.31436 l 55.1615,-21.61734 v 76.49216 h 95.1852 V -1.46648 l 85.3225,-136.52759 c 6.2501,-9.97723 3.3831,-23.16553 -6.7088,-29.58766 -9.9772,-6.25011 -23.1655,-3.32574 -28.7849,6.42213 l -72.4783,115.9997 -43.6361,0.11469 c -2.8097,0 -5.6193,0.45872 -8.429,1.5482 l -75.4027,29.58764 -38.8768,-58.88862 c -6.3648,-9.86255 -19.6105,-12.78691 -29.5877,-6.42214 -9.97723,6.42214 -12.84426,19.72512 -6.47947,29.70237 z"
+                      style="fill:#231f20;fill-rule:nonzero" />
+                    <path
+                      id="path5046"
+                      d="m 1158.9031,-52.90085 c 20.9866,0 38.0167,-16.91544 38.0167,-37.8447 0,-20.92925 -17.0301,-37.95936 -38.0167,-37.95936 -20.9293,0 -37.9594,17.03011 -37.9594,37.95936 0,20.92926 17.0301,37.8447 37.9594,37.8447"
+                      style="fill:#231f20;fill-rule:nonzero" />
+                    <path
+                      id="path5048"
+                      d="M 1213.0325,334.37646 V 163.61664 l -15.998,7.45425 v 163.30557 z"
+                      style="fill:#231f20;fill-rule:nonzero" />
+                  </g>
                 </svg>
               </div>
               <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
@@ -157,7 +187,7 @@ new class extends Component {
                         </div>
                       </div>
                       @endif
-                      <div class="w-full mt-3">
+                      <div class="w-full">
                         <x-label for="adress" value="{{ __('Comments') }}" />
                         <div class="mt-2">
                           <textarea wire:model="comment" id="adress" name="adress" rows="2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>

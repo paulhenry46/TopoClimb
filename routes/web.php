@@ -77,7 +77,7 @@ Route::prefix('/sites/{site:slug}')->group(function () {
 
         Route::get('/view', function (Site $site, Area $area) {
             return view('areas.view', compact('site', 'area'));
-        });
+        })->name('area.view');
     
     });
 

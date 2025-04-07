@@ -24,6 +24,7 @@ new class extends Component {
     public $tags_available;
 
     public $selected_sector;
+    public $selected_line;
     public array $tags_choosen;
     public array $tags_id;
     public $search;
@@ -61,16 +62,23 @@ new class extends Component {
       $this->cotation_from = 0;
       $this->route = Route::find(4);
       $this->user_state = 'all';
+      $this->selected_line = 0;
       }
 
     public function with(){
       if($this->selected_sector != null and $this->selected_sector != '0'){
-        $lines = Line::where('sector_id', $this->selected_sector)->pluck('id');
+        $lines = Line::where('sector_id', $this->selected_sector);
       }else{
-        $lines = Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id');
+        $lines = Line::whereIn('sector_id', $this->area->sectors()->pluck('id'));
       }
+      if($this->selected_line == 0){
+        $lines_selected = $lines->pluck('id');
+      }else{
+        $lines_selected = [$this->selected_line];
+      }
+      
       //return $routes;
-    $routesQuery = Route::whereIn('line_id', $lines)
+    $routesQuery = Route::whereIn('line_id', $lines_selected)
       ->when($this->search, function($query, $search) {
           return $query->where('name', 'LIKE', "%{$this->search}%");
       })
@@ -95,21 +103,40 @@ new class extends Component {
               $query->whereIn('tags.id', $this->tags_id);
           }, '>=', count($this->tags_id));
       });
-    return ['routes' => $routesQuery->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->get()];
+    return ['routes' => $routesQuery->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->get(), 'lines' => $lines->get()];
     }
 
     public function selectSector($id){
       $this->selected_sector = $id;
     }
+    public function selectLine($id){
+      $this->selected_line = $id;
+    }
 }; ?>
 
 <div class="grid grid-cols-3 mt-8 gap-4 pt-2">
-  <div class="col-span-2 flex flex-col" x-data="{
+  <div class="col-span-2 flex flex-col" 
+        @if($this->area->type == 'bouldering')
+        x-data="{
         hightlightedSector: 0,
         selectedSector: 0,
         selectSector(id){ this.selectedSector = id; $wire.selectSector(id); },
         hightlightSector(id){ this.hightlightedSector = id; },
-        }">
+        }"
+        
+        @else
+        x-data="{
+          hightlightedSector: 0,
+          selectedSector: 0,
+          selectSector(id){ this.selectedSector = id; $wire.selectSector(id); },
+          hightlightSector(id){ this.hightlightedSector = id; },
+          hightlightedLine: 0,
+          selectedLine: 0,
+          selectLine(id){ this.selectedLine = id; $wire.selectLine(id); },
+          hightlightLine(id){ this.hightlightedLine = id; },
+          }"
+          >
+          @endif
     <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="sm:flex sm:items-center">
@@ -207,19 +234,42 @@ new class extends Component {
                     </div>
                   </div>
                 </div>
+                @if($this->area->sectors->count() > 1)
                 <div class="col-span-1">
                   <div class="space-y-2 px-4">
                     <div class="w-full mt-3">
                       <x-label for="name" value="{{ __('Sector') }}" />
                       <div class="mt-4">
                         <select wire:model.live="selected_sector" id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
-                          <option value="0">{{__('All')}}</option> @foreach ($this->area->sectors as $sector) <option value="{{ $sector->id }}">{{ $sector->name }}</option> @endforeach
+                          <option value="0">{{__('All')}}</option> 
+                          @foreach ($this->area->sectors as $sector) 
+                          <option value="{{ $sector->id }}">{{ $sector->name }}</option> 
+                          @endforeach
                         </select>
                         <x-input-error for="name" class="mt-2" />
                       </div>
                     </div>
                   </div>
                 </div>
+                @endif
+                @if($this->area->type == 'diff')
+                <div class="col-span-1">
+                  <div class="space-y-2 px-4">
+                    <div class="w-full mt-3">
+                      <x-label for="name" value="{{ __('Line') }}" />
+                      <div class="mt-4">
+                        <select wire:model.live="selected_line" id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
+                          <option value="0">{{__('All')}}</option> 
+                          @foreach ($lines as $line) 
+                          <option value="{{ $line->id }}">{{ $line->local_id }}</option> 
+                          @endforeach
+                        </select>
+                        <x-input-error for="name" class="mt-2" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                @endif
                 <div class="col-span-1">
                   <div class="space-y-2 px-4">
                     <div class="w-full mt-3">
@@ -372,7 +422,7 @@ new class extends Component {
           <div x-show="activeTab == 0"> @foreach ($logs->where('comment','!=', null) as $log) <div class=" mt-2 flex  items-start space-x-3">
               <div>
                 <div class=" px-1">
-                  <div class="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
                     <img class="rounded-md" src="{{ $log->user->profile_photo_url }}" />
                   </div>
                 </div>
@@ -393,7 +443,7 @@ new class extends Component {
           <div x-show="activeTab == 1"> @foreach ($logs as $log) <div class=" mt-2 flex items-center items-start space-x-3">
               <div>
                 <div class=" px-1">
-                  <div class="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
                     <img class="rounded-md" src="{{ $log->user->profile_photo_url }}" />
                   </div>
                 </div>
@@ -421,7 +471,7 @@ new class extends Component {
                       </svg>
                       {{ __('View') }}
                     </a> @elseif($log->type == 'work') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                      <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <svg class="h-1.5 w-1.5 fill-emerald-500" viewBox="0 0 6 6" aria-hidden="true">
                         <circle cx="3" cy="3" r="3" />
                       </svg>
                       {{ __('After work') }}

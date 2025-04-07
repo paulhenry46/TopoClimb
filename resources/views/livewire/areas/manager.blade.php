@@ -78,7 +78,7 @@ new class extends Component {
       $this->type = $item->type;
       $this->id_editing = $id;
       if(Storage::exists('pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'/picture')){
-$this->picture_url = Storage::url('pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'/picture');
+        $this->picture_url = Storage::url('pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'/picture');
       }else{
         $this->picture_url = null;
       }

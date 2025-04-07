@@ -121,7 +121,7 @@ new class extends Component {
 
     public function ProcessMaps(){
       //Use inkscape to fit map to grid (don't keep blank space around map)
-      if($this->area->type == 'voie'){
+      if($this->area->type == 'diff'){
         $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/lines.svg');
       }else{
         $input_file_path = Storage::path('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sectors.svg');
@@ -156,7 +156,7 @@ new class extends Component {
         $item->setAttribute(":class", "currentSector == $sector->id ? 'stroke-indigo-500' : ''");
       }
 
-      if($this->area->type == 'voie'){
+      if($this->area->type == 'diff'){
         foreach ($this->lines as $line) {
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='circle_$line->local_id']")->item(0);
@@ -173,6 +173,14 @@ new class extends Component {
         $item->setAttribute("x-on:click", "selectSector($sector->id)");
         $item->setAttribute(":class", "selectedSector == $sector->id ? 'stroke-width-10' : ''");
         $item->setAttribute("class", "hover:stroke-width-10");
+      }
+      if($this->area->type == 'diff'){
+        foreach ($this->lines as $line) {
+        $xpath = new DOMXPath($dom);
+        $item = $xpath->query("//*[@id='circle_$line->local_id']")->item(0);
+        $item->setAttribute("x-on:click", "selectLine($line->id)");
+        $item->setAttribute(":class", "currentLine == $line->id ? 'fill-gray-200' : ''");
+      }
       }
 
       Storage::put('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/users.svg', $dom->saveXML());
