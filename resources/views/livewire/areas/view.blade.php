@@ -19,7 +19,7 @@ new class extends Component {
     public Area $area;
     public Site $site;
     public Route $route;
-    public array $url_map = [];
+    public array $schema_data = [];
     public $cotations = [];
     public $tags_available;
 
@@ -39,9 +39,23 @@ new class extends Component {
     public function mount(Area $area){
       $this->area = $area;
       $this->site = $this->area->site;
+      if($area->type == 'bouldering'){
         foreach ($area->sectors as $sector) {
-            array_push($this->url_map, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg'));
+            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/users.svg'));
         }
+      }else{
+        $sectors_id = [];
+        $this->schema_data['data'] = [];
+        $this->schema_data['sectors'] = [];
+        foreach ($area->sectors as $sector) {
+          $data = ['id' => $sector->local_id, 'paths' => Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg'),'bg' => Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')];
+            //array_push($this->url_map, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg'));
+            array_push($this->schema_data['data'], $data);
+            //array_push($this->url_map, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg'));//TEST
+            //array_push($this->url_background, Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema'));
+            array_push($this->schema_data['sectors'], $sector->local_id);
+          }
+      }
         $this->cotations = [
         '3a' => 300, '3a+' => 310, '3b' => 320, '3b+' => 330, '3c' => 340, '3c+' => 350, 
         '4a' => 400, '4a+' => 410, '4b' => 420, '4b+' => 430, '4c' => 440, '4c+' => 450, 
@@ -137,17 +151,59 @@ new class extends Component {
           }"
           >
           @endif
+    @if($this->area->type == 'bouldering')      
     <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="sm:flex sm:items-center">
           <div class="sm:flex-auto stroke-indigo-500">
             <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
             <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
-            <div class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> {!!$this->url_map[0]!!} </div>
+            <div class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> {!!$this->schema_data[0]!!} </div>
           </div>
         </div>
       </div>
     </div>
+    @else
+    <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
+      <div class="px-4 sm:px-6 lg:px-8 py-8">
+        <div class="sm:flex sm:items-center">
+          <div class="sm:flex-auto stroke-indigo-500">
+            <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
+            <p class="mt-2 text-sm text-gray-700">{{__('Map of the sector with routes')}}</p> 
+            <div class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> 
+              @if(count($this->schema_data['sectors']) <= 1)
+              <div class="relative w-full h-full min-h-96">
+              <!-- Background div -->
+                <div class="w-full h-96 z-0 flex items-center justify-center">
+                  <img class="h-96" src="{{ $this->schema_data['data'][0]['bg'] }}" />
+                </div>
+              <!-- Foreground div -->
+                <div class="absolute inset-0 flex justify-center items-center z-10">
+                  {!! $this->schema_data['data'][0]['paths'] !!}
+                </div>
+              </div>
+              @else
+              <div x-data="{number_sectors : {{ count($this->schema_data['sectors']) }}, sector_selected : {{ $this->schema_data['data'][0]['id'] }}, sectors : {{ json_encode($this->schema_data['data'])}} }">
+                @foreach ($this->schema_data['data'] as $data)
+                <div class="relative w-full h-full min-h-96" x-show="sector_selected == {{$data['id']}}" style='display : none;'>
+                  <!-- Background div -->
+                    <div class="w-full h-96 z-0 flex items-center justify-center">
+                      <img class="h-96" src="{{ $data['bg'] }}" />
+                    </div>
+                  <!-- Foreground div -->
+                    <div class="absolute inset-0 flex justify-center items-center z-10">
+                      {!! $data['paths'] !!}
+                    </div>
+                  </div>
+                @endforeach
+              </div>
+              @endif
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
     <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-2">
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="sm:flex sm:items-center">

@@ -57,6 +57,17 @@ new class extends Component {
 
       $xpath = (new DOMXPath($dom))->query("//*[@id='area']")->item(0)->remove();
 
+       //In order to make svg responsive, delete height and width attributes and replace them by a viewBox attribute
+       $items = $dom->getElementsByTagName('svg');
+      foreach ($items as $item) {
+          $width = $item->getAttribute('width');
+          $height = $item->getAttribute('height');
+          $item->removeAttribute('width');
+          $item->removeAttribute('height');
+          $item->setAttribute("viewBox", "0 0 $width $height");
+
+      }
+
       Storage::put($filePath, $dom->saveXML());
 
       $this->addPathToCommonPaths($xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0));
@@ -92,10 +103,10 @@ new class extends Component {
 
         $xpath = new DOMXPath($dom_common);
         $item = $xpath->query("//*[@id='path_$route->id']")->item(0);
-        $item->setAttribute("x-on:mouseover", "selectSector($route->id)");
-        $item->setAttribute(":class", "currentSector == $route->id ? 'stroke-width-8' : ''");
+        $item->setAttribute("x-on:mouseover", "selectRoute($route->id)");
+        $item->setAttribute(":class", "currentRoute == $route->id ? 'stroke-width-8' : ''");
 
-      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg', $dom_common->saveXML());
+      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
 }; ?>
 
