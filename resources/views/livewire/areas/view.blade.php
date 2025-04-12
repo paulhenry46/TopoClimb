@@ -41,7 +41,7 @@ new class extends Component {
       $this->site = $this->area->site;
       if($area->type == 'bouldering'){
         foreach ($area->sectors as $sector) {
-            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/users.svg'));
+            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg'));
         }
       }else{
         $sectors_id = [];

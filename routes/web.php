@@ -69,13 +69,13 @@ Route::middleware([
 
 Route::prefix('/sites/{site:slug}')->group(function () {
 
-    Route::get('/view', function (Site $site) {
+    Route::get('/', function (Site $site) {
         return view('sites.view', compact('site'));
     })->name('site.view');
 
     Route::prefix('/{area:slug}')->scopeBindings()->group(function () {
 
-        Route::get('/view', function (Site $site, Area $area) {
+        Route::get('/', function (Site $site, Area $area) {
             return view('areas.view', compact('site', 'area'));
         })->name('area.view');
     
