@@ -134,24 +134,24 @@ new class extends Component {
     @if($this->area->type == 'bouldering') 
       x-data="{ hightlightedSector: 0, selectedSector: 0, selectSector(id){ this.selectedSector = id; $wire.selectSector(id); }, hightlightSector(id){ this.hightlightedSector = id; }, }" 
     @else 
-      x-data="{ hightlightedSector: 0, selectedRoute: 0, selectRoute(id){ this.selectedRoute = id }, hightlightSector(id){ this.hightlightedSector = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
+      x-data="{ hightlightedRoute: 0, selectedRoute: 0, selectRoute(id){ this.selectedRoute = id }, hightlightRoute(id){ this.hightlightedRoute = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
     @endif 
     @if($this->area->type == 'bouldering') 
-    <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
+    <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg" x-data="{ expanded: false }" >
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="sm:flex sm:items-center">
           <div class="sm:flex-auto stroke-indigo-500">
-            <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
+            <h1 @click="expanded = ! expanded" class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
             <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
-            <div class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> {!!$this->schema_data[0]!!} </div>
+            <div x-show="expanded" x-collapse.duration.1000ms class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> {!!$this->schema_data[0]!!} </div>
           </div>
         </div>
       </div>
     </div> @else <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
       <div class="px-4 sm:px-6 lg:px-8 py-8" @if(count($this->schema_data['sectors']) > 1) x-data="{number_sectors : {{ count($this->schema_data['sectors']) }}, sector_selected : {{ $this->schema_data['data'][0]['id'] }}, sectors : {{ json_encode($this->schema_data['data'])}} }" @endif > <div class="sm:flex sm:items-center">
-          <div class="sm:flex-auto stroke-indigo-500">
-            <div class="flex justify-between">
-              <div>
+          <div x-data="{ expanded: false }"  class="sm:flex-auto stroke-indigo-500">
+            <div class="flex justify-between" >
+              <div @click="expanded = ! expanded" >
                 <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
                 <p class="mt-2 text-sm text-gray-700">{{__('Map of the sector with routes')}}</p>
               </div> @if(count($this->schema_data['sectors']) > 1) <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -167,7 +167,7 @@ new class extends Component {
                 </button>
               </div> @endif
             </div>
-            <div class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> @if(count($this->schema_data['sectors']) <= 1) <div class="relative w-full h-full min-h-96">
+            <div  x-show="expanded" x-collapse.duration.1000ms class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> @if(count($this->schema_data['sectors']) <= 1) <div class="relative w-full h-full min-h-96">
                 <div class="w-full h-96 z-0 flex items-center justify-center">
                   <img class="h-96" src="{{ $this->schema_data['data'][0]['bg'] }}" />
                 </div>
@@ -187,10 +187,10 @@ new class extends Component {
   </div> @endif <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-2">
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto stroke-indigo-500">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Filters')}}</h1>
+        <div class="sm:flex-auto stroke-indigo-500" x-data="{ expanded: false }">
+          <h1 @click="expanded = ! expanded" class="text-base font-semibold leading-6 text-gray-900">{{__('Filters')}}</h1>
           <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
-          <div class=" rounded-xl pt-4">
+          <div class=" rounded-xl pt-4" x-show="expanded" x-collapse.duration.1000ms >
             <div class="grid grid-cols-2">
               <div class="col-span-1">
                 <div class="space-y-2 px-4">

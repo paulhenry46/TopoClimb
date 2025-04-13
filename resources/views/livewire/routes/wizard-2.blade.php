@@ -66,7 +66,6 @@ new class extends Component {
           $item->removeAttribute('width');
           $item->removeAttribute('height');
           $item->setAttribute("viewBox", "0 0 $width $height");
-
       }
 
       Storage::put($filePath, $dom->saveXML());
@@ -80,26 +79,46 @@ new class extends Component {
     }
 
     public function addPathToCommonPaths($path){
-      $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg';
-      if(Storage::exists($filePath)){
-       
+      $filePaths = [
+      'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg', 
+      'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg'
+        ];
+
+      if(Storage::exists($filePaths[0])){
+        foreach ($filePaths as $CommonPath) {
+          $dom_common = new DOMDocument('1.0');
+          $dom_common->preserveWhiteSpace = false;
+          $dom_common->formatOutput = true;
+          $dom_common->loadXML(simplexml_load_string(Storage::get($CommonPath))->asXML());
+          $newPath = $dom_common->importNode($path);
+
+          (new DOMXPath($dom_common))->query("//*[@id='g1']")->item(0)->appendChild($newPath);
+          Storage::put($CommonPath, $dom_common->saveXML());
+        }
+      }else{
+        Storage::put($filePaths[0], Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'));
+        
         $dom_common = new DOMDocument('1.0');
         $dom_common->preserveWhiteSpace = false;
         $dom_common->formatOutput = true;
-        $dom_common->loadXML(simplexml_load_string(Storage::get($filePath))->asXML());
-        $newPath = $dom_common->importNode($path);
+        $dom_common->loadXML(simplexml_load_string(Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'))->asXML());
 
-        (new DOMXPath($dom_common))->query("//*[@id='g1']")->item(0)->appendChild($newPath);
-        Storage::put($filePath, $dom_common->saveXML());
-      }else{
-        Storage::put($filePath, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'));
+        foreach ($dom_common->getElementsByTagName('svg') as $item) {
+          $item->setAttribute("xmlns:x-bind", "https://alpinejs.dev");
+          $item->setAttribute("xmlns:x-on", "https://alpinejs.dev");
+          $item->setAttribute("class", "h-96");
+        }
+        $item= (new DOMXPath($dom_common))->query('//*[@id=\'id_'.$this->route->id.'\']')->item(0);
+        $item->removeAttribute('x-on:mouseover');
+        $item->removeAttribute('x-bind:class');
+
+        Storage::put($filePaths[1], $dom_common->saveXML());
       }
-
     }
 
     public function ProcessCommonPaths(){
         $route = $this->route;
-        $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg';
+        $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg';
         $dom_common = new DOMDocument('1.0');
         $dom_common->preserveWhiteSpace = false;
         $dom_common->formatOutput = true;
@@ -107,8 +126,9 @@ new class extends Component {
 
         $xpath = new DOMXPath($dom_common);
         $item = $xpath->query("//*[@id='path_$route->id']")->item(0);
-        $item->setAttribute("x-on:mouseover", "selectRoute($route->id)");
-        $item->setAttribute("x-bind:class", "selectedRoute == $route->id ? 'stroke-8' : ''");
+        $item->setAttribute("x-on:mouseover", "hightlightRoute($route->id)");
+        $item->setAttribute("x-on:click", "selectRoute($route->id)");
+        $item->setAttribute("x-bind:style", "(selectedRoute == $route->id || hightlightedRoute == $route->id) ? 'stroke-width :8;' : ''");
 
       Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
