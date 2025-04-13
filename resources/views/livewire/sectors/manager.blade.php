@@ -171,8 +171,8 @@ new class extends Component {
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
         $item->setAttribute("x-on:click", "selectSector($sector->id)");
-        $item->setAttribute(":class", "selectedSector == $sector->id ? 'stroke-width-10' : ''");
-        $item->setAttribute("class", "hover:stroke-width-10");
+        $item->setAttribute("x-bind:style", "(selectedSector == $sector->id ? || hightlightedSector == $sector->id) ? 'stroke-width: 8;' : ''");
+        $item->setAttribute("x-on:mouseover", "hightlightSector($sector->id)");
       }
       if($this->area->type == 'diff'){
         foreach ($this->lines as $line) {

@@ -41,7 +41,7 @@ new class extends Component {
       $this->site = $this->area->site;
       if($area->type == 'bouldering'){
         foreach ($area->sectors as $sector) {
-            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg'));
+            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/user.svg'));
         }
       }else{
         $sectors_id = [];
@@ -134,15 +134,27 @@ new class extends Component {
     @if($this->area->type == 'bouldering') 
       x-data="{ hightlightedSector: 0, selectedSector: 0, selectSector(id){ this.selectedSector = id; $wire.selectSector(id); }, hightlightSector(id){ this.hightlightedSector = id; }, }" 
     @else 
-      x-data="{ hightlightedRoute: 0, selectedRoute: 0, selectRoute(id){ this.selectedRoute = id }, hightlightRoute(id){ this.hightlightedRoute = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
+      x-data="{ hightlightedRoute: 0, selectedRoute: 0, selectRoute(id){ this.selectedRoute = id; $wire.open_route(id); }, hightlightRoute(id){ this.hightlightedRoute = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
     @endif 
     @if($this->area->type == 'bouldering') 
     <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg" x-data="{ expanded: false }" >
       <div class="px-4 sm:px-6 lg:px-8 py-8">
         <div class="sm:flex sm:items-center">
           <div class="sm:flex-auto stroke-indigo-500">
-            <h1 @click="expanded = ! expanded" class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
-            <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
+            <div class="flex justify-between items-center" >
+              <div @click="expanded = ! expanded" >
+                <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
+                <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
+              </div> 
+               <div class="sm:ml-16 sm:mt-0 sm:flex-none">
+                <button @click="expanded = ! expanded" type="button" class=" inline-flex items-center px-2 py-2 border border-transparent rounded-md font-semibold text-sm tracking-widest hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 focus:outline-none transition ease-in-out duration-150">
+                  <svg xmlns="http://www.w3.org/2000/svg" x-show="!expanded" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-361q-8 0-15-2.5t-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5Z"/>
+                  </svg>
+                  <svg x-show="expanded" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
             <div x-show="expanded" x-collapse.duration.1000ms class="flex justify-center [&>*]:max-h-96 max-h-96 rounded-xl object-contain pt-4"> {!!$this->schema_data[0]!!} </div>
           </div>
         </div>
@@ -150,11 +162,23 @@ new class extends Component {
     </div> @else <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
       <div class="px-4 sm:px-6 lg:px-8 py-8" @if(count($this->schema_data['sectors']) > 1) x-data="{number_sectors : {{ count($this->schema_data['sectors']) }}, sector_selected : {{ $this->schema_data['data'][0]['id'] }}, sectors : {{ json_encode($this->schema_data['data'])}} }" @endif > <div class="sm:flex sm:items-center">
           <div x-data="{ expanded: false }"  class="sm:flex-auto stroke-indigo-500">
-            <div class="flex justify-between" >
-              <div @click="expanded = ! expanded" >
-                <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
-                <p class="mt-2 text-sm text-gray-700">{{__('Map of the sector with routes')}}</p>
-              </div> @if(count($this->schema_data['sectors']) > 1) <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <div class="flex justify-between items-center" >
+                  <div @click="expanded = ! expanded" >
+                    <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Map')}}</h1>
+                    <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
+                  </div> 
+                   <div class="sm:ml-16 sm:mt-0 sm:flex-none">
+                    <button @click="expanded = ! expanded" type="button" class="py-2 px-2 inline-flex items-center border border-transparent rounded-md font-semibold text-sm tracking-widest hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 focus:outline-none transition ease-in-out duration-150">
+                      <svg xmlns="http://www.w3.org/2000/svg" x-show="!expanded" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-361q-8 0-15-2.5t-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5Z"/>
+                      </svg>
+                      <svg x-show="expanded" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/>
+                      </svg>
+                    </button>
+              </div> @if(count($this->schema_data['sectors']) > 1) <div x-show="expanded" class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                <button @click="expanded = ! expanded" type="button" class=" inline-flex items-center px-2 py-2 border border-transparent rounded-md font-semibold text-sm tracking-widest hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 focus:outline-none transition ease-in-out duration-150">
+                  <svg x-show="expanded" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/>
+                  </svg>
+                </button>
                 <button type="button" class="inline-flex items-center px-2 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
                     <path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z" />
@@ -188,8 +212,20 @@ new class extends Component {
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto stroke-indigo-500" x-data="{ expanded: false }">
-          <h1 @click="expanded = ! expanded" class="text-base font-semibold leading-6 text-gray-900">{{__('Filters')}}</h1>
-          <p class="mt-2 text-sm text-gray-700">{{__('Map of the area with sectors and lines')}}</p>
+          <div class="flex justify-between items-center" >
+            <div @click="expanded = ! expanded" >
+              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Filters')}}</h1>
+              <p class="mt-2 text-sm text-gray-700">{{__('Choose which routes you want to see.')}}</p>
+            </div> 
+             <div class="sm:ml-16 sm:mt-0 sm:flex-none">
+              <button @click="expanded = ! expanded" type="button" class=" inline-flex items-center px-2 py-2 border border-transparent rounded-md font-semibold text-sm tracking-widest hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 focus:outline-none transition ease-in-out duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" x-show="!expanded" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-361q-8 0-15-2.5t-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5Z"/>
+                </svg>
+                <svg x-show="expanded" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
           <div class=" rounded-xl pt-4" x-show="expanded" x-collapse.duration.1000ms >
             <div class="grid grid-cols-2">
               <div class="col-span-1">
@@ -321,7 +357,13 @@ new class extends Component {
           <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Routes')}}</h1>
           <p class="mt-2 text-sm text-gray-700 mb-2">{{__('Routes of the area')}}</p>
           <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
-            <tbody class="bg-white"> @foreach ($routes as $route) <tr @click="$wire.open_route({{$route->id}})" x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" class="hover:bg-gray-50 cursor-pointer">
+            <tbody class="bg-white"> @foreach ($routes as $route) <tr @click="selectRoute({{$route->id}})" 
+              @if($this->area->type == 'bouldering')
+              x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" 
+              @else
+              x-on:mouseout="hightlightRoute(0)" x-on:mouseover="hightlightRoute({{$route->id}})" 
+              @endif
+              class="hover:bg-gray-50 cursor-pointer">
                 <td class="rounded-l-md text-xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   {{$route->gradeFormated()}}
                 </td>
