@@ -129,11 +129,13 @@ new class extends Component {
 }; ?>
 
 <div class="grid grid-cols-3 mt-8 gap-4 pt-2">
+  <div class="stroke-8">
+  </div>
   <div class="col-span-2 flex flex-col" 
     @if($this->area->type == 'bouldering') 
       x-data="{ hightlightedSector: 0, selectedSector: 0, selectSector(id){ this.selectedSector = id; $wire.selectSector(id); }, hightlightSector(id){ this.hightlightedSector = id; }, }" 
     @else 
-      x-data="{ hightlightedSector: 0, selectedSector: 0, selectSector(id){ this.selectedSector = id; $wire.selectSector(id); }, hightlightSector(id){ this.hightlightedSector = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
+      x-data="{ hightlightedSector: 0, selectedRoute: 0, selectRoute(id){ this.selectedRoute = id }, hightlightSector(id){ this.hightlightedSector = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
     @endif 
     @if($this->area->type == 'bouldering') 
     <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">

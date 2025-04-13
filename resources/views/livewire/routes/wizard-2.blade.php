@@ -108,7 +108,7 @@ new class extends Component {
         $xpath = new DOMXPath($dom_common);
         $item = $xpath->query("//*[@id='path_$route->id']")->item(0);
         $item->setAttribute("x-on:mouseover", "selectRoute($route->id)");
-        $item->setAttribute("x-bind:class", "currentRoute == $route->id ? 'stroke-width-8' : ''");
+        $item->setAttribute("x-bind:class", "selectedRoute == $route->id ? 'stroke-8' : ''");
 
       Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
