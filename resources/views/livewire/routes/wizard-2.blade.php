@@ -55,7 +55,8 @@ new class extends Component {
       $dom->formatOutput = true;
       $dom->loadXML($xml->asXML());
 
-      $xpath = (new DOMXPath($dom))->query("//*[@id='area']")->item(0)->remove();
+      $xpath = (new DOMXPath($dom));
+      $xpath->query("//*[@id='area']")->item(0)->remove();
 
        //In order to make svg responsive, delete height and width attributes and replace them by a viewBox attribute
        $items = $dom->getElementsByTagName('svg');
@@ -69,8 +70,11 @@ new class extends Component {
       }
 
       Storage::put($filePath, $dom->saveXML());
+      $path = $xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);
+      $path->setAttribute("stroke-width", "3");
+      $path->setAttribute("stroke", $xpath->query('//*[@id=\'id_'.$this->route->id.'\']')->item(0)->getAttribute('stroke'));
 
-      $this->addPathToCommonPaths($xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0));
+      $this->addPathToCommonPaths($path);
       $this->ProcessCommonPaths();
       $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
@@ -104,7 +108,7 @@ new class extends Component {
         $xpath = new DOMXPath($dom_common);
         $item = $xpath->query("//*[@id='path_$route->id']")->item(0);
         $item->setAttribute("x-on:mouseover", "selectRoute($route->id)");
-        $item->setAttribute(":class", "currentRoute == $route->id ? 'stroke-width-8' : ''");
+        $item->setAttribute("x-bind:class", "currentRoute == $route->id ? 'stroke-width-8' : ''");
 
       Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
