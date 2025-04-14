@@ -357,11 +357,13 @@ new class extends Component {
           <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Routes')}}</h1>
           <p class="mt-2 text-sm text-gray-700 mb-2">{{__('Routes of the area')}}</p>
           <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
-            <tbody class="bg-white"> @foreach ($routes as $route) <tr @click="selectRoute({{$route->id}})" 
+            <tbody class="bg-white"> @foreach ($routes as $route) <tr 
               @if($this->area->type == 'bouldering')
               x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" 
+              @click="$wire.open_route({{$route->id}})"
               @else
               x-on:mouseout="hightlightRoute(0)" x-on:mouseover="hightlightRoute({{$route->id}})" 
+              @click="selectRoute({{$route->id}})"
               @endif
               class="hover:bg-gray-50 cursor-pointer">
                 <td class="rounded-l-md text-xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">

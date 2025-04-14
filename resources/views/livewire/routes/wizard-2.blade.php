@@ -92,6 +92,11 @@ new class extends Component {
           $dom_common->loadXML(simplexml_load_string(Storage::get($CommonPath))->asXML());
           $newPath = $dom_common->importNode($path);
 
+          $pathElement = (new DOMXPath($dom_common))->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);//Check if the path already exists in file. If yes, remove it before adding the new path
+          if ($pathElement) {
+              $pathElement->remove();
+          }
+
           (new DOMXPath($dom_common))->query("//*[@id='g1']")->item(0)->appendChild($newPath);
           Storage::put($CommonPath, $dom_common->saveXML());
         }

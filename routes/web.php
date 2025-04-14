@@ -96,7 +96,8 @@ Route::get('/empty/photo/{color}.svg', function (string $color) {
         'gray' => '#d1d5db',
         'black' => '#000000',
         'white' => '#ffffff',
-        'emerald' => '#6ee7b7'
+        'emerald' => '#6ee7b7',
+        'orange' => '#fdba74'
     ];
 
     $content = str_replace('color', $colors[$color], Storage::get('photos/blank.svg'));
