@@ -1,3 +1,5 @@
 *
 !.gitignore
-!./photos/blank.svg
+!photos/
+photos/*
+!photos/blank.svg

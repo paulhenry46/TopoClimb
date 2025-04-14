@@ -41,7 +41,7 @@ class Route extends Model
         if(Storage::exists('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id)){
             return Storage::url('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id);
         }else{
-            return null;
+            return route('empty.photo', $this->color);
         }
     }
 

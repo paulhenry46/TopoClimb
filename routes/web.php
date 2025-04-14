@@ -3,7 +3,9 @@
 use App\Models\Area;
 use App\Models\Route as ModelsRoute;
 use App\Models\Site;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
@@ -82,3 +84,24 @@ Route::prefix('/sites/{site:slug}')->group(function () {
     });
 
 });
+
+Route::get('/empty/photo/{color}.svg', function (string $color) {
+    $colors = [
+        'red' => '#fca5a5',
+        'blue' => '#93c5fd',
+        'green' => '#86efac',
+        'yellow' => '#fde047',
+        'purple' => '#d8b4fe',
+        'pink' => '#f9a8d4',
+        'gray' => '#d1d5db',
+        'black' => '#000000',
+        'white' => '#ffffff',
+        'emerald' => '#6ee7b7'
+    ];
+
+    $content = str_replace('color', $colors[$color], Storage::get('photos/blank.svg'));
+
+$response = response()->make($content, 200);
+$response->header('Content-Type', 'image/svg+xml');
+return $response;
+})->name('empty.photo');
