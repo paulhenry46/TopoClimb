@@ -33,11 +33,11 @@ new class extends Component {
     #[Validate('string|nullable')]
     public $description;
 
-    #[Validate('image')]
+    #[Validate('image|nullable')]
     public $picture;
     public $picture_url;
 
-    #[Validate('image')]
+    #[Validate('image|nullable')]
     public $banner;
     public $banner_url;
     

@@ -10,6 +10,7 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
+use App\Jobs\ProcessPathOfRoute;
 new class extends Component {
   use WithFileUploads;
 
@@ -41,101 +42,9 @@ new class extends Component {
     }
 
     public function save(){
-      $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
-      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
+      ProcessPathOfRoute::dispatchSync($area, $route, $path);
 
-      $input_file_path = Storage::path('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
-      $output_file_path= storage_path('app/public/'.$filePath.'');
-      
-      $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-
-      $xml = simplexml_load_string(Storage::get($filePath));
-      $dom = new DOMDocument('1.0');
-      $dom->preserveWhiteSpace = false;
-      $dom->formatOutput = true;
-      $dom->loadXML($xml->asXML());
-
-      $xpath = (new DOMXPath($dom));
-      $xpath->query("//*[@id='area']")->item(0)->remove();
-
-       //In order to make svg responsive, delete height and width attributes and replace them by a viewBox attribute
-       $items = $dom->getElementsByTagName('svg');
-      foreach ($items as $item) {
-          $width = $item->getAttribute('width');
-          $height = $item->getAttribute('height');
-          $item->removeAttribute('width');
-          $item->removeAttribute('height');
-          $item->setAttribute("viewBox", "0 0 $width $height");
-      }
-
-      Storage::put($filePath, $dom->saveXML());
-      $path = $xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);
-      $path->setAttribute("stroke-width", "3");
-      $path->setAttribute("stroke", $xpath->query('//*[@id=\'id_'.$this->route->id.'\']')->item(0)->getAttribute('stroke'));
-
-      $this->addPathToCommonPaths($path);
-      $this->ProcessCommonPaths();
       $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
-    }
-
-    public function addPathToCommonPaths($path){
-      $filePaths = [
-      'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg', 
-      'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg'
-        ];
-
-      if(Storage::exists($filePaths[0])){
-        foreach ($filePaths as $CommonPath) {
-          $dom_common = new DOMDocument('1.0');
-          $dom_common->preserveWhiteSpace = false;
-          $dom_common->formatOutput = true;
-          $dom_common->loadXML(simplexml_load_string(Storage::get($CommonPath))->asXML());
-          $newPath = $dom_common->importNode($path);
-
-          $pathElement = (new DOMXPath($dom_common))->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);//Check if the path already exists in file. If yes, remove it before adding the new path
-          if ($pathElement) {
-              $pathElement->remove();
-          }
-
-          (new DOMXPath($dom_common))->query("//*[@id='g1']")->item(0)->appendChild($newPath);
-          Storage::put($CommonPath, $dom_common->saveXML());
-        }
-      }else{
-        Storage::put($filePaths[0], Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'));
-        
-        $dom_common = new DOMDocument('1.0');
-        $dom_common->preserveWhiteSpace = false;
-        $dom_common->formatOutput = true;
-        $dom_common->loadXML(simplexml_load_string(Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'))->asXML());
-
-        foreach ($dom_common->getElementsByTagName('svg') as $item) {
-          $item->setAttribute("xmlns:x-bind", "https://alpinejs.dev");
-          $item->setAttribute("xmlns:x-on", "https://alpinejs.dev");
-          $item->setAttribute("class", "h-96");
-        }
-        $item= (new DOMXPath($dom_common))->query('//*[@id=\'id_'.$this->route->id.'\']')->item(0);
-        $item->removeAttribute('x-on:mouseover');
-        $item->removeAttribute('x-bind:class');
-
-        Storage::put($filePaths[1], $dom_common->saveXML());
-      }
-    }
-
-    public function ProcessCommonPaths(){
-        $route = $this->route;
-        $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg';
-        $dom_common = new DOMDocument('1.0');
-        $dom_common->preserveWhiteSpace = false;
-        $dom_common->formatOutput = true;
-        $dom_common->loadXML(simplexml_load_string(Storage::get($filePath))->asXML());
-
-        $xpath = new DOMXPath($dom_common);
-        $item = $xpath->query("//*[@id='path_$route->id']")->item(0);
-        $item->setAttribute("x-on:mouseover", "hightlightRoute($route->id)");
-        $item->setAttribute("x-on:click", "selectRoute($route->id)");
-        $item->setAttribute("x-bind:style", "(selectedRoute == $route->id || hightlightedRoute == $route->id) ? 'stroke-width :8;' : ''");
-
-      Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
 }; ?>
 

@@ -9,6 +9,7 @@ use App\Models\Route as ModelRoute;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
+use App\Jobs\ProcessCircleOfRoute;
 use Livewire\Attributes\Computed;
 new class extends Component {
   use WithFileUploads;
@@ -40,24 +41,7 @@ new class extends Component {
 
     public function save(){
      
-      $filePath = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg';
-      Storage::put('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg', $this->path);
-
-      $input_file_path = Storage::path('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg');
-      $output_file_path= storage_path('app/public/'.$filePath.'');
-      
-      $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-      $xml = simplexml_load_string(Storage::get($filePath));
-      $dom = new DOMDocument('1.0');
-      $dom->preserveWhiteSpace = false;
-      $dom->formatOutput = true;
-      $dom->loadXML($xml->asXML());
-
-      $xpath = new DOMXPath($dom);
-      $item = $xpath->query("//*[@id='area']")->item(0);
-      $item->remove();
-
-      Storage::put($filePath, $dom->saveXML());
+      ProcessCircleOfRoute::dispatchSync($site, $area, $route, $path);
 
       if($this->route->id == session('route_creating')){
         session()->forget('route_creating');

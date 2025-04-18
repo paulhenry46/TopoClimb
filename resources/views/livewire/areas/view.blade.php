@@ -317,7 +317,7 @@ new class extends Component {
                     </div>
                   </div>
                 </div>
-              </div> @endif @if($this->area->type == 'diff') <div class="col-span-1">
+              </div> @endif @if($this->area->type == 'trad') <div class="col-span-1">
                 <div class="space-y-2 px-4">
                   <div class="w-full mt-3">
                     <x-label for="name" value="{{ __('Line') }}" />
