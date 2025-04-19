@@ -162,7 +162,7 @@ new class extends Component {
       </li>
     </ol>
   </nav>
-  @if($this->area->type == 'bloc')
+  @if($this->area->type == 'bouldering')
   <div class="relative grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
     <div class="absolute">
       <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors') }}</p>
@@ -484,7 +484,14 @@ new class extends Component {
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
   </div>
 
+<div class="absolute">
+  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Routes') }}</p>
+  
+  </div>
+<div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8 h-20">
+  Topo
 </div>
+
 </div>
 <div class="relative -right-px col-start-2 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
   <div class="relative -left-px col-start-4 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
