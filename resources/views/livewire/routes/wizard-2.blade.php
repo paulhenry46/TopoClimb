@@ -91,7 +91,7 @@ new class extends Component {
               @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
         <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
+        <script src='http://127.0.0.1:8000/dist/acorn.js'></script>
         
 
         @if($this->file_content)

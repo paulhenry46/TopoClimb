@@ -137,7 +137,7 @@ $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' 
           </div>
         </div>
         <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/acorn/8.8.2/acorn.js'></script>
+        <script src='http://127.0.0.1:8000/dist/acorn.js'></script>
         <script type="text/paperscript" canvas="myCanvas">
             var number_sectors = 0;
             var number_processing = 1;
