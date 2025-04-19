@@ -50,6 +50,17 @@ Route::middleware([
                         return view('areas.initialize.step-3', compact('site', 'area'));
                     })->name('areas.initialize.lines');
                 });
+                Route::prefix('/topo')->group(function () {
+                    Route::get('/map', function (Site $site, Area $area) {
+                        return view('topo.wizard', compact('site', 'area'));
+                    })->name('areas.initialize');
+                    Route::get('/sectors', function (Site $site, Area $area) {
+                        return view('areas.initialize.step-2', compact('site', 'area'));
+                    })->name('areas.initialize.sectors');
+                    Route::get('/lines', function (Site $site, Area $area) {
+                        return view('areas.initialize.step-3', compact('site', 'area'));
+                    })->name('areas.initialize.lines');
+                });
                 Route::prefix('/routes')->group(function () {
                     Route::get('/new', function (Site $site, Area $area) {
                         return view('routes.edit-infos', compact('site', 'area'));
