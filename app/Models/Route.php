@@ -56,4 +56,23 @@ class Route extends Model
     {
         return $this->hasMany(Log::class);
     }
+
+    public function colorToHex()
+{
+    $colors = [
+        'red' => '#ef4444',
+        'blue' => '#3b82f6',
+        'green' => '#10b981',
+        'yellow' => '#f59e0b',
+        'purple' => '#8b5cf6',
+        'pink' => '#ec4899',
+        'gray' => '#6b7280',
+        'indigo' => '#6366f1',
+        'teal' => '#14b8a6',
+        'orange' => '#f97316',
+        'amber' => '#fbbf24'
+    ];
+
+    return $colors[$this->color] ?? '#000000'; // Default to black if color not found
+}
 }

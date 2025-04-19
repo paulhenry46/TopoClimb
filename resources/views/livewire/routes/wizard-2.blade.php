@@ -42,7 +42,7 @@ new class extends Component {
     }
 
     public function save(){
-      ProcessPathOfRoute::dispatchSync($area, $route, $path);
+      ProcessPathOfRoute::dispatchSync($this->area, $this->route, $this->path);
 
       $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
@@ -98,7 +98,7 @@ new class extends Component {
         <script type="text/paperscript" canvas="myCanvas">
           var path;
           const strokeWidth = 3;
-          const strokeColor = '{{$this->route->color}}';
+          const strokeColor = '{{$this->route->colorToHex()}}';
           var group;
           const num_line = '{{$this->route->id}}';
 
@@ -170,7 +170,7 @@ new class extends Component {
         <script type="text/paperscript" canvas="myCanvas">
           var path;
           const strokeWidth = 7;
-          const strokeColor = '{{$this->route->color}}';
+          const strokeColor = '{{$this->route->colorToHex()}}';
           var group;
           const num_line = '{{$this->route->id}}';
 

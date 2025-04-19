@@ -41,7 +41,7 @@ new class extends Component {
 
     public function save(){
      
-      ProcessCircleOfRoute::dispatchSync($site, $area, $route, $path);
+      ProcessCircleOfRoute::dispatchSync($this->site, $this->area, $this->route, $this->path);
 
       if($this->route->id == session('route_creating')){
         session()->forget('route_creating');
@@ -106,7 +106,7 @@ new class extends Component {
         <script type="text/paperscript" canvas="myCanvas">
           const diameter = 70;
           const num_line = {{$this->route->id}};
-          const color = '{{$this->route->color}}';
+          const color = '{{$this->route->colorToHex()}}';
 
           var raster = new Raster('photo');
           raster.position = view.center;
@@ -169,7 +169,7 @@ new class extends Component {
         <script type="text/paperscript" canvas="myCanvas">
           const diameter = 70;
           const num_line = {{$this->route->id}};
-          const color = '{{$this->route->color}}';
+          const color = '{{$this->route->colorToHex()}}';
 
           var raster = new Raster('photo');
           raster.position = view.center;
