@@ -29,6 +29,10 @@ class Area extends Model
         return Route::whereIn('line_id', $lines_id)->get();
     }
 
+    public function lines(){
+        return Line::whereIn('sector_id', $this->sectors()->pluck('id'))->get();
+    }
+
     public function banner(){
         if(Storage::exists('pictures/site-'.$this->site->id.'/area-'.$this->id.'/picture')){
             return Storage::url('pictures/site-'.$this->site->id.'/area-'.$this->id.'/picture');

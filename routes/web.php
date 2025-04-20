@@ -54,6 +54,9 @@ Route::middleware([
                     Route::get('/map', function (Site $site, Area $area) {
                         return view('topo.wizard', compact('site', 'area'));
                     })->name('areas.initialize');
+                    Route::get('/result/routes', function (Site $site, Area $area) {
+                        return view('topo.pdf.routes', compact('site', 'area'));
+                    })->name('areas.initialize');
                     Route::get('/sectors', function (Site $site, Area $area) {
                         return view('areas.initialize.step-2', compact('site', 'area'));
                     })->name('areas.initialize.sectors');
