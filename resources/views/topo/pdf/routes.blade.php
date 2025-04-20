@@ -1,5 +1,5 @@
 <x-pdf-layout>
-    <div class="py-12 mx-3">
+    <div class=" mx-3">
 
 <div class="rounded-l-xl/ border-2 border-solid flex items-center mb-4">
     <div class="text-center w-16 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">

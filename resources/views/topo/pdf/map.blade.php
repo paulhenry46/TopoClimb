@@ -8,9 +8,9 @@
                 <div>
                     <img class="size-24 rounded-md object-cover" src="{{ $site->profile_picture() }}" alt="Admin">
                 </div>
-                <div>
-                    <h1 class="text-2xl text-uppercase">{{$area->site->name}}</h1>
-                    <h2 class="text-2xl text-uppercase">{{$site->name}}</h2>
+                <div class='mt-2'>
+                    <h1 class="text-2xl text-uppercase">{{$area->name}}</h1>
+                    <h2 class="text-xl text-uppercase">{{$site->name}}</h2>
                 </div>
                 <div>
                     QR CODE
