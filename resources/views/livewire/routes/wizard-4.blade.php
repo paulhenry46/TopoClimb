@@ -43,11 +43,7 @@ new class extends Component {
      
       ProcessCircleOfRoute::dispatchSync($this->site, $this->area, $this->route, $this->path);
 
-      if($this->route->id == session('route_creating')){
-        session()->forget('route_creating');
-      }
-
-      $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
+      $this->redirectRoute('admin.routes.finish', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
 }; ?>
 

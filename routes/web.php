@@ -80,6 +80,9 @@ Route::middleware([
                     Route::get('/{route}/photo/circle', function (Site $site, Area $area, ModelsRoute $route) {
                         return view('routes.edit-photo-circle', compact('site', 'area', 'route'));
                     })->name('routes.circle');
+                    Route::get('/{route}/finish', function (Site $site, Area $area, ModelsRoute $route) {
+                        return view('routes.finish-wizard', compact('site', 'area', 'route'));
+                    })->name('routes.finish');
                 });
             });
         });
