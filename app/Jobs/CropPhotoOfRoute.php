@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Storage;
 class CropPhotoOfRoute implements ShouldQueue
 {
     use Queueable;
-
     /**
      * Create a new job instance.
      */

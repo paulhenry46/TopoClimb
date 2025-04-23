@@ -411,7 +411,13 @@ new class extends Component {
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{$this->route->name}}</h1>
-          <p class="mt-1 text-sm text-gray-700">{{$this->route->line->sector->name}}</p>
+          <p class="mt-1 text-sm text-gray-700">
+            @if($this->area->type == 'bouldering')
+            {{$this->route->line->sector->name}}
+            @else
+           {{ __('Line') }}  {{$this->route->line->local_id}}
+            @endif
+          </p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
           <button type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
