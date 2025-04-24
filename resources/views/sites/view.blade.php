@@ -1,11 +1,6 @@
 <x-app-layout>
   <livewire:toast />
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-      {{ __('Administration Area') }}
-    </h2>
-  </x-slot>
-  <div class="py-12  mx-auto ">
+  <div class="  mx-auto ">
     <div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr]  ">
       <div class="col-start-3 row-start-3 ">
         <div class="relative">
