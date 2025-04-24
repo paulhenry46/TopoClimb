@@ -12,12 +12,15 @@ use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Url;
 new class extends Component {
   use WithPagination, WithFileUploads;
 
   
     public Area $area;
     public Site $site;
+    #[Url(keep: true)]
+    public string $route_id ='';
     public Route $route;
     public array $schema_data = [];
     public $cotations = [];
@@ -34,6 +37,7 @@ new class extends Component {
 
   public function open_route($id){
     $this->route = Route::find($id);
+    $this->route_id = $id;
   }
 
     public function mount(Area $area){
@@ -74,7 +78,12 @@ new class extends Component {
       $this->tags_id = [];
       $this->cotation_to = 0;
       $this->cotation_from = 0;
-      $this->route = Route::find(4);
+      if($this->route_id != null){
+        $this->route = Route::find($this->route_id);
+      }else{
+        $this->route = Route::first();
+      }
+      
       $this->user_state = 'all';
       $this->selected_line = 0;
       }
