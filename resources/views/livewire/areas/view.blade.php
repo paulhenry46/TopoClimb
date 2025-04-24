@@ -352,7 +352,7 @@ new class extends Component {
   </div>
   <div class="bg-white mt-2 sm:rounded-lg px-6 py-8">
     <div class='hidden'>
-      <div class='border-red-300 border-orange-300 border-amber-300 border-green-300 border-blue-300 border-violet-300 border-yellow-300 border-emerald-300 border-pink-300'></div>
+      <div class='border-red-300 border-orange-300 border-amber-300 border-green-300 border-blue-300 border-violet-300 border-purple-300 border-yellow-300 border-emerald-300 border-pink-300'></div>
     </div>
     <div class=" flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -369,10 +369,10 @@ new class extends Component {
               @click="selectRoute({{$route->id}})"
               @endif
               class="hover:bg-gray-50 cursor-pointer">
-              <td class="border-2 border-{{$route->color}}-300 rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
-               <div :class='hightlightedRoute == {{$route->id}} ? "grayscale-0" : "grayscale"' class='h-full w-full bg-cover' style="background-image: url({{ $route->picture() }})"></div>
+              <td class="bg-{{$route->color}}-300 border-2 border-{{$route->color}}-300 rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
+               <div :class='hightlightedRoute == {{$route->id}} ? "grayscale-0" : "grayscale"' class='rounded-l h-full w-full bg-cover' style="background-image: url({{ $route->thumbnail() }})"></div>
               </td>
-                <td class=" text-xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                <td class=" text-2xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-3">
                   {{$route->gradeFormated()}}
                 </td>
                 <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
