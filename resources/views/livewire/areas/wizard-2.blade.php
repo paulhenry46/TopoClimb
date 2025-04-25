@@ -61,14 +61,14 @@ for ($i = 1; $i <= $this->number_sectors; $i++) {
     $sector->slug = Str::slug($sector->name, '-');
     $sector->area_id = $this->area->id;
     $sector->save();
-    if($this->area->type == 'bloc'){
+    if($this->area->type == 'bouldering'){
     $line = new Line;
     $line->sector_id = $sector->id;
     $line->local_id = 0;
     $line->save();
     }
 }
-if($this->area->type == 'voie'){
+if($this->area->type == 'trad'){
   $this->redirectRoute('admin.areas.initialize.lines', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
 }else{
 $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
@@ -93,7 +93,7 @@ $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' 
           <span class="text-sm font-medium">{{__('Create sectors')}}</span>
         </a>
       </li>
-      @if($this->area->type == 'voie')
+      @if($this->area->type == 'trad')
       <li class="md:flex-1">
         <!-- Upcoming Step -->
         <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">

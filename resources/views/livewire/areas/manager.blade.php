@@ -223,18 +223,18 @@ new class extends Component {
                       <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
                         <legend class="sr-only">{{__('Area Type')}}</legend>
                         <div class="-space-y-px bg-white">
-                          <label :class="type == 'voie' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
-                            <input x-model="type" type="radio" name="area-type" value="voie" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
+                          <label :class="type == 'trad' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
+                            <input x-model="type" type="radio" name="area-type" value="trad" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
                             <span class="ml-3 flex flex-col">
-                              <span :class="type == 'voie' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('Type Voie')}}</span>
-                              <span :class="type == 'voie' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
+                              <span :class="type == 'trad' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('Type Traditional')}}</span>
+                              <span :class="type == 'trad' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
                             </span>
                           </label>
-                          <label :class="type == 'bloc' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
-                            <input x-model="type" type="radio" name="area-type" value="bloc" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
+                          <label :class="type == 'bouldering' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
+                            <input x-model="type" type="radio" name="area-type" value="bouldering" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
                             <span class="ml-3 flex flex-col">
-                              <span :class="type == 'bloc' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Type Bloc')}}</span>
-                              <span :class="type == 'bloc' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
+                              <span :class="type == 'bouldering' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Type Bouldering')}}</span>
+                              <span :class="type == 'bouldering' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
                             </span>
                           </label>
                         </div>

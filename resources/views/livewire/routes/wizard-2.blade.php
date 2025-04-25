@@ -27,7 +27,7 @@ new class extends Component {
       $this->area = $area;
       $this->route = $route;
       $this->url = Storage::url('plans/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/sector-'.$route->line->sector->id.'/schema');
-      if($this->area->type == 'bloc'){
+      if($this->area->type == 'bouldering'){
         $this->redirectRoute('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
       }
       $this->edit = $edit;
@@ -66,7 +66,7 @@ new class extends Component {
           <span class="text-sm font-medium">{{__('Draw path')}}</span>
         </a>
       </li>
-      @if($this->area->type == 'voie')
+      @if($this->area->type == 'trad')
       <li class="md:flex-1">
         <!-- Upcoming Step -->
         <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
