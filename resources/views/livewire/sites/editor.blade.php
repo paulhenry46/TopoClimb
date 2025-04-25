@@ -182,8 +182,8 @@ new class extends Component {
     </div>
     
     <!-- Submit Button -->
-    <div class="mt-6 flex justify-end">
-        <x-button wire:click="save" type="button">{{ __('Save') }}</x-button>
-    </div>
   </div>
+  <div class="flex items-center justify-end px-4 py-3 bg-gray-50 text-end sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
+    <x-button wire:click="save" type="button">{{ __('Save') }}</x-button>
+</div>
 </div>
