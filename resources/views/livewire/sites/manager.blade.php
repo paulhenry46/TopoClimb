@@ -177,10 +177,8 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->areas->count()}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button><x-icon-see/></button></a>
-                  <button wire:click="open_item({{$site->id}})" class="text-gray-600 hover:text-gray-900 mr-2"><x-icon-edit/></button>
-                  <button type="button" wire:click="delete_item({{$site->id}})" wire:confirm="{{__('Are you sure you want to delete this site?')}}" class="text-red-600 hover:text-red-900">
-                    <x-icon-delete/>
-                  </button>
+                  
+                  
                 </td>
               </tr> @endforeach
             </tbody>
