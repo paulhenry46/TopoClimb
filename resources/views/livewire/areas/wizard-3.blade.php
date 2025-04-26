@@ -26,8 +26,8 @@ new class extends Component {
       $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors.svg');
     }
 
-    public function save(array $lines_sectors){
-      
+    public function save(){
+      //dd($this->lines_sectors);
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines-numbers.svg',$this->removeClipPath($this->svg_lines));
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines.svg',$this->removeClipPath($this->svg_lines_without_numbers));
       
@@ -35,7 +35,7 @@ new class extends Component {
       
 
 
-      foreach ($lines_sectors as $key => $value)  {
+      foreach ($this->lines_sectors as $key => $value)  {
         if($value !== null and $key != 0){
           $line = new Line;
           $line->local_id = $key;
@@ -91,13 +91,13 @@ new class extends Component {
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Add Lines to the area')}}</h1>
-          <p class="mt-2 text-sm text-gray-700">{{$this->site->adress}}</p>
+          <p class="mt-2 text-sm text-gray-700">{{$this->site->address}}</p>
         </div>
       </div>
       <div class="mt-4 flow-root">
         <div class="rounded-md bg-indigo-50 p-4">
           <div class="flex">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <svg class="h-5 w-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor">
                 <path d="m424-408-86-86q-11-11-28-11t-28 11q-11 11-11 28t11 28l114 114q12 12 28 12t28-12l226-226q11-11 11-28t-11-28q-11-11-28-11t-28 11L424-408Zm56 328q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
               </svg>
@@ -114,7 +114,9 @@ new class extends Component {
               <div x-data="{message: ''}" 
               @svg_lines.window="$wire.svg_lines = $event.detail.message"
               @svg_lines_without_numbers.window="$wire.svg_lines_without_numbers = $event.detail.message"
-              @sent_to_wire.window="$wire.save($event.detail.lines_sectors)">
+              @export_lines_sectors.window="$wire.lines_sectors = $event.detail.message"
+              @sent_to_wire2.window="console.log($event.detail.lines_sectors)"
+              @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
             </div>
             </div>
@@ -156,6 +158,7 @@ new class extends Component {
             lines_sectors: lines_sectors,
           }
       });
+      console.log(lines_sectors);
       window.dispatchEvent(evt);
   })
 
@@ -262,10 +265,16 @@ new class extends Component {
       }
     });
     window.dispatchEvent(evt);
+
+    var evt = new CustomEvent('export_lines_sectors', {
+      detail: {
+        message: lines_sectors,
+      }
+    });
+    window.dispatchEvent(evt);
   }
 
   function scaleAllItems() {
-    console.log(diameter);
       for (var item of project.activeLayer.getItems({
               class: Path
           })) {
@@ -328,7 +337,7 @@ function onMouseDrag(event) {
         
       </div>
     </div>
-    <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+    <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
       <div class="flex justify-end space-x-3" x-data="{svg_edited : '', svg_with_numbers : ''}">
         <x-secondary-button type="button">{{__('Cancel')}}</x-secondary-button> 
         <x-button @click="$dispatch('restart')">{{__('Restart')}}</x-button>

@@ -129,7 +129,7 @@ new class extends Component {
       <li>
         <div>
           <a href="#" class="text-gray-400 hover:text-gray-500">
-            <svg class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd" />
             </svg>
             <span class="sr-only">{{__('Dashboard')}}</span>
@@ -138,7 +138,7 @@ new class extends Component {
       </li>
       <li>
         <div class="flex items-center">
-          <svg class="h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg class="h-5 w-5 shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
           </svg>
           <a wire:navigate href="{{route('admin.sites.manage')}}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700">{{__('Sites')}}</a>
@@ -146,7 +146,7 @@ new class extends Component {
       </li>
       <li>
         <div class="flex items-center">
-          <svg class="h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg class="h-5 w-5 shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
           </svg>
           <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$this->area->site->id ])}}" class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700" aria-current="page">{{$this->area->site->name}}</a>
@@ -154,7 +154,7 @@ new class extends Component {
       </li>
       <li>
         <div class="flex items-center">
-          <svg class="h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg class="h-5 w-5 shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
           </svg>
           <a class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700" aria-current="page">{{$this->area->name}}</a>
@@ -266,7 +266,7 @@ new class extends Component {
                           </div>
                         </div>
                       </div>
-                      <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                      <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                         <div class="flex justify-end space-x-3">
                           <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                           <x-button type="submit">{{$this->modal_submit_message}}</x-button>
@@ -336,7 +336,7 @@ new class extends Component {
                 <div x-show="expanded" x-collapse>
               <img class="rounded-lg" src="{{Storage::url('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')}}">
               <div class="mt-4 flex items-center justify-end gap-x-6">
-              <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
+              <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
                 <span>{{__('Edit')}}</span>
                 <input wire:model="schemas.{{$sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
               </label>
@@ -352,7 +352,7 @@ new class extends Component {
                   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{__('No schema')}}</h3>
                   <p class="mt-1 text-sm text-gray-500">{{('Schemas allow to draw the route over a schema of the sector')}}</p>
                   <div class="mt-6">
-                    <label for="file-upload" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none disabled:opacity-50 transition ease-in-out duration-150">
+                    <label for="file-upload" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
                       <span>{{__('Add Schema')}}</span>
                       <input wire:model="schemas.{{$sector->id}}" id="file-upload" name="file-upload" type="file" class="sr-only">
                     </label>
@@ -459,7 +459,7 @@ new class extends Component {
                           </div>
                         </div>
                       </div>
-                      <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                      <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                         <div class="flex justify-end space-x-3">
                           <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                           <x-button type="submit">{{$this->modal_submit_message}}</x-button>

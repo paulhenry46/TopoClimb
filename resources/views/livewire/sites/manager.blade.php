@@ -19,7 +19,7 @@ new class extends Component {
     #[Validate('required|string')]
     public $name;
     #[Validate('required|string')]
-    public $adress;
+    public $address;
     #[Validate('string|nullable')]
     public $state;
     #[Validate('email|nullable')]
@@ -51,18 +51,18 @@ new class extends Component {
         $this->slug = Str::slug($this->name, '-');
         if($this->id_editing == 0){
           $this->site = Site::create(
-            $this->pull(['name', 'adress', 'slug'])
+            $this->pull(['name', 'address', 'slug'])
         );
         $this->site->state = $this->state;
         $this->site->coord = $this->coord;
         $this->site->description = $this->description;
-        $this->site->mail = $this->mail;
+        $this->site->email = $this->mail;
         $this->site->phone = $this->phone;
         $this->site->website = $this->website;
         $this->site->save();
         }else{
           $this->site->name = $this->name;
-          $this->site->adress = $this->adress;
+          $this->site->address = $this->address;
           $this->site->slug = $this->slug;
           $this->site->state = $this->state;
           $this->site->coord = $this->coord;
@@ -97,7 +97,7 @@ new class extends Component {
       $item = Site::find($id);
       $this->site = $item;
       $this->name = $item->name;
-      $this->adress = $item->adress;
+      $this->address = $item->address;
       $this->state = $item->state;
         $this->coord = $item->coord;
         $this->description = $item->description;
@@ -164,7 +164,7 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
             <thead>
               <tr>
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Name')}}</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Adress')}}</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('address')}}</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of areas')}}</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Edit</span>
@@ -173,7 +173,7 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
             </thead>
             <tbody class="bg-white"> @foreach ($this->sites as $site) <tr class="even:bg-gray-50">
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$site->name}}</td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->adress}}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->address}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->areas->count()}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button><x-icon-see/></button></a>
@@ -227,16 +227,16 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                     <x-label for="description" value="{{ __('Description') }}" />
                   <div class="sm:col-span-2">
-                    <textarea wire:model="description" id="description" name="description" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+                    <textarea wire:model="description" id="description" name="description" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
                     <x-input-error for="description" class="mt-2" />
                   </div>
                 </div>
                   <!-- Project description -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="adress" value="{{ __('Adress') }}" />
+                      <x-label for="address" value="{{ __('address') }}" />
                     <div class="sm:col-span-2">
-                      <textarea wire:model="adress" id="adress" name="adress" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
-                      <x-input-error for="adress" class="mt-2" />
+                      <textarea wire:model="address" id="address" name="address" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+                      <x-input-error for="address" class="mt-2" />
                     </div>
                   </div>
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
@@ -277,7 +277,7 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
               <div x-data="{banner_url: $wire.entangle('banner_url')}" class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                 <x-label for="banner" value="{{ __('Banner image') }}" />
                 <div class="sm:col-span-2">
-                <x-input wire:model="banner" type="file" name="banner" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+                <x-input wire:model="banner" type="file" name="banner" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
                 <x-input-error for="banner" class="mt-2" />
                 <img class="rounded-lg mt-2" x-bind:src="banner_url" />
               </div>
@@ -285,7 +285,7 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
             <div x-data="{picture_url: $wire.entangle('picture_url')}" class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
               <x-label for="name" value="{{ __('Picture') }}" />
               <div class="sm:col-span-2">
-              <x-input wire:model="picture" type="file" name="picture" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+              <x-input wire:model="picture" type="file" name="picture" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
               <x-input-error for="picture" class="mt-2" />
               <img class="rounded-lg mt-2" x-bind:src="picture_url" />
             </div>
@@ -294,7 +294,7 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
             
                 </div>
               </div>
-              <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+              <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                 <div class="flex justify-end space-x-3">
                   <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                   <x-button type="submit">{{$this->modal_submit_message}}</x-button>

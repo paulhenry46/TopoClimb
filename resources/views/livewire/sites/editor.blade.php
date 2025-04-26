@@ -4,22 +4,21 @@ use Livewire\Volt\Component;
 use App\Models\Site;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
-use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 new class extends Component {
-  use WithPagination, WithFileUploads;
+  use WithFileUploads;
 
     public Site $site;
 
     #[Validate('required|string')]
     public $name;
     #[Validate('required|string')]
-    public $adress;
+    public $address;
     #[Validate('string|nullable')]
     public $state;
     #[Validate('email|nullable')]
-    public $mail;
+    public $email;
     #[Validate('string|nullable')]
     public $coord;
     #[Validate('string|nullable')]
@@ -46,12 +45,12 @@ new class extends Component {
         $this->slug = Str::slug($this->name, '-');
 
           $this->site->name = $this->name;
-          $this->site->adress = $this->adress;
+          $this->site->address = $this->address;
           $this->site->slug = $this->slug;
           $this->site->state = $this->state;
           $this->site->coord = $this->coord;
           $this->site->description = $this->description;
-          $this->site->mail = $this->mail;
+          $this->site->email = $this->email;
           $this->site->phone = $this->phone;
           $this->site->website = $this->website;
           $this->site->save();
@@ -63,7 +62,7 @@ new class extends Component {
         }
 
         if($this->banner !== null){
-          $this->banner->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'banner');
+          dd($this->banner->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'banner'));
         $this->banner = null;
         }
         
@@ -81,9 +80,9 @@ new class extends Component {
       $this->site = $site;
 
       $this->name = $site->name;
-    $this->adress = $site->adress;
+    $this->address = $site->address;
     $this->state = $site->state;
-    $this->mail = $site->mail;
+    $this->email = $site->email;
     $this->coord = $site->coord;
     $this->phone = $site->phone;
     $this->website = $site->website;
@@ -123,15 +122,15 @@ new class extends Component {
 
         <!-- Address -->
         <div>
-            <x-label for="adress" value="{{ __('Address') }}" />
-            <textarea wire:model="adress" id="adress" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
-            <x-input-error for="adress" class="mt-2" />
+            <x-label for="address" value="{{ __('Address') }}" />
+            <textarea wire:model="address" id="address" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+            <x-input-error for="address" class="mt-2" />
         </div>
     
         <!-- Description -->
         <div>
             <x-label for="description" value="{{ __('Description') }}" />
-            <textarea wire:model="description" id="description" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+            <textarea wire:model="description" id="description" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
             <x-input-error for="description" class="mt-2" />
         </div>
     
@@ -151,9 +150,9 @@ new class extends Component {
     
         <!-- Email -->
         <div>
-            <x-label for="mail" value="{{ __('Email') }}" />
-            <x-input wire:model="mail" type="email" id="mail" class="block w-full mt-1" />
-            <x-input-error for="mail" class="mt-2" />
+            <x-label for="email" value="{{ __('Email') }}" />
+            <x-input wire:model="email" type="email" id="email" class="block w-full mt-1" />
+            <x-input-error for="email" class="mt-2" />
         </div>
     
         <!-- Phone -->
@@ -169,21 +168,21 @@ new class extends Component {
         <!-- Banner Image -->
         <div>
             <x-label for="banner" value="{{ __('Banner Image') }}" />
-            <x-input wire:model="banner" type="file" name="banner" id="project-name" class="mt-1 block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+            <x-input wire:model="banner" type="file" name="banner" id="project-name" class="mt-1 block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
             <x-input-error for="banner" class="mt-2" />
         </div>
     
         <!-- Picture -->
         <div>
             <x-label for="picture" value="{{ __('Picture') }}" />
-            <x-input wire:model="picture" type="file" name="picture" id="project-name" class="mt-1 block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+            <x-input wire:model="picture" type="file" name="picture" id="project-name" class="mt-1 block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
             <x-input-error for="picture" class="mt-2" />
         </div>
     </div>
     
     <!-- Submit Button -->
   </div>
-  <div class="flex items-center justify-end px-4 py-3 bg-gray-50 text-end sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md">
+  <div class="flex items-center justify-end px-4 py-3 bg-gray-50 text-end sm:px-6 shadow-sm sm:rounded-bl-md sm:rounded-br-md">
     <x-button wire:click="save" type="button">{{ __('Save') }}</x-button>
 </div>
 </div>

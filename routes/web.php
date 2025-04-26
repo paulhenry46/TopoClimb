@@ -53,19 +53,21 @@ Route::middleware([
                 Route::prefix('/topo')->group(function () {
                     Route::get('/map', function (Site $site, Area $area) {
                         return view('topo.wizard', compact('site', 'area'));
-                    })->name('areas.initialize');
+                    })->name('areas.topo.initialize');
+
                     Route::get('/result/routes', function (Site $site, Area $area) {
                         return view('topo.pdf.routes', compact('site', 'area'));
                     })->name('areas.topo.result.routes');
                     Route::get('/result/map', function (Site $site, Area $area) {
                         return view('topo.pdf.map', compact('site', 'area'));
                     })->name('areas.topo.result.map');
+                    
                     Route::get('/sectors', function (Site $site, Area $area) {
                         return view('areas.initialize.step-2', compact('site', 'area'));
-                    })->name('areas.initialize.sectors');
+                    })->name('areas.topo.initialize.sectors');
                     Route::get('/lines', function (Site $site, Area $area) {
                         return view('areas.initialize.step-3', compact('site', 'area'));
-                    })->name('areas.initialize.lines');
+                    })->name('areas.topo.initialize.lines');
                 });
                 Route::prefix('/routes')->group(function () {
                     Route::get('/new', function (Site $site, Area $area) {

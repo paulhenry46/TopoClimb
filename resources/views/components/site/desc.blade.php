@@ -5,7 +5,7 @@
     <div class=" w-full  border-gray-900 rounded-md border-2 mb-4">
       <div class="ml-4 mt-4 mb-4"> 
         @if(!empty($site->description))
-        {{ nl2br($site->description) }}
+        {!! nl2br($site->description) !!}
         @else
         {{ __('This site has not yet a description...') }}
         @endif

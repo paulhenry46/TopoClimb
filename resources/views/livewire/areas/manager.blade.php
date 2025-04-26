@@ -42,7 +42,7 @@ new class extends Component {
             $this->pull(['name', 'type', 'slug', 'site_id'])
         );
         if($this->picture !== null){
-          $this->picture->storeAs(path: 'pictures/site-'.$this->area->site->id.'/area-'.$area->id.'', name: 'picture');
+          $this->picture->storeAs(path: 'pictures/site-'.$area->site->id.'/area-'.$area->id.'', name: 'picture');
         $this->picture = null;
         }
         
@@ -53,7 +53,7 @@ new class extends Component {
           $this->area->save();
 
           if($this->picture !== null){
-        $this->picture->storeAs(path: 'pictures/site-'.$this->area->site->id.'/area-'.$this->area->id.'', name: 'picture');
+        $this->picture->storeAs(path: 'pictures/site-'.$area->site->id.'/area-'.$this->area->id.'', name: 'picture');
         $this->picture = null;
         }
 
@@ -118,7 +118,7 @@ new class extends Component {
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
         <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Areas of')}} {{$this->site->name}}</h1>
-        <p class="mt-2 text-sm text-gray-700">{{$this->site->adress}}</p>
+        <p class="mt-2 text-sm text-gray-700">{{$this->site->address}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <x-button wire:click="open_modal()" type="button">{{__('New area')}}</x-button>
@@ -218,19 +218,19 @@ new class extends Component {
                   </div>
                   <!-- Project description -->
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
-                      <x-label for="adress" value="{{ __('Area Type') }}" />
+                      <x-label for="address" value="{{ __('Area Type') }}" />
                     <div class="sm:col-span-2">
                       <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
                         <legend class="sr-only">{{__('Area Type')}}</legend>
                         <div class="-space-y-px bg-white">
-                          <label :class="type == 'trad' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
+                          <label :class="type == 'trad' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-hidden">
                             <input x-model="type" type="radio" name="area-type" value="trad" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'trad' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('Type Traditional')}}</span>
                               <span :class="type == 'trad' ? 'text-indigo-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
                             </span>
                           </label>
-                          <label :class="type == 'bouldering' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
+                          <label :class="type == 'bouldering' ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-hidden">
                             <input x-model="type" type="radio" name="area-type" value="bouldering" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-indigo-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-indigo-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'bouldering' ? 'text-indigo-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Type Bouldering')}}</span>
@@ -244,14 +244,14 @@ new class extends Component {
                   <div x-data="{picture_url: $wire.entangle('picture_url')}" class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                     <x-label for="name" value="{{ __('Picture') }}" />
                     <div class="sm:col-span-2">
-                    <x-input wire:model="picture" type="file" name="picture" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-none file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
+                    <x-input wire:model="picture" type="file" name="picture" id="project-name" class="block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
                     <x-input-error for="picture" class="mt-2" />
                     <img class="rounded-lg mt-2" x-bind:src="picture_url" />
                   </div>
                 </div>
                 </div>
               </div>
-              <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+              <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                 <div class="flex justify-end space-x-3">
                   <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                   <x-button type="submit">{{$this->modal_submit_message}}</x-button>

@@ -94,19 +94,19 @@ new class extends Component {
 }; ?>
 
 <div x-data="{ open: false }">
-  <button @click="open=true" type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-sm hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+  <button @click="open=true" type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
       <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
     </svg>
   </button>
   <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
       <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
           <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
-              <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 sm:mx-0 sm:h-10 sm:w-10">
+              <div class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 sm:mx-0 sm:h-10 sm:w-10">
                 <svg class="h-7 w-7"
                   viewBox="0 0 389 515"
                   id="svg2"
@@ -146,25 +146,25 @@ new class extends Component {
                 <div class="mt-2">
                   <div class="grid grid-cols-2">
                     <div>
-                      <x-label class="mb-2" for="adress" value="{{__('Ascent way')}}" />
+                      <x-label class="mb-2" for="address" value="{{__('Ascent way')}}" />
                       <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
                         <legend class="sr-only">{{__('Ascent way')}}</legend>
                         <div class="-space-y-px bg-white">
-                          <label :class="type == 'view' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
-                            <input x-model="type" type="radio" name="area-type" value="view" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
+                          <label :class="type == 'view' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-hidden">
+                            <input x-model="type" type="radio" name="area-type" value="view" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 active:border-0   focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'view' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('View')}}</span>
                               <span :class="type == 'view' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
                             </span>
                           </label>
-                          <label :class="type == 'flash' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="relative flex cursor-pointer border p-4 focus:outline-none">
+                          <label :class="type == 'flash' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="relative flex cursor-pointer border p-4 focus:outline-hidden">
                             <input x-model="type" type="radio" name="area-type" value="flash" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'flash' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Flash')}}</span>
                               <span :class="type == 'flash' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
                             </span>
                           </label>
-                          <label :class="type == 'work' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
+                          <label :class="type == 'work' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-hidden">
                             <input x-model="type" type="radio" name="area-type" value="work" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'work' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('After work')}}</span>
@@ -188,10 +188,10 @@ new class extends Component {
                       </div>
                       @endif
                       <div class="w-full">
-                        <x-label for="adress" value="{{ __('Comments') }}" />
+                        <x-label for="address" value="{{ __('Comments') }}" />
                         <div class="mt-2">
-                          <textarea wire:model="comment" id="adress" name="adress" rows="2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
-                          <x-input-error for="adress" class="mt-2" />
+                          <textarea wire:model="comment" id="address" name="address" rows="2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+                          <x-input-error for="address" class="mt-2" />
                         </div>
                       </div>
                       <div class="w-full">
@@ -210,10 +210,10 @@ new class extends Component {
                       </div>
                     </div>
                     <div class="w-full col-span-2 mt-3">
-                      <x-label for="adress" value="{{ __('Video URL') }}" />
+                      <x-label for="address" value="{{ __('Video URL') }}" />
                       <div class="mt-2">
-                        <x-input class="w-full" wire:model="adress" id="adress" name="adress"/>
-                        <x-input-error for="adress" class="mt-2" />
+                        <x-input class="w-full" wire:model="address" id="address" name="address"/>
+                        <x-input-error for="address" class="mt-2" />
                       </div>
                     </div>
                     <div></div>

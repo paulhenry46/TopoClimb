@@ -154,10 +154,10 @@ new class extends Component {
       $tags = [];
      foreach($tags_temp as $name => $key){
       array_push($tags, ['name' => $name, 'id' => $key]);
-
+     }
       $this->sectors = Sector::where('area_id', $this->area->id)->get();
       $this->sector = Sector::where('area_id', $this->area->id)->first()->id;
-     }
+     
 
      $this->tags_available = $tags;
     }
@@ -342,7 +342,7 @@ new class extends Component {
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="comment" value="{{ __('Comments') }}" />
                       <div class="sm:col-span-2">
-                        <textarea wire:model="comment" id="comment" name="comment" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
+                        <textarea wire:model="comment" id="comment" name="comment" rows="3" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
                         <x-input-error for="comment" class="mt-2" />
                       </div>
                     </div>
@@ -351,7 +351,7 @@ new class extends Component {
                       <x-label for="line" value="{{ __('Sector') }}" />
                       <div class="sm:col-span-2">
                         <select wire:model.live="sector" id="sector" name="sector" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($this->sectors as $line) <option value="{{$line->id}}">{{__('Sector ')}}{{$line->local_id}}</option> @endforeach </select>
-                        <x-input-error for="adress" class="mt-2" />
+                        <x-input-error for="address" class="mt-2" />
                       </div>
                     </div>
                     @endif
@@ -360,7 +360,7 @@ new class extends Component {
                       <x-label for="line" value="{{ __('Line') }}" />
                       <div class="sm:col-span-2">
                         <select wire:model.live="line" id="line" name="line" class="block w-full rounded-md border-0 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6"> @foreach ($this->lines_available as $line) <option value="{{$line->id}}">{{__('Line ')}}{{$line->local_id}}</option> @endforeach </select>
-                        <x-input-error for="adress" class="mt-2" />
+                        <x-input-error for="address" class="mt-2" />
                       </div>
                     </div>
                     @endif
@@ -375,58 +375,58 @@ new class extends Component {
                       <x-label for="color" value="{{ __('Color') }}" />
                       <div class="sm:col-span-2" x-data="{colorChosen : $wire.entangle('color')}">
                         <fieldset>
-                          <div class="mt-4 flex items-center space-x-3">
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-lime-300" x-on:click="colorChosen = 'lime'" :class="colorChosen == 'lime' ? 'ring-2' : ''">
+                          <div class="mt-4 flex items-center gap-2">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-lime-300" x-on:click="colorChosen = 'lime'" :class="colorChosen == 'lime' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
                               <span id="color-choice-4-label" class="sr-only bg-lime-50">Yellow</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-lime-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-lime-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-emerald-300" x-on:click="colorChosen = 'emerald'" :class="colorChosen == 'emerald' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-emerald-300" x-on:click="colorChosen = 'emerald'" :class="colorChosen == 'emerald' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
                               <span id="color-choice-4-label" class="sr-only bg-emerald-50">Yellow</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-emerald-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-emerald-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-yellow-300" x-on:click="colorChosen = 'yellow'" :class="colorChosen == 'yellow' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-yellow-300" x-on:click="colorChosen = 'yellow'" :class="colorChosen == 'yellow' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
                               <span id="color-choice-4-label" class="sr-only bg-yellow-50">Yellow</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-yellow-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-yellow-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-orange-300" x-on:click="colorChosen = 'orange'" :class="colorChosen == 'orange' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-orange-300" x-on:click="colorChosen = 'orange'" :class="colorChosen == 'orange' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
                               <span id="color-choice-4-label" class="sr-only bg-orange-50">Yellow</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-orange-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-orange-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-amber-300" x-on:click="colorChosen = 'amber'" :class="colorChosen == 'amber' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-amber-300" x-on:click="colorChosen = 'amber'" :class="colorChosen == 'amber' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Yellow" class="sr-only" aria-labelledby="color-choice-4-label">
                               <span id="color-choice-4-label" class="sr-only bg-amber-50">Yellow</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-amber-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-amber-300 rounded-full border border-black/10"></span>
                             </label>
                           </div>
-                          <div class="mt-4 flex items-center space-x-3">
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-red-300" x-on:click="colorChosen = 'red'" :class="colorChosen == 'red' ? 'ring-2' : ''">
+                          <div class="mt-4 flex items-center gap-2">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-red-300" x-on:click="colorChosen = 'red'" :class="colorChosen == 'red' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="pink" class="sr-only" aria-labelledby="color-choice-0-label">
                               <span id="color-choice-0-label" class="sr-only bg-red-50">Pink</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-red-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-red-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-pink-300" x-on:click="colorChosen = 'pink'" :class="colorChosen == 'pink' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-pink-300" x-on:click="colorChosen = 'pink'" :class="colorChosen == 'pink' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="pink" class="sr-only" aria-labelledby="color-choice-0-label">
                               <span id="color-choice-0-label" class="sr-only bg-pink-50">Pink</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-pink-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-pink-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-purple-300" x-on:click="colorChosen = 'purple'" :class="colorChosen == 'purple' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-purple-300" x-on:click="colorChosen = 'purple'" :class="colorChosen == 'purple' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Purple" class="sr-only" aria-labelledby="color-choice-1-label">
                               <span id="color-choice-1-label" class="sr-only bg-purple-50">Purple</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-purple-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-purple-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-blue-300" x-on:click="colorChosen = 'blue'" :class="colorChosen == 'blue' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-blue-300" x-on:click="colorChosen = 'blue'" :class="colorChosen == 'blue' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Blue" class="sr-only" aria-labelledby="color-choice-2-label">
                               <span id="color-choice-2-label" class="sr-only bg-blue-50">Blue</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-blue-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-blue-300 rounded-full border border-black/10"></span>
                             </label>
-                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-green-300" x-on:click="colorChosen = 'green'" :class="colorChosen == 'green' ? 'ring-2' : ''">
+                            <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-green-300" x-on:click="colorChosen = 'green'" :class="colorChosen == 'green' ? 'ring-2' : ''">
                               <input type="radio" name="color-choice" value="Green" class="sr-only" aria-labelledby="color-choice-3-label">
                               <span id="color-choice-3-label" class="sr-only bg-green-50">Green</span>
-                              <span aria-hidden="true" class="h-8 w-8 bg-green-300 rounded-full border border-black border-opacity-10"></span>
+                              <span aria-hidden="true" class="h-8 w-8 bg-green-300 rounded-full border border-black/10"></span>
                             </label>
                           </div>
                         </fieldset>
@@ -469,8 +469,8 @@ new class extends Component {
                                 </svg>
                               </span>
                             </template>
-                            <input placeholder="Add a tag" x-model="term" @click="showListe = true" id="combobox" type="text" class="mt-2 w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
-                            <ul x-show="showListe" class="absolute z-20 mt-1 max-h-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
+                            <input placeholder="Add a tag" x-model="term" @click="showListe = true" id="combobox" type="text" class="mt-2 w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" role="combobox" aria-controls="options" aria-expanded="false">
+                            <ul x-show="showListe" class="absolute z-20 mt-1 max-h-20 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden sm:text-sm" id="options" role="listbox">
                               <template x-for="tag in tags">
                                 <li x-show="!(term.length > 0 && !tag['name'].toLowerCase().includes(term.toLowerCase()))" :class="SelectedID.includes(tag['id']) ? 'font-semibold' : 'text-gray-900'" @click="toogle(tag['id'])" class="hover:bg-gray-100 relative cursor-default select-none py-2 pl-8 pr-4 text-gray-900" id="option-0" role="option" tabindex="-1">
                                   <span class="block truncate" x-text="tag['name']"></span>
@@ -492,7 +492,7 @@ new class extends Component {
                       <x-label for="opener_search" value="{{ __('Openers') }}" />
                       <div class=" sm:col-span-2">
                         <div class=" flex rounded-md">
-                          <div class="flex-auto relative flex flex-grow items-stretch focus-within:z-10">
+                          <div class="flex-auto relative flex grow items-stretch focus-within:z-10">
                             @forelse ( $this->opener_selected as $opener)
                             <span wire:click="remove_opener({{$opener['id']}})" class="group cursor-pointer flex-none mr-2 inline-flex items-center gap-x-1.5 rounded-md ring-1 ring-gray-300 px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200">
                               <img
@@ -525,7 +525,7 @@ new class extends Component {
                     </div>
                       <!-- Tags pour le style de voie, combobox pour les ouvreurs, dessin sur schema selon le secteur-->
                   </div>
-                  <div class="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                     <div class="flex justify-end space-x-3">
                       <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                       <x-button type="submit">{{$this->modal_submit_message}}</x-button>

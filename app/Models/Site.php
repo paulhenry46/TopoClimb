@@ -30,6 +30,6 @@ class Site extends Model
     protected $fillable = [
         'name',
         'slug',
-        'adress',
+        'address',
     ];
 }
