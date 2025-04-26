@@ -5,4 +5,5 @@ return [
     App\Providers\FortifyServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\VoltServiceProvider::class,
+    Spatie\Permission\PermissionServiceProvider::class
 ];
