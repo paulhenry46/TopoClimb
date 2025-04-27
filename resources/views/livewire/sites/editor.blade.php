@@ -102,8 +102,7 @@ new class extends Component {
         <p class="mt-2 text-sm text-gray-700">{{__('Édit contact and other other data of this website')}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <x-button wire:click="open_modal()" type="button">{{__('See site page')}}</x-button>
-        
+        <x-button wire:navigate href="{{ route('site.view', $this->site->slug) }}" >{{__('See site page')}} </x-button>
       </div>
     </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

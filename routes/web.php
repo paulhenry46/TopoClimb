@@ -13,7 +13,7 @@ Route::get('/', function () {
 });
 
 Route::middleware([
-    'auth:sanctum',
+    'auth:web',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
@@ -24,21 +24,17 @@ Route::middleware([
     Route::prefix('/admin/sites')->name('admin.')->group(function () {
         Route::get('/', function () {
             return view('sites.index');
-        })->name('sites.manage');
+        })->middleware('can:edit sites')->name('sites.manage');
         
         Route::prefix('/{site}')->group(function () {
             Route::get('/', function (Site $site) {
                 return view('areas.index', compact('site'));
-            })->name('areas.manage');
-    
-            Route::get('/view', function (Site $site) {
-                return view('areas.view', compact('site'));
-            })->name('area.view');
+            })->middleware('can:edit areas')->name('areas.manage');
             
             Route::prefix('/areas/{area}')->group(function () {
                 Route::get('/', function (Site $site, Area $area) {
                     return view('sectors.index', compact('site', 'area'));
-                })->name('sectors.manage');
+                })->middleware('can:edit areas')->name('sectors.manage');
                 Route::prefix('/initialize')->group(function () {
                     Route::get('/map', function (Site $site, Area $area) {
                         return view('areas.initialize.step-1', compact('site', 'area'));
@@ -49,7 +45,8 @@ Route::middleware([
                     Route::get('/lines', function (Site $site, Area $area) {
                         return view('areas.initialize.step-3', compact('site', 'area'));
                     })->name('areas.initialize.lines');
-                });
+                })->middleware('can:edit areas');
+
                 Route::prefix('/topo')->group(function () {
                     Route::get('/map', function (Site $site, Area $area) {
                         return view('topo.wizard', compact('site', 'area'));
@@ -68,7 +65,7 @@ Route::middleware([
                     Route::get('/lines', function (Site $site, Area $area) {
                         return view('areas.initialize.step-3', compact('site', 'area'));
                     })->name('areas.topo.initialize.lines');
-                });
+                })->middleware('can:edit topo');
                 Route::prefix('/routes')->group(function () {
                     Route::get('/new', function (Site $site, Area $area) {
                         return view('routes.edit-infos', compact('site', 'area'));
@@ -85,7 +82,7 @@ Route::middleware([
                     Route::get('/{route}/finish', function (Site $site, Area $area, ModelsRoute $route) {
                         return view('routes.finish-wizard', compact('site', 'area', 'route'));
                     })->name('routes.finish');
-                });
+                })->middleware('can:edit routes');
             });
         });
     });

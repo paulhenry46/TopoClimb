@@ -375,7 +375,7 @@ new class extends Component {
               <p class="mt-2 text-sm text-gray-700">{{__('Registered sectors and lines in this area')}}</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-              <x-button type="button">{{__('Edit')}}</x-button>
+              <x-button  disabled type="button">{{__('Edit')}}</x-button>
             </div>
           </div>
           <div class="mt-8 flow-root">

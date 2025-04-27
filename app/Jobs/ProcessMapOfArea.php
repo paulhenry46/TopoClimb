@@ -66,7 +66,7 @@ class ProcessMapOfArea implements ShouldQueue
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
         $item->setAttribute("x-on:mouseover", "selectSector($sector->id)");
-        $item->setAttribute(":class", "currentSector == $sector->id ? 'stroke-indigo-500' : ''");
+        $item->setAttribute(":class", "currentSector == $sector->id ? 'stroke-gray-500' : ''");
       }
 
       if($this->area->type == 'trad'){
@@ -74,7 +74,7 @@ class ProcessMapOfArea implements ShouldQueue
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='circle_$line->local_id']")->item(0);
         $item->setAttribute("x-on:mouseover", "selectLine($line->id)");
-        $item->setAttribute(":class", "currentLine == $line->id ? 'fill-indigo-500' : ''");
+        $item->setAttribute(":class", "currentLine == $line->id ? 'fill-gray-500' : ''");
       }
       }
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg', $dom->saveXML());
