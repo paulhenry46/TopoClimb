@@ -99,9 +99,7 @@ Route::prefix('/sites/{site:slug}')->group(function () {
         Route::get('/', function (Site $site, Area $area) {
             return view('areas.view', compact('site', 'area'));
         })->name('area.view');
-    
     });
-
 });
 
 Route::get('/empty/photo/{color}.svg', function (string $color) {
@@ -116,7 +114,8 @@ Route::get('/empty/photo/{color}.svg', function (string $color) {
         'black' => '#000000',
         'white' => '#ffffff',
         'emerald' => '#6ee7b7',
-        'orange' => '#fdba74'
+        'orange' => '#fdba74',
+        'amber' => '#fbbf24'
     ];
 
     $content = str_replace('color', $colors[$color], Storage::get('photos/blank.svg'));
