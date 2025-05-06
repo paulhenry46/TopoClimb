@@ -71,4 +71,20 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Route::class);
     }
+
+    public function hr(){
+        $roles_name = $this->getRoleNames()->toArray();
+            if(in_array('super-admin', $roles_name)){
+                return 0;
+            }elseif(preg_grep("/^owner/", $roles_name)){
+                return  1;
+            }elseif(preg_grep("/^admin/", $roles_name)){
+                return  2;
+            }elseif(preg_grep("/^opener/", $roles_name)){
+                return 3;
+            }else{
+                return null;
+            }
+    }
+
 }

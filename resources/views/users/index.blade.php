@@ -26,7 +26,7 @@
                       <svg class="h-5 w-5 shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
                       </svg>
-                      <a class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700" aria-current="page">{{__('Sites')}}</a>
+                      <a class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700" aria-current="page">{{__('Users')}}</a>
                     </div>
                   </li>
                 </ol>
@@ -42,7 +42,7 @@
               <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Export') }}</p>
             </div>
           <div class="bg-white mt-4 overflow-hidden  sm:rounded-lg">
-           export users as csv
+           <livewire:users.export/>
           </div>
           </div>
           </div>
