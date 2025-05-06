@@ -7,6 +7,9 @@ use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
 new class extends Component {
   use WithPagination, WithFileUploads;
 
@@ -49,8 +52,8 @@ new class extends Component {
     {
         $this->validate(); 
         $this->slug = Str::slug($this->name, '-');
-        if($this->id_editing == 0){
-          $this->site = Site::create(
+
+        $this->site = Site::create(
             $this->pull(['name', 'address', 'slug'])
         );
         $this->site->state = $this->state;
@@ -60,19 +63,7 @@ new class extends Component {
         $this->site->phone = $this->phone;
         $this->site->website = $this->website;
         $this->site->save();
-        }else{
-          $this->site->name = $this->name;
-          $this->site->address = $this->address;
-          $this->site->slug = $this->slug;
-          $this->site->state = $this->state;
-          $this->site->coord = $this->coord;
-          $this->site->description = $this->description;
-          $this->site->mail = $this->mail;
-          $this->site->phone = $this->phone;
-          $this->site->website = $this->website;
-          $this->site->save();
-          $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
-        }
+        
         if($this->picture !== null){
           $this->picture->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'profile');
         $this->picture = null;
@@ -84,6 +75,26 @@ new class extends Component {
         }
         
         $this->modal_open = false;
+        $this->dispatch('action_ok', title: 'Site saved', message: 'Your modifications has been registered !');
+
+        $id = $this->site->id;
+
+        $owner = Role::create(['name' => 'owner.'.$id.'']);
+        $admin = Role::create(['name' => 'admin.'.$id.'']);
+        $opener = Role::create(['name' => 'opener.'.$id.'']);
+
+        $p_1 = Permission::create(['name' => 'routes.'.$id.'']);
+
+        $p_2 = Permission::create(['name' => 'areas.'.$id.'']);
+        $p_3 = Permission::create(['name' => 'lines-sectors.'.$id.'']);
+        
+        $p_4 = Permission::create(['name' => 'site.'.$id.'']);
+        $p_5 = Permission::create(['name' => 'users.'.$id.'']); 
+
+        $owner->givePermissionTo([$p_1, $p_2, $p_3, $p_4, $p_5]);
+        $admin->givePermissionTo([$p_1, $p_2, $p_3]);
+        $opener->givePermissionTo($p_1);
+
         $this->render();
     }
 

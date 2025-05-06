@@ -104,7 +104,7 @@ new class extends Component {
       $this->lines = Line::whereIn('sector_id', $this->sectors->pluck('id'))->get();
       if(Storage::missing('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg')){
         ProcessMapOfArea::dispatchSync($this->area);
-        $this->ProcessMaps();
+       
       }
       $this->map = Storage::get('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/edited/admin.svg');
       foreach ($this->sectors as $sector) {
