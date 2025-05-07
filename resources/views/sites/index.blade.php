@@ -5,7 +5,6 @@
             {{ __('Administration Area') }}
         </h2>
     </x-slot>
-
     <div class="py-12  mx-auto " >
       <div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr]  ">
         <div class="col-start-3 row-start-3 " >
@@ -39,10 +38,21 @@
                <livewire:sites.manager/>
             </div>
             <div class="absolute">
-              <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Settings') }}</p>
+              <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Users') }}</p>
             </div>
           <div class="bg-white mt-4 overflow-hidden  sm:rounded-lg">
-             <livewire:sites.manager/>
+            <div class="px-4 sm:px-6 lg:px-8 py-8">
+              <div class="sm:flex sm:items-center">
+                  <div class="sm:flex-auto">
+                      <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Users')}}</h1>
+                      <p class="mt-2 text-sm text-gray-700">{{__('Manage resgistered users in all sites')}}</p>
+                  </div>
+                  <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                      <x-button href="{{ route('admin.users') }}" wire:navigate>{{ __('Manage users') }}</x-button>
+                  </div>
+              </div>
+              
+          </div>
           </div>
           </div>
           </div>

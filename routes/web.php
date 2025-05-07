@@ -24,15 +24,15 @@ Route::middleware([
     Route::prefix('/admin/users')->group(function () {
         Route::get('/', function (Site $site) {
             return view('users.index');
-        })->middleware('can:users')->name('areas.manage');
+        })->middleware('can:users, site')->name('admin.users');
     });
 
-    Route::prefix('/admin/sites')->name('admin.')->group(function () {
+    Route::prefix('/admin')->name('admin.')->group(function () {
         Route::get('/', function () {
             return view('sites.index');
         })->middleware('can:sites')->name('sites.manage');
         
-        Route::prefix('/{site}')->group(function () {
+        Route::prefix('/site/{site}')->group(function () {
             Route::get('/', function (Site $site) {
                 return view('areas.index', compact('site'));
             })->middleware('can:edit_areas,site')->name('areas.manage');

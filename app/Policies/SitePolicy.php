@@ -44,4 +44,8 @@ class SitePolicy
         return $user->can('site.'.$site->id.'');
     }
 
+    public function users(User $user){
+        return $user->hr() == 'owner';
+    }
+
 }
