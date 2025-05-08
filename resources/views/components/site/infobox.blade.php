@@ -41,4 +41,13 @@
         <dd class="text-sm leading-6 text-gray-500">{{ $site->coord }}</dd>
       </div>
       @endif
+      @auth
+      <div class="mt-3 inset-x-0 bottom-0 bg-gray-50 px-4 py-4 sm:px-6">
+        <div class="text-sm">
+          
+      <livewire:sites.favorited :site='$site' />
+        </div>
+      </div>
+      @endauth
+
 </div>

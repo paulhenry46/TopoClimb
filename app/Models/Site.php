@@ -32,4 +32,10 @@ class Site extends Model
         'slug',
         'address',
     ];
+
+    public function favoritedByUsers(){
+
+        return $this->belongsToMany(User::class);
+
+    }
 }

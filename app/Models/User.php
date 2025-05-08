@@ -87,4 +87,10 @@ class User extends Authenticatable
             }
     }
 
+    public function favoriteSites(){
+
+        return $this->belongsToMany(Site::class);
+
+    }
+
 }
