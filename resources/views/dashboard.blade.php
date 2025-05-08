@@ -12,15 +12,20 @@
 
             <div class="bg-white overflow-hidden  sm:rounded-lg col-span-2 min-h-32">
                 <div class='px-4 py-4'>
-                <h2 class="ml-4 mt-3 text-xl font-semibold text-gray-900">
+                <h2 class="ml-4 text-xl font-semibold text-gray-900">
                    {{ __('Profile') }}
                 </h2>
                 <livewire:dashboard.profile/>
             </div>
             </div>
-            <div class="bg-white overflow-hidden  sm:rounded-lg col-span-4">
-                <div class='px-4 py-4'>
-                    stats
+            <div class="col-span-4">
+                <div class='h-full'>
+                    <div class="bg-white overflow-hidden  sm:rounded-lg col-span-2">
+                        <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
+                            {{ __('Stats') }}
+                         </h2>
+                    </div>
+                    <livewire:dashboard.stats class='h-full'/>
                 </div>
                </div>
                <div class="bg-white overflow-hidden  sm:rounded-lg col-span-3 min-h-32">
@@ -28,11 +33,16 @@
                     <h2 class="ml-4 mt-3 text-xl font-semibold text-gray-900">
                        {{ __('Graph') }}
                     </h2>
-                    <livewire:dashboard.stats/>
+                    <livewire:dashboard.graph/>
                 </div>
                </div>
                <div class="bg-white overflow-hidden  sm:rounded-lg col-span-3">
-                Routes
+                <div class='px-4 py-4'>
+                    <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
+                       {{ __('Routes') }}
+                    </h2>
+                    <livewire:dashboard.routes/>
+                </div>
                </div>
         </div>
 
