@@ -45,7 +45,7 @@ class SitePolicy
     }
 
     public function users(User $user){
-        return $user->hr() == 'owner';
+        return $user->hr() == 1;
     }
 
 }

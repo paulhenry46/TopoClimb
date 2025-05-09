@@ -2,11 +2,13 @@
 
 use Livewire\Volt\Component;
 use App\Models\Site;
+use App\Models\User;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -14,6 +16,13 @@ new class extends Component {
   use WithPagination, WithFileUploads;
 
     public Site $site;
+    public User $user;
+    #[Locked] 
+    public $is_super_admin;
+    #[Locked] 
+    public $authorized_sites = [];
+    #[Locked]
+    public $viewable_sites;
     public $modal_open;
     public $modal_title;
     public $modal_subtitle;
@@ -101,7 +110,11 @@ new class extends Component {
     #[Computed]
     public function sites()
     {
-        return Site::paginate(10);
+        if($this->is_super_admin){
+          return Site::paginate(10);
+        }else{
+          return Site::whereIn('id', $this->viewable_sites)(10);
+        }
     }
 
     public function open_item($id){
@@ -122,13 +135,13 @@ new class extends Component {
       $this->modal_open = true;
 
       if(Storage::exists('pictures/site-'.$this->site->id.'/profile')){
-$this->picture_url = Storage::url('pictures/site-'.$this->site->id.'/profile');
+        $this->picture_url = Storage::url('pictures/site-'.$this->site->id.'/profile');
       }else{
         $this->picture_url = null;
       }
 
       if(Storage::exists('pictures/site-'.$this->site->id.'/banner')){
-$this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
+        $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
       }else{
         $this->banner_url = null;
       }
@@ -142,6 +155,29 @@ $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
     }
 
     public function mount(){
+
+      
+      $this->user = auth()->user();
+      $this->is_super_admin = $this->user->hasRole('super-admin');
+
+      $roles = $this->user->getRoleNames();
+      //$roles = ['owner.1', 'opener.1'];
+
+      foreach ($roles as $role) {
+        if($role !== 'super-admin'){
+          list($type, $site_id) = explode('.', $role);
+
+          if($type == 'owner'){
+            $editable = true;
+          }else{
+            $editable = false;
+          }
+          $this->authorized_sites[$site_id] = $editable;
+        }
+      }
+      $this->viewable_sites = array_keys($this->authorized_sites); //Inutie car c'est pas ici qu'on modifie le site
+
+
       $this->modal_subtitle = __('Get started by filling in the information below to create a new site.');
       $this->modal_title = __('New site');
       $this->modal_submit_message = __('Create');

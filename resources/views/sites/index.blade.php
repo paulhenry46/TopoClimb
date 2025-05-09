@@ -37,9 +37,12 @@
             <div class="bg-white overflow-hidden  sm:rounded-lg">
                <livewire:sites.manager/>
             </div>
+
+            @if(auth()->user()->hr() <= 1)
             <div class="absolute">
               <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Users') }}</p>
             </div>
+
           <div class="bg-white mt-4 overflow-hidden  sm:rounded-lg">
             <div class="px-4 sm:px-6 lg:px-8 py-8">
               <div class="sm:flex sm:items-center">
@@ -54,6 +57,7 @@
               
           </div>
           </div>
+          @endif
           </div>
           </div>
           <div class="relative -right-px col-start-2 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
