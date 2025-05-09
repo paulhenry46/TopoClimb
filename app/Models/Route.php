@@ -79,6 +79,10 @@ class Route extends Model
         }
     }
 
+    public function qrcode(){
+            return Storage::url('qrcode/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg');
+    }
+
     public function logs()
     {
         return $this->hasMany(Log::class);

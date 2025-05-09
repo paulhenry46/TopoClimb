@@ -12,6 +12,7 @@ use Livewire\Attributes\Validate;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
+use App\Jobs\GenerateQRCodeOfRoute;
 use Carbon\Carbon;
 new class extends Component {
   use WithFileUploads;
@@ -96,7 +97,7 @@ new class extends Component {
       $route->users()->attach($temp_openers_id);
       
       session(['route_creating' => $route->id]);
-
+      GenerateQRCodeOfRoute::dispatchSync($route, $this->area, $this->site);
       $this->redirectRoute('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id], navigate: true);
      }
     public function with(){
