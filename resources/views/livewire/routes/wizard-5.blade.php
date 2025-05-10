@@ -25,6 +25,9 @@ new class extends Component {
     public array $transform;
 
     public function mount(Site $site, Area $area, ModelRoute $route){
+      if (!$route->users()->where('user_id', auth()->id())->exists() && !auth()->user()->can('lines-sectors' . $site->id)) {
+        abort(403, 'You are not authorized to access this route.');
+    }
       $this->site = $site;
       $this->area = $area;
       $this->route = $route;

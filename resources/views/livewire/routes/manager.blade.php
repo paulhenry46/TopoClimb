@@ -69,7 +69,7 @@ new class extends Component {
 
     public function saveRoute()
     {
-      if($all_routes or $this->route->users()->where('id', auth()->id())->exists()){
+      if($all_routes or $this->route->users()->where('user_id', auth()->id())->exists()){
         $this->validate(); 
       $this->route->slug = Str::slug($this->name, '-');
       $this->route->name = $this->name;
