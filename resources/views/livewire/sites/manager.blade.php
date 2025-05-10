@@ -22,7 +22,7 @@ new class extends Component {
     #[Locked] 
     public $authorized_sites = [];
     #[Locked]
-    public $viewable_sites;
+    public $viewable_sites =[];
     public $modal_open;
     public $modal_title;
     public $modal_subtitle;
@@ -167,16 +167,9 @@ new class extends Component {
         if($role !== 'super-admin'){
           list($type, $site_id) = explode('.', $role);
 
-          if($type == 'owner'){
-            $editable = true;
-          }else{
-            $editable = false;
-          }
-          $this->authorized_sites[$site_id] = $editable;
+          array_push($this->viewable_sites, $site_id);
         }
       }
-      $this->viewable_sites = array_keys($this->authorized_sites); //Inutie car c'est pas ici qu'on modifie le site
-
 
       $this->modal_subtitle = __('Get started by filling in the information below to create a new site.');
       $this->modal_title = __('New site');

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use App\Jobs\ProcessMapOfArea;
 use Illuminate\Support\Facades\Process;
 new class extends Component {
@@ -24,6 +25,8 @@ new class extends Component {
     public $modal_subtitle;
     public $modal_submit_message;
     public $map;
+    #[Locked]
+    public $editable;
 
     #[Validate('required')]
     public $name;
@@ -41,6 +44,7 @@ new class extends Component {
 
     public function save()
     {
+      if($this->editable){ 
         $this->validateOnly('name'); 
         $this->sector->name = $this->name;
         $this->sector->slug = Str::slug($this->name, '-');
@@ -49,11 +53,14 @@ new class extends Component {
         
         $this->modal_open = false;
         $this->render();
+      }
+
     }
 
     public function saveSchema()
     {
-      $this->validateOnly('schemas'); 
+      if($this->editable){
+        $this->validateOnly('schemas'); 
         //dd($this->schemas);
         foreach ($this->schemas as $key => $value) {
           
@@ -66,6 +73,7 @@ new class extends Component {
       $name = 'schema';
       $file->storeAs(path: 'plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$id.'', name: $name);
       $this->schemas[$id] = null;
+      }
     }
 
     #[Computed]
@@ -93,6 +101,12 @@ new class extends Component {
     }
 
     public function mount(Area $area){
+
+      if(auth()->user()->can('lines-sectors.'.$area->site->id) or auth()->user()->hr() == 0){
+        $this->editable == true;
+      }else{
+        $this->editable == false;
+      }
       
       $this->area = $area;
       if($this->area->sectors->count() == 0){
@@ -202,20 +216,24 @@ new class extends Component {
                       <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Local ID')}}</th>
                       <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Name')}}</th>
                       <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Number of lines')}}</th>
+                      @if($this->editable)
                       <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                         <span class="sr-only">Edit</span>
                       </th>
+                      @endif
                     </tr>
                   </thead>
                   <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-gray-100' : ''">
                       <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->name}}</td>
                       <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->lines->count()}}</td>
+                      @if($this->editable)
                       <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <button wire:click="open_item({{$sector->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
                           <x-icon-edit />
                         </button>
                       </td>
+                      @endif
                     </tr> @endforeach </tbody>
                 </table>
               </div>
@@ -336,10 +354,12 @@ new class extends Component {
                 <div x-show="expanded" x-collapse>
               <img class="rounded-lg" src="{{Storage::url('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')}}">
               <div class="mt-4 flex items-center justify-end gap-x-6">
+                @if($this->editable)
               <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
                 <span>{{__('Edit')}}</span>
                 <input wire:model="schemas.{{$sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
               </label>
+              @endif
             </div>
             </div>
             </div>
@@ -352,10 +372,12 @@ new class extends Component {
                   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{__('No schema')}}</h3>
                   <p class="mt-1 text-sm text-gray-500">{{('Schemas allow to draw the route over a schema of the sector')}}</p>
                   <div class="mt-6">
+                    @if($this->editable)
                     <label for="file-upload" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
                       <span>{{__('Add Schema')}}</span>
                       <input wire:model="schemas.{{$sector->id}}" id="file-upload" name="file-upload" type="file" class="sr-only">
                     </label>
+                    @endif
                   </div>
               </div>
               @endif
@@ -483,7 +505,7 @@ new class extends Component {
   <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8">
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
   </div>
-
+@can('site.'.$this->area->site->id)
 <div class="absolute">
   <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Topo') }}</p>
   
@@ -491,7 +513,7 @@ new class extends Component {
 <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8 h-20">
   {{ __('Topo') }}
 </div>
-
+@endcan
 </div>
 <div class="relative -right-px col-start-2 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
   <div class="relative -left-px col-start-4 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>

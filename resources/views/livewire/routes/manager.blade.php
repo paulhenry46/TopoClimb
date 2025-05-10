@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Models\Sector;
 use App\Models\User;
 use Livewire\Attributes\Validate; 
+use Livewire\Attributes\Locked; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\Attributes\Computed;
@@ -18,6 +19,8 @@ new class extends Component {
     public Site $site;
     public Area $area;
     public Route $route;
+    #[Locked]
+    public $all_routes;
     public $lines;
     public $lines_available;
 
@@ -66,7 +69,8 @@ new class extends Component {
 
     public function saveRoute()
     {
-      $this->validate(); 
+      if($all_routes or $this->route->users()->where('id', auth()->id())->exists()){
+        $this->validate(); 
       $this->route->slug = Str::slug($this->name, '-');
       $this->route->name = $this->name;
       $this->route->comment = $this->comment;
@@ -87,12 +91,18 @@ new class extends Component {
         
         $this->modal_open = false;
         $this->render();
+      }
+      
     }
 
     #[Computed]
     public function routes()
     {
+      if($this->all_routes){
         return Route::whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
+      }else{
+        return auth()->user()->routes()->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
+      }
     }
 
     public function open_item($id){
@@ -138,6 +148,13 @@ new class extends Component {
     }
 
     public function mount($lines, Site $site, Area $area){
+
+      if(auth()->user()->can('lines-sectors.'.$area->site->id)){
+        $this->all_routes == true;
+      }else{
+        $this->all_routes == false;
+      }
+
       $this->modal_title = __('Editing route ').$this->name;
       $this->modal_subtitle = __('Check the informations about this route.');
       $this->modal_submit_message = __('Edit');
