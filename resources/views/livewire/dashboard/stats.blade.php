@@ -14,6 +14,8 @@ new class extends Component {
       
       $this->user  = auth()->user();
       $logs = Log::where('user_id', $this->user->id)->with('route.line.sector.area');
+      
+      $this->total = count(array_unique($logs->get()->pluck('route_id')->toArray()));
 
     $bouldering_logs = $logs->whereHas('route.line.sector.area', function ($query) {
         $query->where('type', 'bouldering');
@@ -52,7 +54,6 @@ new class extends Component {
         $this->level_t = '3a';
     }
 
-      $this->total = count(array_unique($logs->get()->pluck('route_id')->toArray()));
 
     }
 }; ?>

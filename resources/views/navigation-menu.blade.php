@@ -12,15 +12,24 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+                    <x-nav-link wire:navigate href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+                @auth
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('admin.sites.manage') }}" :active="request()->routeIs('admin.*')">
+                    <x-nav-link wire:navigate href="{{ route('admin.sites.manage') }}" :active="request()->routeIs('admin.*')">
                         {{ __('Administration') }}
                     </x-nav-link>
                 </div>
+                @foreach (auth()->user()->favoriteSites as $site)
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link wire:navigate href="{{ route('site.view', $site->slug) }}" :active="(request()->routeIs('site.*')) && request()->route('site')->slug == $site->slug">
+                        {{ $site->name }}
+                    </x-nav-link>
+                </div>
+                @endforeach
+                @endauth
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">

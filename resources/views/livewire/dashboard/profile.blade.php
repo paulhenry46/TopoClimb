@@ -6,6 +6,7 @@ new class extends Component {
 
     public User $user;
     public string $color;
+    public $favorite_site_names;
 
     public function mount(){
       
@@ -23,6 +24,8 @@ new class extends Component {
       }else{
         $this->color = 'gray';
       }
+
+      $this->favorite_site_names = $this->user->favoriteSites()->pluck('name');
     }
 }; ?>
 
@@ -52,7 +55,10 @@ new class extends Component {
         <div class="flex items-center justify-center mt-1 mb-3">
             <div class="flex items-center">
                         <p >
-                        {{ $this->user->created_at->format('d/m/Y') }} - Salle favorite
+                        {{ $this->user->created_at->format('d/m/Y') }} -
+                        @foreach ($this->favorite_site_names as $name)
+                          {{ $name }}
+                        @endforeach
                     </p>
                                                                     
                 </div>

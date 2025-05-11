@@ -61,6 +61,17 @@ new class extends Component {
     }
 
     public function save(){
+
+      $existingLog = Log::where('user_id', $this->user->id)
+        ->where('route_id', $this->route->id)
+        ->where('way', $this->way)
+        ->exists();
+
+    if ($existingLog) {
+        $this->dispatch('action_error', title: 'Duplicate Log', message: 'You have already logged this route.');
+        return;
+    }
+
         $this->validate();
         $log = new Log;
         $log->user_id = $this->user->id;
@@ -93,7 +104,7 @@ new class extends Component {
     }
 }; ?>
 
-<div x-data="{ open: false }">
+<div x-data="{ open: false, save(){$wire.save(); this.open = false;} }">
   <button @click="open=true" type="button" class="rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
       <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
@@ -180,8 +191,8 @@ new class extends Component {
                         <x-label for="name" value="{{ __('Type') }}" />
                         <div class="mt-2">
                           <select wire:model="way" id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
-                            <option value="moul">{{__('Moulinette')}}</option>
-                            <option value="tete">{{ __('En tete') }}</option>
+                            <option value="top-rope">{{__('Moulinette')}}</option>
+                            <option value="lead">{{ __('En tete') }}</option>
                           </select>
                           <x-input-error for="name" class="mt-2" />
                         </div>
@@ -224,7 +235,7 @@ new class extends Component {
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 sm:gap-x-1">
             <x-secondary-button x-on:click="open = false" type="button">{{__('Cancel')}}</x-secondary-button>
-            <x-button @click="$wire.save()">{{__('Save')}}</x-button>
+            <x-button @click="save()">{{__('Save')}}</x-button>
           </div>
         </div>
       </div>

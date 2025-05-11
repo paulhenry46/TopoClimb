@@ -3,6 +3,8 @@
 use Livewire\Volt\Component;
 use App\Models\User;
 use App\Models\Log;
+use Illuminate\Database\Eloquent\Collection;
+
 new class extends Component {
 
     public User $user;
@@ -24,7 +26,7 @@ new class extends Component {
 
     // Group logs by route grade and count them
     $routesByGrade = $logs->groupBy(function ($log) {
-        return $log->route->grade; // Assuming `grade` is a column in the `routes` table
+        return $log->route->gradeFormated(); // Assuming `grade` is a column in the `routes` table
     })->map(function (Collection $group) {
         return $group->count();
     });

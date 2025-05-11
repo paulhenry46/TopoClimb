@@ -11,7 +11,7 @@ new class extends Component {
     public function mount(){
       
       $this->user  = auth()->user();
-      $this->logs = Log::where('user_id', $this->user->id)->with('route')->orderBy('created_at')->take(5)->get();
+      $this->logs = Log::where('user_id', $this->user->id)->with('route')->orderBy('created_at')->take(3)->get();
 
    
 
@@ -32,7 +32,7 @@ new class extends Component {
             <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
               <div class="flex items-center">
                 <div>
-                  <div class="font-bold pb-1">{{$log->route->name}}</div> @if($log->route->line->local_id == 0) <div class="text-sm opacity-50">{{__('Sector')}} {{$log->route->line->sector->local_id}}</div> @else <div class="text-sm opacity-50">{{__('Line')}} {{$log->route->line->local_id}}</div> @endif
+                  <div class="font-bold pb-1">{{$log->route->name}}</div>   <div class="text-sm opacity-50">{{$log->created_at->format('d/m/y')}}</div>
                 </div>
               </div>
             </td>
