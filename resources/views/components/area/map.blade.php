@@ -67,7 +67,7 @@
             <div  x-show="expanded" x-collapse.duration.1000ms class=" rounded-xl object-contain pt-4"> 
               @if(count($this->schema_data['sectors']) <= 1) <div class="relative w-full h-full min-h-96">
                 <div class="w-full h-96 z-0 flex items-center justify-center">
-                  <img class="h-96" src="{{ $this->schema_data['data'][0]['bg'] }}" />
+                  <img class="object-contain h-96" src="{{ $this->schema_data['data'][0]['bg'] }}" />
                 </div>
                 <div class="absolute inset-0 flex justify-center items-center z-10"> {!! $this->schema_data['data'][0]['paths'] !!} </div>
             </div> 
@@ -75,7 +75,7 @@
             <div > 
               @foreach ($this->schema_data['data'] as $data) <div class="relative w-full h-full min-h-96" x-show="sector_selected == {{$data['id']}}" style='display : none;'>
                 <div class="w-full h-96 z-0 flex items-center justify-center">
-                  <img class="h-96" src="{{ $data['bg'] }}" />
+                  <img class="object-contain h-96" src="{{ $data['bg'] }}" />
                 </div>
                 <div class="absolute inset-0 flex justify-center items-center z-10"> {!! $data['paths'] !!} </div>
               </div> 

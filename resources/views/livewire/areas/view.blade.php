@@ -160,12 +160,12 @@ new class extends Component {
     <x-area.card-route :logs=$logs key='card-md' :key_button="'button-md'"/>
   </div>
 
-<div x-data="{ open: false }" @open_modal.window="open=true" class="relative md:hidden">
+<div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden">
   <!-- Drawer Toggle Button -->
 
   <!-- Drawer -->
-  <div 
-      x-show="$wire.mobile_first_open" 
+  <div style='display: none;'
+      x-show="open" 
       x-transition:enter="transition ease-out duration-300" 
       x-transition:enter-start="translate-y-full" 
       x-transition:enter-end="translate-y-0" 

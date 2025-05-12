@@ -5,8 +5,8 @@
               background-image: url('{{$this->route->circle()}}'); filter: opacity(99.9%);"></div>
   <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
     <div class="px-4 sm:px-6 lg:px-8 py-8">
-      <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
+      <div class="flex items-center">
+        <div class="flex-auto">
           <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{$this->route->name}}</h1>
           <p class="mt-1 text-sm text-gray-700">
             @if($this->area->type == 'bouldering')

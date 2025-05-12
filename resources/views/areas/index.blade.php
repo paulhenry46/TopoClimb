@@ -6,8 +6,7 @@
         </h2>
     </x-slot>
     <div class="py-12  mx-auto " >
-      <div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr]  ">
-        <div class="col-start-3 row-start-3 " >
+      <x-grid-pattern-layout>
             <nav class="flex ml-4 my-4" aria-label="Breadcrumb">
                 <ol role="list" class="flex items-center space-x-4">
                   <li>
@@ -38,32 +37,20 @@
                   </li>
                 </ol>
             </nav>
-            <div class="relative">
-
               @can('can:site.'.$site->id)
-              <div class="absolute">
-                <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Stats') }}</p>
-                
-                </div>
-                <div class=" bg-white overflow-hidden  sm:rounded-lg mb-4">
-              
-                  <livewire:sites.editor :$site/>
-               </div>
+              <x-grid-pattern-title >
+                {{ __('Editor') }}
+              </x-grid-pattern-title>
+              <x-grid-pattern-item >
+                <livewire:sites.editor :$site/>
+              </x-grid-pattern-item>
                @endcan
-
-               <div class="absolute">
-                <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Areas') }}</p>
-                
-                </div>
-            <div class=" bg-white overflow-hidden  sm:rounded-lg">
-               <livewire:areas.manager :$site/>
-            </div>
-          </div>
-        </div>
-        <div class="relative -right-px col-start-2 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
-  <div class="relative -left-px col-start-4 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
-  <div class="relative -bottom-px col-span-full col-start-1 row-start-2 h-px bg-gray-200"></div>
-  <div class="relative -top-px col-span-full col-start-1 row-start-4 h-px bg-gray-200"></div>
-    </div>
+               <x-grid-pattern-title >
+                {{ __('Areas') }}
+              </x-grid-pattern-title>
+              <x-grid-pattern-item >
+                <livewire:areas.manager :$site/>
+              </x-grid-pattern-item>
+      </x-grid-pattern-layout>
   </div>
 </x-app-layout>
