@@ -135,9 +135,9 @@ new class extends Component {
       $this->modal_open = true;
     }
 }; ?>
+
 <div class="py-12  mx-auto " >
-<div class="relative grid  grid-cols-[1fr_2.5rem_80rem_2.5rem_1fr] grid-rows-[1fr_1px_auto_1px_1fr]  ">
-<div class="col-start-3 row-start-3 " >
+  <x-grid-pattern-layout>
   <nav class="flex ml-4 my-4" aria-label="Breadcrumb">
     <ol role="list" class="flex items-center space-x-4">
       <li>
@@ -177,11 +177,11 @@ new class extends Component {
     </ol>
   </nav>
   @if($this->area->type == 'bouldering')
+  <x-grid-pattern-title >
+    {{ __('Sectors') }}
+  </x-grid-pattern-title >
   <div class="relative grid grid-cols-1 items-start gap-4 lg:grid-cols-2" x-data="{currentSector: 0, selectSector(id){ this.currentSector = id; }}">
-    <div class="absolute">
-      <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Sectors') }}</p>
-      
-      </div>
+    
     <div class="">
       <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
@@ -300,18 +300,20 @@ new class extends Component {
       </div>
     </div>
   </div>
-@else
-  <div class="relative grid grid-cols-1 items-start lg:grid-cols-2" 
+  @else
+  <x-grid-pattern-title >
+    {{ __('Lines') }}
+  </x-grid-pattern-title >
+
+  <div class="relative grid grid-cols-1 items-start lg:grid-cols-2 mb-4" 
   x-data="{
   currentSector: 0, 
   currentLine: 0, 
   selectSector(id){ this.currentSector = id; this.currentLine = 0;},
   selectLine(id){ this.currentLine = id; this.currentSector = 0; }
   }">
-  <div class="absolute">
-  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-12 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Lines') }}</p>
   
-  </div>
+
   <div class=" ">
       <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
@@ -498,25 +500,21 @@ new class extends Component {
     </div>
   </div>
   @endif
-  <div class="absolute">
-    <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Routes') }}</p>
-    
-    </div>
-  <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8">
+  <x-grid-pattern-title >
+  {{ __('Routes') }}
+  </x-grid-pattern-title >
+
+  <x-grid-pattern-item >
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
-  </div>
+  </x-grid-pattern-item >
 @can('site.'.$this->area->site->id)
-<div class="absolute">
-  <p class="font-semibold text-right origin-bottom-right -ml-96 pb-10 -mt-8 -rotate-90 text-gray-600 font-mono text-[0.8125rem]/6 font-medium tracking-widest text-pretty uppercase ">{{ __('Topo') }}</p>
-  
-  </div>
-<div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8 h-20">
+<x-grid-pattern-title >
   {{ __('Topo') }}
-</div>
+</x-grid-pattern-title >
+
+  <x-grid-pattern-item class='mt-2'>
+  {{ __('Topo') }}
+  </x-grid-pattern-item >
 @endcan
-</div>
-<div class="relative -right-px col-start-2 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
-  <div class="relative -left-px col-start-4 row-span-full row-start-1 border-x border-x-(--pattern-fg) bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed"></div>
-  <div class="relative -bottom-px col-span-full col-start-1 row-start-2 h-px bg-gray-200"></div>
-  <div class="relative -top-px col-span-full col-start-1 row-start-4 h-px bg-gray-200"></div>
+</x-grid-pattern-layout>
 </div>
