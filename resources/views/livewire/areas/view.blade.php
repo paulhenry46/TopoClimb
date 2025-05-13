@@ -141,7 +141,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="grid grid-cols-3 mt-8 gap-4 pt-2">
+<div class="grid grid-cols-3 md:mt-8 gap-4 md:pt-2">
   <div class="col-span-3 md:col-span-2 flex flex-col" 
     @if($this->area->type == 'bouldering') 
       x-data="{ hightlightedSector: 0, selectedSector: 0, selectSector(id){ this.selectedSector = id; $wire.selectSector(id); }, hightlightSector(id){ this.hightlightedSector = id; }, }" 
