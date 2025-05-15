@@ -54,24 +54,58 @@ Route::middleware([
                 })->middleware('can:edit_areas,site');
 
                 Route::prefix('/topo')->group(function () {
-                    Route::get('/map', function (Site $site, Area $area) {
-                        return view('topo.wizard', compact('site', 'area'));
-                    })->name('areas.topo.initialize');
+    
+                    Route::prefix('/map')->name('areas.topo.initialize.')->group(function () {
+                        Route::get('/sectors', function (Site $site, Area $area) {
+                            $type = 'sectors';
+                            return view('topo.wizard', compact('site', 'area', 'type'));
+                        })->name('sectors');
+                        Route::get('/lines', function (Site $site, Area $area) {
+                            $type = 'lines';
+                            return view('topo.wizard', compact('site', 'area', 'type'));
+                        })->name('lines');
+                        Route::get('/schema', function (Site $site, Area $area) {
+                            $type = 'schema';
+                            return view('topo.wizard', compact('site', 'area', 'type'));
+                        })->name('schema');
+                    });
 
-                    Route::get('/result/routes', function (Site $site, Area $area) {
-                        return view('topo.pdf.routes', compact('site', 'area'));
-                    })->name('areas.topo.result.routes');
-                    Route::get('/result/map', function (Site $site, Area $area) {
-                        return view('topo.pdf.map', compact('site', 'area'));
-                    })->name('areas.topo.result.map');
+                    Route::prefix('/result/map')->name('areas.topo.result.map.')->group(function () {
+                        Route::get('/sectors', function (Site $site, Area $area) {
+                            $type = 'sectors';
+                            return view('topo.pdf.map', compact('site', 'area', 'type'));
+                        })->name('sectors');
+                        Route::get('/lines', function (Site $site, Area $area) {
+                            $type = 'lines';
+                            return view('topo.pdf.map', compact('site', 'area', 'type'));
+                        })->name('lines');
+                        Route::get('/schema', function (Site $site, Area $area) {
+                            $type = 'schema';
+                            return view('topo.pdf.map', compact('site', 'area', 'type'));
+                        })->name('schema');
+                    });
+
+                    Route::prefix('/result/routes')->name('areas.topo.result.routes.')->group(function () {
+                        Route::get('/sectors', function (Site $site, Area $area) {
+                            $type = 'sectors';
+                            return view('topo.pdf.routes', compact('site', 'area', 'type'));
+                        })->name('sectors');
+                        Route::get('/lines', function (Site $site, Area $area) {
+                            $type = 'lines';
+                            return view('topo.pdf.routes', compact('site', 'area', 'type'));
+                        })->name('lines');
+                        Route::get('/schema', function (Site $site, Area $area) {
+                            $type = 'schema';
+                            return view('topo.pdf.routes', compact('site', 'area', 'type'));
+                        })->name('schema');
+                    });
+
+
+                   
                     
-                    Route::get('/sectors', function (Site $site, Area $area) {
-                        return view('areas.initialize.step-2', compact('site', 'area'));
-                    })->name('areas.topo.initialize.sectors');
-                    Route::get('/lines', function (Site $site, Area $area) {
-                        return view('areas.initialize.step-3', compact('site', 'area'));
-                    })->name('areas.topo.initialize.lines');
+                   
                 })->middleware('can:edit,site');
+
                 Route::prefix('/routes')->group(function () {
                     Route::get('/new', function (Site $site, Area $area) {
                         return view('routes.edit-infos', compact('site', 'area'));

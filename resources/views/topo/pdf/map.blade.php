@@ -2,7 +2,7 @@
 <div class="pt-12 mx-3">
     <div class='justify-center flex'>
         <div>
-            <img src='{{ Storage::url('plans/site-'.$site->id.'/area-'.$area->id.'/topo_export.svg') }}'/>
+            <img src='{{ Storage::url('plans/site-'.$site->id.'/area-'.$area->id.'/topo_export_'.$type.'.svg') }}'/>
         </div>
     </div>
     <div>
@@ -44,5 +44,8 @@
         </div>
         <div class="h-10 -top-px  border-b border-t border-t-(--pattern-fg) bg-[image:repeating-linear-gradient(-45deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed">
         </div>
+    </div>
+    <div class=' print:hidden flex justify-end'>
+      <a class='mr-2 mt-2' wire:navigate href='{{ route("admin.areas.topo.result.routes.$type", ['site'=>$area->site, 'area'=> $area]) }}'  > <x-button type="button">{{ __('Next') }}</x-button></a>
     </div>
 </x-pdf-layout>

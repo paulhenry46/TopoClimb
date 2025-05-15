@@ -513,7 +513,19 @@ new class extends Component {
 </x-grid-pattern-title >
 
   <x-grid-pattern-item class='mt-2'>
-  {{ __('Topo') }}
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Topo')}}</h1>
+          <p class="mt-2 text-sm text-gray-700">{{__('Generate Topo for this area')}}</p>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+         <a wire:navigate href='{{ route("admin.areas.topo.initialize.lines", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Lines') }}</x-button></a>
+         <a wire:navigate href='{{ route("admin.areas.topo.initialize.sectors", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Sectors') }}</x-button></a>
+          <a wire:navigate href='{{ route("admin.areas.topo.initialize.schema", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Schema') }}</x-button></a>
+        </div>
+      </div>
+    </div>
   </x-grid-pattern-item >
 @endcan
 </x-grid-pattern-layout>

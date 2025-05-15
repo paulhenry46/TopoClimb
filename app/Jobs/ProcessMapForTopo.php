@@ -17,7 +17,7 @@ class ProcessMapForTopo implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Site $site, public Area $area, public string $svg)
+    public function __construct(public Site $site, public Area $area, public string $svg, public string $type)
     {
         //
     }
@@ -27,7 +27,15 @@ class ProcessMapForTopo implements ShouldQueue
      */
     public function handle(): void
     {
-        $final_path = 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/topo_export.svg';
+        if($this->type == 'sectors'){
+            $output_name ='topo_export_sectors.svg';
+            }elseif($this->type == 'lines'){
+              $output_name ='topo_export_lines.svg';
+            }else{
+              $output_name ='topo_export_schema.svg';
+            }
+
+        $final_path = 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/'.$output_name;
         $xml = simplexml_load_string($this->svg);
         $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;

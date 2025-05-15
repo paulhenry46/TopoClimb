@@ -14,4 +14,9 @@ class Sector extends Model
     {
         return $this->hasMany(Line::class);
     }
+
+    public function routes()
+    {
+        return Route::whereIn('line_id', $this->lines()->pluck('id'))->get();
+    }
 }

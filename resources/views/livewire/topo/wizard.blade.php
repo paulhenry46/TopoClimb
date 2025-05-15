@@ -17,16 +17,28 @@ new class extends Component {
     public Site $site;
     public $svg;
     public $url;
+    public $type;
 
-    public function mount(Site $site, Area $area){
+    public function mount(Site $site, Area $area, string $type){
+
       $this->site = $site;
       $this->area = $area;
+      $this->type = $type;
 
-     $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors-numbers.svg');
+      if($type == 'sectors'){
+      $input_name ='sectors-numbers.svg';
+      }elseif($type == 'lines'){
+        $input_name ='lines-numbers.svg';
+      }else{
+        $input_name ='schema.svg';
+      }
+
+     $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/'.$input_name);
     }
 
     public function save(){
-        ProcessMapForTopo::dispatchSync($this->site, $this->area, $this->svg);
+        ProcessMapForTopo::dispatchSync($this->site, $this->area, $this->svg, $this->type);
+        $this->redirectRoute('admin.areas.topo.result.map.'.$this->type, ['site'=>$this->site, 'area'=>$this->area], navigate:true);
     }
 
 }; ?>
@@ -49,7 +61,7 @@ new class extends Component {
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Draw path of the route')}}</h1>
+          <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Edit map')}}</h1>
           <p class="mt-2 text-sm text-gray-700"></p>
         </div>
       </div>
