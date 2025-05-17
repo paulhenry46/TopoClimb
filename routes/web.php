@@ -128,6 +128,10 @@ Route::middleware([
     });
 });
 
+Route::get('/sites', function () {
+    return view('sites.index-public', ['sites'=> Site::all()]);
+})->name('sites.public-index');
+
 Route::prefix('/sites/{site:slug}')->group(function () {
 
     Route::get('/', function (Site $site) {
