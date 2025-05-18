@@ -33,7 +33,7 @@ new class extends Component {
 }; ?>
 <div class='flex justify-end' >
     <button wire:click="toggleFavorite" 
-            class="px-4 py-2 font-semibold text-white rounded-md 
+            class="cursor-pointer px-4 py-2 font-semibold text-white rounded-md 
                    {{ $isFavorited ? 'bg-gray-500 hover:bg-gray-600' : 'bg-gray-900 hover:bg-gray-900' }}">
         {{ $isFavorited ? __('Unfavorite') : __('Favorite') }}
     </button>

@@ -22,6 +22,11 @@
                         {{ __('Administration') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link wire:navigate href="{{ route('sites.public-index') }}" :active="request()->routeIs('sites.public-index')">
+                        {{ __('All sites') }}
+                    </x-nav-link>
+                </div>
                 @foreach (auth()->user()->favoriteSites as $site)
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link wire:navigate href="{{ route('site.view', $site->slug) }}" :active="(request()->routeIs('site.*')) && request()->route('site')->slug == $site->slug">
