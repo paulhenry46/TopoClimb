@@ -100,9 +100,9 @@ Route::middleware([
                         })->name('schema');
                     });
 
-
-                   
-                    
+                    Route::get('/tags', function (Site $site, Area $area) {
+                        return view('topo.pdf.tags', compact('site', 'area'));
+                    })->name('areas.topo.tags');
                    
                 })->middleware('can:edit,site');
 

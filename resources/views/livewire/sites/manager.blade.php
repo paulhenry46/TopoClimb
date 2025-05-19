@@ -216,7 +216,7 @@ new class extends Component {
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->address}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->areas->count()}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                  <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button><x-icon-see/></button></a>
+                  <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button class='cursor-pointer'><x-icon-see/></button></a>
                   
                   
                 </td>
@@ -246,7 +246,7 @@ new class extends Component {
                       <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
                     </div>
                     <div class="flex h-7 items-center">
-                      <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500">
+                      <button x-on:click="open = ! open" type="button" class="cursor-pointer relative text-gray-400 hover:text-gray-500">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>

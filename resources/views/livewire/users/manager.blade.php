@@ -215,7 +215,7 @@ new class extends Component {
                                 @endif
 
                               </td>
-                              <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3"> <button wire:click="open_item({{$user->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
+                              <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3"> <button class='cursor-pointer' wire:click="open_item({{$user->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
                                       <x-icon-edit />
                                   </button> </td>
                           </tr> 
@@ -253,7 +253,7 @@ new class extends Component {
                                               <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
                                               <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
                                           </div>
-                                          <div class="flex h-7 items-center"> <button x-on:click="open = ! open" type="button" class="relative text-gray-400 hover:text-gray-500"> <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                          <div class="flex h-7 items-center"> <button x-on:click="open = ! open" type="button" class="cursor-pointer relative text-gray-400 hover:text-gray-500"> <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                                   </svg> </button> </div>
                                       </div>
