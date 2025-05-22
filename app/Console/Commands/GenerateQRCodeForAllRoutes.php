@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Jobs\GenerateQRCodeOfRoute;
+use App\Jobs\GenerateQrCodeOfSite;
 use App\Models\Route;
+use App\Models\Site;
 use Illuminate\Console\Command;
 
 class GenerateQRCodeForAllRoutes extends Command
@@ -39,6 +41,12 @@ class GenerateQRCodeForAllRoutes extends Command
                 GenerateQRCodeOfRoute::dispatchSync($route, $area, $site);
                 $this->info("QR code generated for route: {$route->name} (ID: {$route->id})");
             
+        }
+
+        foreach (Site::all() as $site) {
+
+            GenerateQrCodeOfSite::dispatchSync($site);
+            $this->info("QR code generated for site: {$site->name} (ID: {$site->id})");
         }
 
         $this->info('QR code generation completed for all routes.');
