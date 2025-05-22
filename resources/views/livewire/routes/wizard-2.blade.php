@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 use App\Jobs\ProcessPathOfRoute;
+
+# Wizard for step 2 : drw path of route
 new class extends Component {
   use WithFileUploads;
 

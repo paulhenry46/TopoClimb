@@ -15,6 +15,7 @@ class ProcessPathOfRoute implements ShouldQueue
 {
     use Queueable;
     public $site;
+    public $sector;
 
     /**
      * Create a new job instance.
@@ -22,6 +23,7 @@ class ProcessPathOfRoute implements ShouldQueue
     public function __construct(public Area $area, public Route $route, public string $path)
     {
         $this->site = $area->site;
+        $this->sector = $route->line->sector;
     }
 
     /**
@@ -67,7 +69,6 @@ class ProcessPathOfRoute implements ShouldQueue
 
       $this->addPathToCommonPaths($path);
       $this->ProcessCommonPaths();
-
     }
 
     /**
@@ -75,8 +76,8 @@ class ProcessPathOfRoute implements ShouldQueue
      */
     private function addPathToCommonPaths($path){
         $filePaths = [
-        'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg', 
-        'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg'
+        'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/common.src.svg', 
+        'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/common_paths.svg'
           ];
   
         if(Storage::exists($filePaths[0])){
@@ -114,19 +115,14 @@ class ProcessPathOfRoute implements ShouldQueue
             $item->setAttribute("xmlns:x-on", "https://alpinejs.dev");
             $item->setAttribute("class", "h-96"); // We set the height of the svg to better scale it with css
           }
-
-        //   $item= (new DOMXPath($dom_common))->query('//*[@id=\'id_'.$this->route->id.'\']')->item(0);
-        //   $item->removeAttribute('x-on:mouseover');
-        //   $item->removeAttribute('x-bind:class');
   
           Storage::put($filePaths[1], $dom_common->saveXML());
         }
       }
 
-
     private function ProcessCommonPaths(){
           $route_id = $this->route->id;
-          $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg';
+          $filePath = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/common_paths.svg';
           $dom_common = new DOMDocument('1.0');
           $dom_common->preserveWhiteSpace = false;
           $dom_common->formatOutput = true;
@@ -138,6 +134,6 @@ class ProcessPathOfRoute implements ShouldQueue
           $item->setAttribute("x-on:click", "selectRoute($route_id)");
           $item->setAttribute("x-bind:style", "(selectedRoute == $route_id || hightlightedRoute == $route_id) ? 'stroke-width :8;' : ''");
   
-        Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg', $dom_common->saveXML());
+        Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
 }

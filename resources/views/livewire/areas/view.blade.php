@@ -53,11 +53,12 @@ new class extends Component {
         $this->schema_data['data'] = [];
         $this->schema_data['sectors'] = [];
         foreach ($area->sectors as $sector) {
-          $data = ['id' => $sector->local_id, 'paths' => Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg'),'bg' => Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')];
-            //array_push($this->url_map, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/common_paths.svg'));
+          $data = ['id' => $sector->local_id,
+                    'name' => $sector->name,
+                   'paths' => Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/edited/common_paths.svg'),
+                   'bg' => Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')
+                  ];
             array_push($this->schema_data['data'], $data);
-            //array_push($this->url_map, Storage::get('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/common.src.svg'));//TEST
-            //array_push($this->url_background, Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema'));
             array_push($this->schema_data['sectors'], $sector->local_id);
           }
       }
