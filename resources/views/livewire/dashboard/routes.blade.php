@@ -11,7 +11,7 @@ new class extends Component {
     public function mount(){
       
       $this->user  = auth()->user();
-      $this->logs = Log::where('user_id', $this->user->id)->with('route')->orderBy('created_at')->take(3)->get();
+      $this->logs = Log::where('user_id', $this->user->id)->with('route')->orderByDesc('created_at')->take(3)->get();
 
    
 

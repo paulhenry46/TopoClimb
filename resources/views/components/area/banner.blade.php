@@ -15,7 +15,7 @@
       <img class="size-24 rounded-md object-contain" src="{{ $area->site->profile_picture() }}" alt="Admin">
       <div class="ml-3 grid grid-rows-2">
         <div class="font-semibold text-white content-center text-3xl">{{$area->name }}</div>
-        <div class=" text-white content-top">{{ $area->site->name }}</div>
+        <a wire:navigate href='{{route('site.view', $area->site->slug) }}'  class=" text-white content-top">{{ $area->site->name }}</a>
       </div>
     </div>
 </div>

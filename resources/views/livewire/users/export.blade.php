@@ -41,9 +41,6 @@ new class extends Component {
         // Close the file handle
         fclose($csvContent);
 
-        // Store the CSV file temporarily
-        Storage::put($fileName, $csvData);
-
         // Return the file as a download response
         return response()->streamDownload(function () use ($csvData) {
             echo $csvData;
