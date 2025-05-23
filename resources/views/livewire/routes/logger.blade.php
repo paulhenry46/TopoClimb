@@ -33,8 +33,7 @@ new class extends Component {
     public string $videoUrl;
 
     public $date;
-  public $cotations;
-
+    public $cotations;
 
     public function mount(Route $route){
       $this->route = $route;
