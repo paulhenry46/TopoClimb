@@ -93,4 +93,8 @@ class User extends Authenticatable
 
     }
 
+    public function registeredRoutes(){
+        return $this->belongsToMany(Route::class, 'registered_routes_users');
+   }
+
 }

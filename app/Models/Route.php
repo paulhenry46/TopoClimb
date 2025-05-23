@@ -33,6 +33,11 @@ class Route extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    public function registeredUser(){
+         return $this->belongsToMany(User::class, 'registered_routes_users');
+    }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
