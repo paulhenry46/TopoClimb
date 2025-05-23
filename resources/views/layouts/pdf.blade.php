@@ -20,7 +20,7 @@
     <body class="font-sans antialiased">
         <x-banner />
 
-        <div class="min-h-screen">
+        <div class="">
 
             <main>
                 {{ $slot }}

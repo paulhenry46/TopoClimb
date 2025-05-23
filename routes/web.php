@@ -128,6 +128,11 @@ Route::middleware([
     });
 });
 
+Route::get('r/{route}', function(ModelsRoute $route){
+    $area = $route->line->sector->area;
+    return redirect(route('site.area.view', ['site' => $area->site->slug, 'area' => $area->slug, 'route_id' => $route->id]));
+})->name('route.shortUrl');
+
 Route::get('/sites', function () {
     return view('sites.index-public', ['sites'=> Site::all()]);
 })->name('sites.public-index');

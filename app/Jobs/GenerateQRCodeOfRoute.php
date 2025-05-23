@@ -30,7 +30,7 @@ class GenerateQRCodeOfRoute implements ShouldQueue
      */
     public function handle(): void
     {
-        $url = route('site.area.view', ['site' => $this->site->slug, 'area' => $this->area->slug, 'route_id' => $this->route->id]);
+        $url = route('route.shortUrl', ['route' => $this->route->id]);
         $directory = 'qrcode/site-' . $this->site->id . '/area-' . $this->area->id;
         $file = Storage::path('qrcode/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg');
         
