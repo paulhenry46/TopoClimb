@@ -71,6 +71,7 @@ new class extends Component {
         return;
     }
 
+    dd($this->way);
         $this->validate();
         $log = new Log;
         $log->user_id = $this->user->id;
@@ -156,7 +157,6 @@ new class extends Component {
                 <div class="mt-2">
                   <div class="grid grid-cols-2">
                     <div>
-                      <x-label class="mb-2" for="address" value="{{__('Ascent way')}}" />
                       <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
                         <legend class="sr-only">{{__('Ascent way')}}</legend>
                         <div class="-space-y-px bg-white">

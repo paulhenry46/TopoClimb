@@ -12,7 +12,7 @@
 
             <div class="bg-white overflow-hidden  sm:rounded-lg col-span-2 min-h-32">
                 <div class='px-4 py-4'>
-                <h2 class="ml-4 text-xl font-semibold text-gray-900">
+                <h2 class="ml-4 text-xl font-semibold text-gray-900 mt-1">
                    {{ __('Profile') }}
                 </h2>
                 <livewire:dashboard.profile/>
@@ -31,7 +31,7 @@
                <div class="bg-white overflow-hidden  sm:rounded-lg col-span-3 min-h-32">
                 <div class='px-4 py-4'>
                     <h2 class="ml-4 mt-3 text-xl font-semibold text-gray-900">
-                       {{ __('Graph') }}
+                       {{ __('Distribution of climbed routes') }}
                     </h2>
                     <livewire:dashboard.graph/>
                 </div>
