@@ -440,5 +440,11 @@
     "Openers" : "Ouvreurs",
     "Add a tag" : "Taper une étiquette",
     "Editing route " : "Modifier une route",
-    "Check the informations about this route." : "Vérifier les données de cette route"
+    "Check the informations about this route." : "Vérifier les données de cette route",
+    "Administration Area" : "Espace Administration",
+    "Step" : "Étape",
+    "Add informations" : "Ajout des informations",
+    "Draw path" : "Dessin du tracé",
+    "Upload photo" : "Ajout de la photo",
+    "Add basic infos of your new route" : "Ajout des données de base de la voie"
 }

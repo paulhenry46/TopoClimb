@@ -8,9 +8,9 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-        <div class='grid grid-cols-6 gap-x-6 gap-y-6'>
+        <div class='grid md:grid-cols-6 gap-x-6 gap-y-6'>
 
-            <div class="bg-white overflow-hidden  sm:rounded-lg col-span-2 min-h-32">
+            <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-2 min-h-32">
                 <div class='px-4 py-4'>
                 <h2 class="ml-4 text-xl font-semibold text-gray-900 mt-1">
                    {{ __('Profile') }}
@@ -18,7 +18,7 @@
                 <livewire:dashboard.profile/>
             </div>
             </div>
-            <div class="col-span-4">
+            <div class="md:col-span-4">
                 <div class='h-full'>
                     <div class="bg-white overflow-hidden  sm:rounded-lg col-span-2">
                         <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
@@ -28,7 +28,7 @@
                     <livewire:dashboard.stats class='h-full'/>
                 </div>
                </div>
-               <div class="bg-white overflow-hidden  sm:rounded-lg col-span-3 min-h-32">
+               <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3 min-h-32">
                 <div class='px-4 py-4'>
                     <h2 class="ml-4 mt-3 text-xl font-semibold text-gray-900">
                        {{ __('Distribution of climbed routes') }}
@@ -36,7 +36,7 @@
                     <livewire:dashboard.graph/>
                 </div>
                </div>
-               <div class="bg-white overflow-hidden  sm:rounded-lg col-span-3">
+               <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3">
                 <div class='px-4 py-4'>
                     <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
                        {{ __('Routes') }}

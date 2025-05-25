@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', function(){
+    return redirect(route('sites.public-index'));
+})->name('welcome');
 
 Route::middleware([
     'auth:web',
