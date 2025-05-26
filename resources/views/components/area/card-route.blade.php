@@ -103,7 +103,8 @@
             </nav>
           </div>
         </div>
-        <div x-show="activeTab == 0" class='min-h-56'> @foreach ($logs->where('comment','!=', null) as $log) <div class=" mt-2 flex  items-start space-x-3">
+        <div x-show="activeTab == 0" class='min-h-56'> 
+          @forelse ($logs->where('comment','!=', null) as $log) <div class=" mt-2 flex  items-start space-x-3">
             <div>
               <div class=" px-1">
                 <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
@@ -123,8 +124,14 @@
                 </span>
               </div>
             </div>
-          </div> @endforeach </div>
-        <div x-show="activeTab == 1" class='min-h-56'> @foreach ($logs as $log) <div class=" mt-2 flex items-center items-start space-x-3">
+          </div> 
+          @empty
+          {{ __('No comments for this route. If you manage to climb it, you can be the first to comment !') }}
+          @endforelse
+        </div>
+        <div x-show="activeTab == 1" class='min-h-56'> 
+          @forelse ($logs as $log) 
+          <div class=" mt-2 flex items-center items-start space-x-3">
             <div>
               <div class=" px-1">
                 <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
@@ -167,8 +174,16 @@
                   </a> @endif </span>
               </div>
             </div>
-          </div> @endforeach </div>
-        <div x-show="activeTab == 2" class='min-h-56'> {{ __('Videos') }} </div>
+          </div> 
+          @empty
+          {{ __('No ascents for this route. Maybe you are the fisrt to succes !') }}
+          @endforelse
+        </div>
+        {{--  
+        <div x-show="activeTab == 2" class='min-h-56'> {{ __('Videos') }} 
+
+        </div>
+        --}}
       </div>
     </div>
   </div>

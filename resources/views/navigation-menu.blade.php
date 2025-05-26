@@ -6,7 +6,11 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
+                        @if(Storage::exists('pictures/logo'))
+                        <img src='{{ Storage::url('pictures/logo') }}' class='h-16' />
+                        @else
                         <x-application-mark class="block h-9 w-auto" />
+                        @endif
                     </a>
                 </div>
                 <!-- Navigation Links -->

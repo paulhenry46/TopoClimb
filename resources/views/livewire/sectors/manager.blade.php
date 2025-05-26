@@ -103,11 +103,12 @@ new class extends Component {
     public function mount(Area $area){
 
       if(auth()->user()->can('lines-sectors.'.$area->site->id) or auth()->user()->hr() == 0){
-        $this->editable == true;
+        $this->editable = true;
       }else{
-        $this->editable == false;
+        $this->editable = false;
       }
-      
+
+
       $this->area = $area;
       if($this->area->sectors->count() == 0){
         return $this->redirectRoute('admin.areas.initialize', ['site'=>$this->area->site->id, 'area' => $this->area->id ], navigate: true);

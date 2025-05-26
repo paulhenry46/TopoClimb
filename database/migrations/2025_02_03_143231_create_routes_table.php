@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('routes', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->timestamp('removing_at')->nullable();
             $table->foreignId('line_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
             $table->integer('local_id');
-            $table->string('comment');
+            $table->string('comment')->nullable();
             $table->smallInteger('grade');
             $table->string('color');
         });

@@ -62,7 +62,7 @@ new class extends Component {
         }
 
         if($this->banner !== null){
-          dd($this->banner->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'banner'));
+          $this->banner->storeAs(path: 'pictures/site-'.$this->site->id.'', name: 'banner');
         $this->banner = null;
         }
         

@@ -55,7 +55,21 @@
               </div>
             </div>
           </x-grid-pattern-item >
-            @endif
+          @endif
+          @if(auth()->user()->hr() <= 0)
+          <x-grid-pattern-title >
+                {{ __('Backups') }}
+            </x-grid-pattern-title >
+          <x-grid-pattern-item >
+            <livewire:settings.backup />
+          </x-grid-pattern-item >
+          <x-grid-pattern-title >
+                {{ __('Logo') }}
+            </x-grid-pattern-title >
+          <x-grid-pattern-item >
+            <livewire:settings.logo />
+          </x-grid-pattern-item >
+          @endif
           </div>
         </x-grid-pattern-layout >
     </div>

@@ -18,33 +18,38 @@ new class extends Component {
     public string $url;
     public $svg_lines;
     public $svg_lines_without_numbers;
+    public $saving;
 
 
     public function mount(Site $site, Area $area){
       $this->site = $site;
       $this->area = $area;
+      $this->saving = false;
       $this->url = Storage::disk('public')->url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors.svg');
     }
 
     public function save(){
-      //dd($this->lines_sectors);
+      if($this->saving == false){
+      $this->saving = true;
+      dump($this->lines_sectors);
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines-numbers.svg',$this->removeClipPath($this->svg_lines));
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/lines.svg',$this->removeClipPath($this->svg_lines_without_numbers));
       
       $localIDToID = Sector::where('area_id', $this->area->id)->pluck('id', 'local_id')->toArray();
       
-
-
       foreach ($this->lines_sectors as $key => $value)  {
         if($value !== null and $key != 0){
           $line = new Line;
           $line->local_id = $key;
           $line->sector_id = $localIDToID[$value];
           $line->save();
+          dump($line);
         }
       }
+      dd($this->lines_sectors);
       $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
-    }
+      }
+      }
 
     public function removeClipPath($svg){
       $xml = simplexml_load_string($svg);
