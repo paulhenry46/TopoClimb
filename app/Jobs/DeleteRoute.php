@@ -31,9 +31,12 @@ class DeleteRoute implements ShouldQueue
         $sector = $line->sector;
         $area = $sector->area;
         $site = $area->site;
-
-        $logs->update(['route_id' => 1, "comment" => $grade]);
-        
+        if($area->type == 'trad'){
+            $logs->update(['route_id' => 1, "comment" => $grade]);
+        }else{
+            $logs->update(['route_id' => 2, "comment" => $grade]);
+        }
+    
         #Delete path
         Storage::delete('paths/site-'.$site->id.'/area-'.$area->id.'/route-'.$this->route->id.'.original.svg');
         Storage::delete('paths/site-'.$site->id.'/area-'.$area->id.'/route-'.$this->route->id.'.svg');
