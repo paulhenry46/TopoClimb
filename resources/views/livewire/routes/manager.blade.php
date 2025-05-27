@@ -12,6 +12,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Attributes\Locked; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
+use App\Jobs\DeleteRoute;
 use Livewire\Attributes\Computed;
 new class extends Component {
   use WithPagination;
@@ -140,9 +141,9 @@ new class extends Component {
     }
   }
 
-    public function delete_item($id){
+    public function remove_item($id){
       $item = Route::find($id);
-      $item->delete();
+      DeteteRoute::dispatchSync($item);
       $this->dispatch('action_ok', title: 'Route deleted', message: 'Your modifications has been registered !');
       $this->render();
     }
@@ -300,6 +301,9 @@ new class extends Component {
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <button wire:click="open_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
                     <x-icon-edit />
+                  </button>
+                  <button wire:click="remove_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
+                    <x-icon-delete />
                   </button>
                   <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="cursor-pointer mr-2 text-gray-600 hover:text-gray-900" >
                     <button>

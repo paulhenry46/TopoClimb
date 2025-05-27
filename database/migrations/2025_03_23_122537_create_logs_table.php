@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('route_id')->constrained()->onDelete('cascade');
+            $table->foreignId('route_id')->constrained();
             $table->text('comment')->nullable();
             $table->string('video_url')->nullable();
             $table->smallInteger('grade');

@@ -1,12 +1,12 @@
 <?php
 
 use Livewire\Volt\Component;
-#use ZipArchive;
+use ZipArchive;
 use Illuminate\Support\Facades\Storage;
 
 new class extends Component {
 
- /*    public function createZipOfStorage(){
+     public function createZipOfStorage(){
     $zip = new ZipArchive;
         $zipFileName = 'TopoClimb-files'.date("m.d.y").'.zip';
         if ($zip->open(public_path($zipFileName), ZipArchive::CREATE) === TRUE) {
@@ -18,7 +18,7 @@ new class extends Component {
             $zip->close();
             return response()->download(public_path($zipFileName))->deleteFileAfterSend(true);
         }
-} */
+} 
 
 public function createBackupOfDB(){
     $path =''.storage_path().'/app/export.sql';
