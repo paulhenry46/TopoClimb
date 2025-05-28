@@ -96,17 +96,29 @@ class Route extends Model
     public function colorToHex()
 {
     $colors = [
-        'red' => '#ef4444',
+         'red' => '#ef4444',
         'blue' => '#3b82f6',
-        'green' => '#10b981',
-        'yellow' => '#f59e0b',
-        'purple' => '#8b5cf6',
-        'pink' => '#ec4899',
+        'green' => '#22c55e',
+        'yellow' => '#fde047',
+        'purple' => '#d8b4fe',
+        'pink' => '#f9a8d4',
+        'gray' => '#d1d5db',
+        'black' => '#000000',
+        'white' => '#ffffff',
+        'emerald' => '#6ee7b7',
+        'orange' => '#fdba74',
+        'amber' => '#fbbf24',
+        'teal' => '#00bba7',
+        'lime' => '#7ccf00',
+        'cyan' => '#00b8db',
+        'sky' => '#00a6f4',
+        'indigo' => '#615fff',
+        'violet' => '#8e51ff',
+        'fuchsia' => '#d946ef',
+        'rose' => '#f43f5e',
+        'slate' => '#64748b',
         'gray' => '#6b7280',
-        'indigo' => '#6366f1',
-        'teal' => '#14b8a6',
-        'orange' => '#f97316',
-        'amber' => '#fbbf24'
+        'zinc' => '#71717a'
     ];
 
     return $colors[$this->color] ?? '#000000'; // Default to black if color not found

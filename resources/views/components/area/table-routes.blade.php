@@ -1,6 +1,27 @@
 <div class="bg-white mt-2 sm:rounded-lg px-6 py-8">
     <div class='hidden'>
-      <div class='border-red-300 border-orange-300 border-amber-300 border-green-300 border-blue-300 border-violet-300 border-purple-300 border-yellow-300 border-emerald-300 border-pink-300'></div>
+      <div class='
+border-red-300
+border-orange-300
+border-amber-300
+border-yellow-300
+border-lime-300
+border-green-300
+border-emerald-300
+border-teal-300
+border-cyan-300
+border-sky-300
+border-blue-300
+border-indigo-300
+border-violet-300
+border-purple-300
+border-fuchsia-300
+border-pink-300
+border-rose-300
+border-slate-300
+border-gray-300
+border-zinc-300'
+                ></div>
     </div>
     <div class=" flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

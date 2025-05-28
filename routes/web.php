@@ -153,9 +153,9 @@ Route::prefix('/sites/{site:slug}')->group(function () {
 
 Route::get('/empty/photo/{color}.svg', function (string $color) {
     $colors = [
-        'red' => '#fca5a5',
-        'blue' => '#93c5fd',
-        'green' => '#86efac',
+        'red' => '#ef4444',
+        'blue' => '#3b82f6',
+        'green' => '#22c55e',
         'yellow' => '#fde047',
         'purple' => '#d8b4fe',
         'pink' => '#f9a8d4',
@@ -164,7 +164,18 @@ Route::get('/empty/photo/{color}.svg', function (string $color) {
         'white' => '#ffffff',
         'emerald' => '#6ee7b7',
         'orange' => '#fdba74',
-        'amber' => '#fbbf24'
+        'amber' => '#fbbf24',
+        'teal' => '#00bba7',
+        'lime' => '#7ccf00',
+        'cyan' => '#00b8db',
+        'sky' => '#00a6f4',
+        'indigo' => '#615fff',
+        'violet' => '#8e51ff',
+        'fuchsia' => '#d946ef',
+        'rose' => '#f43f5e',
+        'slate' => '#64748b',
+        'gray' => '#6b7280',
+        'zinc' => '#71717a'
     ];
 
     $content = str_replace('color', $colors[$color], Storage::get('photos/blank.svg'));
