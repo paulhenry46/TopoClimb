@@ -137,7 +137,7 @@ new class extends Component {
       $roles = auth()->user()->getRoleNames();
 
       if($roles->contains('super-admin')){
-        $this->sites = Site::all()->pluck('name', 'id')->toArray();
+        $this->sites = Site::where('id', '!=', 1)->pluck('name', 'id')->toArray();
         $this->authorized_sites_id = ['all'];
       }else{
         $sites_id = [];

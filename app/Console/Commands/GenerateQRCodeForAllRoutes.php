@@ -43,7 +43,7 @@ class GenerateQRCodeForAllRoutes extends Command
             
         }
 
-        foreach (Site::all() as $site) {
+        foreach (Site::where('id', '!=', 1)->get() as $site) {
 
             GenerateQrCodeOfSite::dispatchSync($site);
             $this->info("QR code generated for site: {$site->name} (ID: {$site->id})");

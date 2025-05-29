@@ -134,7 +134,7 @@ Route::get('r/{route}', function(ModelsRoute $route){
 })->name('route.shortUrl');
 
 Route::get('/sites', function () {
-    return view('sites.index-public', ['sites'=> Site::all()]);
+    return view('sites.index-public', ['sites'=> Site::where('id', '!=', 1)->get()]);
 })->name('sites.public-index');
 
 Route::prefix('/sites/{site:slug}')->group(function () {
@@ -177,7 +177,6 @@ Route::get('/empty/photo/{color}.svg', function (string $color) {
         'gray' => '#6b7280',
         'zinc' => '#71717a'
     ];
-
     $content = str_replace('color', $colors[$color], Storage::get('photos/blank.svg'));
 
 $response = response()->make($content, 200);
