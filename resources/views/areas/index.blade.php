@@ -47,9 +47,9 @@
               <x-grid-pattern-title >
                 {{ __('Stats') }}
               </x-grid-pattern-title>
-              <x-grid-pattern-item >
+              
                 <livewire:sites.stats :$site/>
-              </x-grid-pattern-item>
+             
                @endcan
                <x-grid-pattern-title >
                 {{ __('Areas') }}

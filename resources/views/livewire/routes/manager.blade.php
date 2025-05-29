@@ -143,7 +143,7 @@ new class extends Component {
 
     public function remove_item($id){
       $item = Route::find($id);
-      DeteteRoute::dispatchSync($item);
+      $item->removed_at = Carbon::today()->toDateTime();
       $this->dispatch('action_ok', title: 'Route deleted', message: 'Your modifications has been registered !');
       $this->render();
     }
@@ -244,7 +244,13 @@ new class extends Component {
        <a href="{{route('admin.routes.new', ['site' => $this->site->id, 'area' => $this->area->id])}}" wire:navigate> <x-button type="button">{{__('Add route')}}</x-button></a>
       </div>
     </div>
-    <div class=" flow-root">
+    <div class="flow-root" x-data='{selected:[], 
+                                    date:"", 
+                                    open_modal: false, 
+                                    send(){$wire.set_remove_date(this.selected, this.date)},
+                                    toogle(id){
+                                    if(this.selected.includes(id)){this.selected.splice(array.indexOf(id), 1);}else{this.selected.push(id); }}
+                                    }' >
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">

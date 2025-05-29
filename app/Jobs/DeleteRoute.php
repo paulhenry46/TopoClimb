@@ -73,5 +73,6 @@ class DeleteRoute implements ShouldQueue
           }
         }
         $this->route->delete();
+
     }
 }
