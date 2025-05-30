@@ -148,6 +148,10 @@ new class extends Component {
       $this->render();
     }
 
+    public function set_remove_date($ids, $date){
+      dd($date);
+    }
+
     public function mount($lines, Site $site, Area $area){
 
       if(auth()->user()->can('lines-sectors.'.$area->site->id)){
@@ -245,12 +249,46 @@ new class extends Component {
       </div>
     </div>
     <div class="flow-root" x-data='{selected:[], 
-                                    date:"", 
                                     open_modal: false, 
-                                    send(){$wire.set_remove_date(this.selected, this.date)},
+                                    remove(){$wire.set_remove_date(this.selected, $refs.date.value); this.open_modal = false},
+                                    remove_now(){$wire.set_remove_date(this.selected, "now");  this.open_modal = false},
                                     toogle(id){
                                     if(this.selected.includes(id)){this.selected.splice(array.indexOf(id), 1);}else{this.selected.push(id); }}
                                     }' >
+            <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show='open_modal' style='display: none;'>
+         
+          <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 bg-gray-500/75  transition-opacity" x-show='open_modal' style='display: none;'></div>
+
+          <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              
+              <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" x-show='open_modal' style='display: none;'>
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                  <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                      <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">{{ (' Set the route dismantling date') }}</h3>
+                      <div class="mt-2">
+                        <p class="text-sm text-gray-500">{{ __('Are you sure you want to remove this routes ? Set the date below') }}</p>
+                        <x-input x-ref='date' id="date" type="date" class="mt-1 block w-full"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <button @click='remove()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Set date of removing') }}</button>
+                  <button @click='remove_now()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Remove now') }}</button>
+                  <button @click='open_modal = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
@@ -305,11 +343,18 @@ new class extends Component {
                   @endforelse
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                  <div class='flex items-center justify-end' >
                   <button wire:click="open_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
                     <x-icon-edit />
                   </button>
-                  <button wire:click="remove_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
+                  <button x-on:click='toogle({{$route->id}})' class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
+                    <span x-show='!selected.includes({{$route->id}})'>
+                    <x-icon-delete-filled />
+                    </span>
+                    <span x-show='selected.includes({{$route->id}})'>
                     <x-icon-delete />
+                    </span>
+
                   </button>
                   <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="cursor-pointer mr-2 text-gray-600 hover:text-gray-900" >
                     <button>
@@ -321,6 +366,7 @@ new class extends Component {
                     <x-icon-picture />
                     </button>
                   </a>
+                  </div>
                 </td>
               </tr> @endforeach </tbody>
           </table>
