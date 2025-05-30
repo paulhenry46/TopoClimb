@@ -69,6 +69,12 @@
           <x-grid-pattern-item >
             <livewire:settings.logo />
           </x-grid-pattern-item >
+          <x-grid-pattern-title >
+                {{ __('Mails') }}
+            </x-grid-pattern-title >
+          <x-grid-pattern-item >
+            <livewire:settings.mails />
+          </x-grid-pattern-item >
           @endif
           </div>
         </x-grid-pattern-layout >

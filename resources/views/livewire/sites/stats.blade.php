@@ -32,7 +32,7 @@ new class extends Component {
             })
             ->when(($this->area != null), function ($query) {
                         return $query->whereHas('line.sector.area', function ($query) {
-                                $query->where('id', $this->area->id);
+                                $query->where('id', $this->area);
                             });
                     })
             ->get();
@@ -81,7 +81,7 @@ new class extends Component {
             })
             ->when(($this->area != null), function ($query) {
                         return $query->whereHas('line.sector.area', function ($query) {
-                                $query->where('id', $this->area->id);
+                                $query->where('id', $this->area);
                             });
                     })
             ->whereBetween('created_at', [$startDate, $endDate])
@@ -122,7 +122,7 @@ new class extends Component {
             });
             if ($this->area != null) {
                 $query->whereHas('line.sector.area', function ($query) {
-                    $query->where('id', $this->area->id);
+                    $query->where('id', $this->area);
                 });
             }
         }])->get();
@@ -150,7 +150,7 @@ new class extends Component {
                 })
                 ->when(($this->area != null), function ($query) {
                 return $query->whereHas('route.line.sector.area', function ($query) {
-                    $query->where('id', $this->area->id);
+                    $query->where('id', $this->area);
                 });
                 })
                 ->whereBetween('created_at', [$startMonth, $endMonth])
@@ -203,14 +203,16 @@ new class extends Component {
     <div class='grid grid-cols-6 gap-2'>
         <div class="bg-white overflow-hidden  sm:rounded-lg col-span-6 flex justify-between items-center">
             <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
-                {{ __('Stats of Site') }}
+                {{ __('Stats of Site') }} {{ $this->area }}
             </h2>
-            <select class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
+            <div class='flex items-center gap-2 ml-2'> {{ __('Areas') }}
+            <select wire:model.live='area' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
                 <option value="null">{{ __('All') }}</option>
                 @foreach ($areas as $area)
                     <option value="{{ $area->id }}">{{ $area->name }}</option>
                 @endforeach
             </select>
+        </div>
         </div>
     
     <div class='col-span-3 bg-white overflow-hidden  sm:rounded-lg  min-h-32'>
