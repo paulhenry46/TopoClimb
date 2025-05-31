@@ -14,25 +14,31 @@ new class extends Component {
     public Site $site;
     public $area;
     public $areas;
-    /*public $data_routes_grade;
+    public $data_routes_grade;
     public $data_routes_week;
     public $data_routes_by_tag;
-    public $data_logs_by_month;*/
+    public $data_logs_by_month;
 
     public function mount(Site $site){
       $this->site = $site;
       $this->areas = $this->site->areas;
       $this->area = null;
+      $values = $this->getValues();
+
+    $this->data_routes_grade = $values['data_routes_grade'];
+    $this->data_routes_week = $values['data_routes_week'];
+    $this->data_routes_by_tag = $values['data_routes_by_tag'];
+    $this->data_logs_by_month = $values['data_logs_by_month'];
 
     }
-    public function with(){
+    public function getValues(){
             #Number of routes by difficulty (bar chart) with 2 bars for each type (bouldering and sport climbing)
             $routes = Route::whereHas('line.sector.area.site', function ($query) {
                 $query->where('id', $this->site->id);
             })
             ->when(($this->area != null), function ($query) {
                         return $query->whereHas('line.sector.area', function ($query) {
-                                $query->where('id', $this->area);
+                                $query->where('id', 7);
                             });
                     })
             ->get();
@@ -186,11 +192,24 @@ new class extends Component {
                     ],
                 ],
             ];
-        return ['data_logs_by_month' => json_encode($data_logs_by_month), 
-            'data_routes_by_tag'=> json_encode($data_routes_by_tag),
-            'data_routes_week'=> json_encode($data_routes_week),
-            'data_routes_grade' => json_encode($data_routes_grade)];
+        return ['data_logs_by_month' => $data_logs_by_month, 
+            'data_routes_by_tag'=> $data_routes_by_tag,
+            'data_routes_week'=> $data_routes_week,
+            'data_routes_grade' => $data_routes_grade];
     }
+
+    public function updated(){
+        if($this->area == 'null'){
+            $this->area = null;
+        }
+        
+    $values = $this->getValues();
+    $this->data_routes_grade = $values['data_routes_grade'];
+    $this->data_routes_week = $values['data_routes_week'];
+    $this->data_routes_by_tag = $values['data_routes_by_tag'];
+    $this->data_logs_by_month = $values['data_logs_by_month'];
+    }
+
 
 
 }; ?>
@@ -220,10 +239,15 @@ new class extends Component {
                 {{ __('Number of routes by grade') }}
             </h2>
 
-        <div x-data="{ chart: null }"
-x-init=" chart = new Chart(document.getElementById('data_routes_grade').getContext('2d'), 
-{ type: 'bar', data: {{$data_routes_grade}},
- options: {} }); " class='mx-2'>
+        <div x-data="{
+        data: $wire.entangle('data_routes_grade'),
+        updateChart(){
+        if (Chart.getChart('data_routes_grade')){ Chart.getChart('data_routes_grade').destroy(); }
+         new Chart(document.getElementById('data_routes_grade').getContext('2d'), 
+{ type: 'bar', data: this.data, options: {} });}
+ }"
+x-init="updateChart()"
+x-effect="updateChart()" class='mx-2'>
 
  <canvas id="data_routes_grade" class='h-96'></canvas>
 </div>
@@ -234,10 +258,15 @@ x-init=" chart = new Chart(document.getElementById('data_routes_grade').getConte
                 {{ __('Number of routes by tags') }}
             </h2>
 
-            <div x-data="{ chart: null }"
-x-init=" chart = new Chart(document.getElementById('data_routes_by_tag').getContext('2d'), 
-{ type: 'bar', data: {{$data_routes_by_tag}},
- options: {} }); " class='mx-2'>
+            <div x-data="{
+        data: $wire.entangle('data_routes_by_tag'),
+        updateChart(){
+        if (Chart.getChart('data_routes_by_tag')){ Chart.getChart('data_routes_by_tag').destroy(); }
+         new Chart(document.getElementById('data_routes_by_tag').getContext('2d'), 
+{ type: 'bar', data: this.data, options: {} });}
+ }"
+x-init="updateChart()"
+x-effect="updateChart()" class='mx-2'>
 
  <canvas id="data_routes_by_tag" class='h-96'></canvas>
 </div>
@@ -248,10 +277,15 @@ x-init=" chart = new Chart(document.getElementById('data_routes_by_tag').getCont
                 {{ __('Number of logs by monts') }}
             </h2>
 
-            <div x-data="{ chart: null }"
-x-init=" chart = new Chart(document.getElementById('data_logs_by_month').getContext('2d'), 
-{ type: 'bar', data: {{$data_logs_by_month}},
- options: {maintainAspectRatio: false} }); " class='mx-2 h-120 pb-20'>
+            <div x-data="{
+        data: $wire.entangle('data_logs_by_month'),
+        updateChart(){
+        if (Chart.getChart('data_logs_by_month')){ Chart.getChart('data_logs_by_month').destroy(); }
+         new Chart(document.getElementById('data_logs_by_month').getContext('2d'), 
+{ type: 'bar', data: this.data, options: {maintainAspectRatio: false} });}
+ }"
+x-init="updateChart()"
+x-effect="updateChart()" class='mx-2 h-120 pb-20'>
 
  <canvas id="data_logs_by_month" class='h-full'></canvas>
 </div>
@@ -261,10 +295,15 @@ x-init=" chart = new Chart(document.getElementById('data_logs_by_month').getCont
                 {{ __('Number of routes created by week') }}
             </h2>
 
-            <div x-data="{ chart: null }"
-x-init=" chart = new Chart(document.getElementById('data_routes_week').getContext('2d'), 
-{ type: 'bar', data: {{$data_routes_week}},
- options: {} }); " class='mx-2'>
+            <div x-data="{
+        data: $wire.entangle('data_routes_week'),
+        updateChart(){
+        if (Chart.getChart('data_routes_week')){ Chart.getChart('data_routes_week').destroy(); }
+         new Chart(document.getElementById('data_routes_week').getContext('2d'), 
+{ type: 'bar', data: this.data, options: {} });}
+ }"
+x-init="updateChart()"
+x-effect="updateChart()" class='mx-2'>
 
  <canvas id="data_routes_week" class='h-96'></canvas>
 </div>
