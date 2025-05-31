@@ -228,7 +228,7 @@ new class extends Component {
             <select wire:model.live='area' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
                 <option value="null">{{ __('All') }}</option>
                 @foreach ($areas as $area)
-                    <option value="{{ $area->id }}">{{ $this->area->name }}</option>
+                    <option value="{{ $area->id }}">{{ $area->name }}</option>
                 @endforeach
             </select>
         </div>
