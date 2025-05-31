@@ -202,7 +202,7 @@ new class extends Component {
         if($this->area == 'null'){
             $this->area = null;
         }
-        
+
     $values = $this->getValues();
     $this->data_routes_grade = $values['data_routes_grade'];
     $this->data_routes_week = $values['data_routes_week'];
@@ -222,13 +222,13 @@ new class extends Component {
     <div class='grid grid-cols-6 gap-2'>
         <div class="bg-white overflow-hidden  sm:rounded-lg col-span-6 flex justify-between items-center">
             <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
-                {{ __('Stats of Site') }} {{ $this->area }}
+                {{ __('Stats of Site') }}
             </h2>
             <div class='flex items-center gap-2 ml-2'> {{ __('Areas') }}
             <select wire:model.live='area' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
                 <option value="null">{{ __('All') }}</option>
                 @foreach ($areas as $area)
-                    <option value="{{ $area->id }}">{{ $area->name }}</option>
+                    <option value="{{ $area->id }}">{{ $this->area->name }}</option>
                 @endforeach
             </select>
         </div>
