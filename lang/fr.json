@@ -446,5 +446,10 @@
     "Add informations" : "Ajout des informations",
     "Draw path" : "Dessin du tracé",
     "Upload photo" : "Ajout de la photo",
-    "Add basic infos of your new route" : "Ajout des données de base de la voie"
+    "Add basic infos of your new route" : "Ajout des données de base de la voie",
+    "Stats of Site" : "Statistiques du site",
+    "Number of routes by grade" : "Nombre de voies par cotation",
+    "Number of routes by tags" : "Nombre de voies par tag",
+    "Number of logs by monts" : "Nombre de logs par mois",
+    "Number of routes created by week" : "Nombre de nouvelles voies crées par semaine"
 }

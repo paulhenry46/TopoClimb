@@ -24,11 +24,10 @@ new class extends Component {
       $this->areas = $this->site->areas;
       $this->area = null;
       $values = $this->getValues();
-
-    $this->data_routes_grade = $values['data_routes_grade'];
-    $this->data_routes_week = $values['data_routes_week'];
-    $this->data_routes_by_tag = $values['data_routes_by_tag'];
-    $this->data_logs_by_month = $values['data_logs_by_month'];
+        $this->data_routes_grade = $values['data_routes_grade'];
+        $this->data_routes_week = $values['data_routes_week'];
+        $this->data_routes_by_tag = $values['data_routes_by_tag'];
+        $this->data_logs_by_month = $values['data_logs_by_month'];
 
     }
     public function getValues(){
@@ -103,16 +102,25 @@ new class extends Component {
                     'count' => $group->count(),
                 ];
             })
-            ->values()
-            ->groupBy('year_week')
-            ->sortBy('week_start');
+            ->keyBy('year_week');
+
+        $weeks = [];
+        $labels = [];
+        $counts = [];
+        $period = CarbonPeriod::create($startDate, '1 week', $endDate);
+        foreach ($period as $dt) {
+            $year_week = $dt->format('o-W');
+            $weeks[] = $year_week;
+            $labels[] = $year_week;
+            $counts[] = isset($routes_by_week[$year_week]) ? $routes_by_week[$year_week]['count'] : 0;
+        }
 
         $data_routes_week =  [
-        'labels' => range(1, 52),
+        'labels' => $labels,
         'datasets' => [
             [
                 'label' =>  __('Number of routes created by weeks'),
-                'data' => $routes_by_week->pluck('count'),
+                'data' => $counts,
                 'backgroundColor' => 'rgba(0, 0, 0, 0.2)',
                 'borderColor' => 'rgba(0, 0, 0, 1)',
                 'borderWidth' => 1,
@@ -197,21 +205,16 @@ new class extends Component {
             'data_routes_week'=> $data_routes_week,
             'data_routes_grade' => $data_routes_grade];
     }
-
     public function updated(){
         if($this->area == 'null'){
             $this->area = null;
         }
-
-    $values = $this->getValues();
-    $this->data_routes_grade = $values['data_routes_grade'];
-    $this->data_routes_week = $values['data_routes_week'];
-    $this->data_routes_by_tag = $values['data_routes_by_tag'];
-    $this->data_logs_by_month = $values['data_logs_by_month'];
+        $values = $this->getValues();
+        $this->data_routes_grade = $values['data_routes_grade'];
+        $this->data_routes_week = $values['data_routes_week'];
+        $this->data_routes_by_tag = $values['data_routes_by_tag'];
+        $this->data_logs_by_month = $values['data_logs_by_month'];
     }
-
-
-
 }; ?>
 
 <div class='pb-4'>
