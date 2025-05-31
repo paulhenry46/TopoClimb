@@ -149,7 +149,11 @@ new class extends Component {
     }
 
     public function set_remove_date($ids, $date){
-      dd($date);
+      if($date == 'today'){
+        $date = Carbon::today()->toDateTime();
+      }
+
+      Route::whereIn('id', $ids)->update(['removing_at' => $date]);
     }
 
     public function mount($lines, Site $site, Area $area){
@@ -238,23 +242,25 @@ new class extends Component {
 }; ?>
 
 <div>
-  <div class="px-4 sm:px-6 lg:px-8 py-8">
+  <div class="px-4 sm:px-6 lg:px-8 py-8" x-data='{selected:[], 
+                                    open_modal: false, 
+                                    remove(){$wire.set_remove_date(this.selected, $refs.date.value); this.open_modal = false; this.selected = []},
+                                    cancel_modal(){this.open_modal = false; this.selected = []},
+                                    remove_now(){$wire.set_remove_date(this.selected, "now");  this.open_modal = false; this.selected = []},
+                                    toogle(id){
+                                    if(this.selected.includes(id)){this.selected.splice(this.selected.indexOf(id), 1);}else{this.selected.push(id); }}
+                                    }'>
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
         <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Routes')}}</h1>
         <p class="mt-2 text-sm text-gray-700">{{__('Registered routes')}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+       <x-button x-on:click='open_modal = !open_modal' type="button" x-show='selected.length >0'>{{__('Remove')}}</x-button>
        <a href="{{route('admin.routes.new', ['site' => $this->site->id, 'area' => $this->area->id])}}" wire:navigate> <x-button type="button">{{__('Add route')}}</x-button></a>
       </div>
     </div>
-    <div class="flow-root" x-data='{selected:[], 
-                                    open_modal: false, 
-                                    remove(){$wire.set_remove_date(this.selected, $refs.date.value); this.open_modal = false},
-                                    remove_now(){$wire.set_remove_date(this.selected, "now");  this.open_modal = false},
-                                    toogle(id){
-                                    if(this.selected.includes(id)){this.selected.splice(array.indexOf(id), 1);}else{this.selected.push(id); }}
-                                    }' >
+    <div class="flow-root"  >
             <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show='open_modal' style='display: none;'>
          
           <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 bg-gray-500/75  transition-opacity" x-show='open_modal' style='display: none;'></div>
@@ -282,7 +288,7 @@ new class extends Component {
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button @click='remove()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Set date of removing') }}</button>
                   <button @click='remove_now()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Remove now') }}</button>
-                  <button @click='open_modal = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                  <button @click='cancel_modal()' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
                 </div>
               </div>
             </div>
@@ -294,6 +300,7 @@ new class extends Component {
           <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
             <thead>
               <tr>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
@@ -342,16 +349,24 @@ new class extends Component {
                   @empty
                   @endforelse
                 </td>
+                <td class="items-center relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3 flex">
+                 @if($route->removing_at !=  null)
+                  <x-icon-schedule/>
+                  {{ $route->removing_at }}
+                  @else
+                  <x-icon-infinity/>
+                  @endif
+                </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <div class='flex items-center justify-end' >
                   <button wire:click="open_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
                     <x-icon-edit />
                   </button>
                   <button x-on:click='toogle({{$route->id}})' class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
-                    <span x-show='!selected.includes({{$route->id}})'>
+                    <span x-show='selected.includes({{$route->id}})' style='display: hidden;'>
                     <x-icon-delete-filled />
                     </span>
-                    <span x-show='selected.includes({{$route->id}})'>
+                    <span x-show='!selected.includes({{$route->id}})'>
                     <x-icon-delete />
                     </span>
 
