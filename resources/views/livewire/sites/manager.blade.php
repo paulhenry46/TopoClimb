@@ -111,7 +111,7 @@ new class extends Component {
     public function sites()
     {
         if($this->is_super_admin){
-          return Site::paginate(10);
+          return Site::where('id', '!=', 1)->paginate(10);
         }else{
           return Site::whereIn('id', $this->viewable_sites)(10);
         }

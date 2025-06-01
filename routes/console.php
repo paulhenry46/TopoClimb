@@ -1,12 +1,20 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
-use App\Models\User;
+use App\Jobs\DeleteRoute;
+use App\Jobs\SoftDeleteRoute;
+use App\Models\Route;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('grant_owner', function () {
-   $users = User::all();
-   foreach($users as $user){
-    $user->assignRole('owner');
+
+Schedule::call(function () {
+   foreach(Route::where('removing_at', '<', Carbon::now()->subYear()->toDateString())->get() as $route){
+      DeleteRoute::dispatchSync($route);
    }
-})->purpose('Temporary DEV command to grant all access to everybody');
+})->daily();
+
+Schedule::call(function () {
+   foreach(Route::where('removing_at', '=', Carbon::now()->toDateString())->where('comment', '!=', 'softDeleted')->get() as $route){
+      SoftDeleteRoute::dispatchSync($route);
+   }
+})->daily();
