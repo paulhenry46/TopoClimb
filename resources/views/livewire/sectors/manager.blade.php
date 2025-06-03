@@ -231,7 +231,7 @@ new class extends Component {
                       @if($this->editable)
                       <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <button wire:click="open_item({{$sector->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
-                          <x-icon-edit />
+                          <x-icons.icon-edit />
                         </button>
                       </td>
                       @endif
@@ -422,7 +422,7 @@ new class extends Component {
                       <th colspan="1" scope="colgroup" class="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{$sector->name}} ({{$sector->local_id}})</th>
                       <th scope="colgroup" class="bg-gray-50 relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <button wire:click="open_item({{$sector->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
-                          <x-icon-edit />
+                          <x-icons.icon-edit />
                         </button>
                       </th>
                     </tr>

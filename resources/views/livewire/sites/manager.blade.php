@@ -216,7 +216,7 @@ new class extends Component {
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->address}}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$site->areas->count()}}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                  <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button class='cursor-pointer'><x-icon-see/></button></a>
+                  <a wire:navigate href="{{route('admin.areas.manage', ['site'=>$site->id ])}}" class="text-gray-600 hover:text-gray-900 mr-2"><button class='cursor-pointer'><x-icons.icon-see/></button></a>
                   
                   
                 </td>

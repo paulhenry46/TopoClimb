@@ -351,34 +351,34 @@ new class extends Component {
                 </td>
                 <td class="items-center relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3 flex">
                  @if($route->removing_at !=  null)
-                  <x-icon-schedule/>
+                  <x-icons.icon-schedule/>
                   {{ $route->removing_at }}
                   @else
-                  <x-icon-infinity/>
+                  <x-icons.icon-infinity/>
                   @endif
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <div class='flex items-center justify-end' >
                   <button wire:click="open_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
-                    <x-icon-edit />
+                    <x-icons.icon-edit />
                   </button>
                   <button x-on:click='toogle({{$route->id}})' class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
                     <span x-show='selected.includes({{$route->id}})' style='display: hidden;'>
-                    <x-icon-delete-filled />
+                    <x-icons.icon-delete-filled />
                     </span>
                     <span x-show='!selected.includes({{$route->id}})'>
-                    <x-icon-delete />
+                    <x-icons.icon-delete />
                     </span>
 
                   </button>
                   <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="cursor-pointer mr-2 text-gray-600 hover:text-gray-900" >
                     <button>
-                    <x-icon-path />
+                    <x-icons.icon-path />
                     </button>
                   </a>
                   <a wire:navigate href="{{Route('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="cursor-pointer text-gray-600 hover:text-gray-900" >
                     <button>
-                    <x-icon-picture />
+                    <x-icons.icon-picture />
                     </button>
                   </a>
                   </div>

@@ -194,29 +194,29 @@ new class extends Component {
                                 @endphp
                                 @if ($hr == 0)
                                 <div class='text-amber-500 flex aling-center gap-x-1 font-bold'>
-                                    <x-icon-police />
+                                    <x-icons.icon-police />
                                     {{ ('Super Admin') }}
                                 </div>
                                 @elseif($hr == 1)
                                 <div class='text-red-500 flex aling-center gap-x-1 font-bold'>
-                                    <x-icon-account-manager />
+                                    <x-icons.icon-account-manager />
                                     {{ __('Owner') }}
                                 </div>
                                 @elseif ($hr == 2)
                                 <div class='text-blue-500 flex aling-center gap-x-1 font-bold'>
-                                    <x-icon-settings />
+                                    <x-icons.icon-settings />
                                     {{ __('Local admin') }}
                                 </div>
                                 @elseif($hr == 3)
                                 <div class='text-green-500 flex aling-center gap-x-1 font-bold'>
-                                    <x-icon-edit />
+                                    <x-icons.icon-edit />
                                     {{ __('Opener') }}
                                 </div>
                                 @endif
 
                               </td>
                               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3"> <button class='cursor-pointer' wire:click="open_item({{$user->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
-                                      <x-icon-edit />
+                                      <x-icons.icon-edit />
                                   </button> </td>
                           </tr> 
                         @endforeach 
