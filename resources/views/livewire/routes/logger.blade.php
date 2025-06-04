@@ -103,13 +103,23 @@ new class extends Component {
       $this->cotation = $this->route->grade;
     }
 }; ?>
+@if ($this->area->type == 'trad')
+<div x-data="{ open: false, save(){$wire.way = this.way; $wire.type= this.type; $wire.save(); this.open = false;}, step:1, type: 'work', way: 'top-rope', 
+            next_action(){
+                if(this.step == 3){this.save()}else{this.step++;}
+                },
+                cancel_action(){this.open = false; this.step = 1;} 
+                }" @show_modal.window="open = true">
+@else
+  <div x-data="{ open: false, save(){$wire.way = this.way; $wire.type= this.type; $wire.save(); this.open = false;}, step:1, type: 'work', way: 'top-rope', 
+            next_action(){
+                if(this.step == 2){this.save()}else{this.step++;}
+                },
+                cancel_action(){this.open = false; this.step = 1;} 
+                }" @show_modal.window="open = true">
 
-<div x-data="{ open: false, save(){$wire.save(); this.open = false;} }">
-  <button @click="open=true" type="button" class="cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
-      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-    </svg>
-  </button>
+@endif
+
   <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
     <div class="fixed inset-0 bg-gray-500/75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -152,59 +162,160 @@ new class extends Component {
                   </g>
                 </svg>
               </div>
-              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">{{ __('Your ascent') }}</h3>
-                <div class="mt-2">
+              <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                
+                
+                <div class='mt-2 text-left' x-show='step == 1'> 
+                  <div class="mx-auto max-w-lg">
+                    <h2 class="text-base font-semibold leading-6 text-gray-900">{{ __('Ascent type') }}</h2>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('Get started by selecting how you climbed the route') }}</p>
+                    <ul role="list" class="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200">
+                      <li x-on:click='type = "view"'>
+                        <div class="group relative flex items-start space-x-3 py-4">
+                          <div class="flex-shrink-0">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500">
+                              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" />
+                              </svg>
+                            </span>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900">
+                              <a href="#">
+                                <span class="absolute inset-0" aria-hidden="true"></span>
+                                {{__('View')}}
+                              </a>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ __('Successfully complete a route on the first attempt, without knowing the difficulties involved') }}</p>
+                          </div>
+                           <div class="flex-shrink-0 self-center text-indigo-500" x-show='type =="view"'>
+                            <x-icons.icon-check/>
+                          </div>
+                        </div>
+                      </li>
+                      <li x-on:click='type = "flash"'>
+                        <div class="group relative flex items-start space-x-3 py-4">
+                          <div class="flex-shrink-0">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                              </svg>
+                            </span>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900">
+                              <a href="#">
+                                <span class="absolute inset-0" aria-hidden="true"></span>
+                                {{__('Flash')}}
+                              </a>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ __('Flashering a route means linking it together without having worked on it, but knowing the movements you\'ve read from the ground.') }}</p>
+                          </div>
+                          <div class="flex-shrink-0 self-center text-amber-500" x-show='type =="flash"'>
+                            <x-icons.icon-check/>
+                          </div>
+                        </div>
+                      </li>
+                      <li x-on:click='type = "work"'>
+                        <div class="group relative flex items-start space-x-3 py-4">
+                          <div class="flex-shrink-0">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500">
+                              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                              </svg>
+                            </span>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900">
+                              <a href="#">
+                                <span class="absolute inset-0" aria-hidden="true"></span>
+                                {{__('After work')}}
+                              </a>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ __('Here, we know the movements, we\'ve already worked the way.') }}</p>
+                          </div>
+                           <div class="flex-shrink-0 self-center text-emerald-500" x-show='type =="work"'>
+                            <x-icons.icon-check/>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                @if ($this->area->type == 'trad')
+                <div class='mt-2 text-left' x-show='step == 2'> 
+                  <div class="mx-auto max-w-lg">
+                    <h2 class="text-base font-semibold leading-6 text-gray-900">{{ __('Ascent way') }}</h2>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('Continue by selecting the type of ascent') }}</p>
+                    <ul role="list" class="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200">
+                      <li x-on:click='way = "top-rope"'>
+                        <div class="group relative flex items-start space-x-3 py-4">
+                          <div class="flex-shrink-0">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
+                              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 01-1.44-4.282m3.102.069a18.03 18.03 0 01-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 018.835 2.535M10.34 6.66a23.847 23.847 0 008.835-2.535m0 0A23.74 23.74 0 0018.795 3m.38 1.125a23.91 23.91 0 011.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 001.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 010 3.46" />
+                              </svg>
+                            </span>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900">
+                              <a href="#">
+                                <span class="absolute inset-0" aria-hidden="true"></span>
+                                {{__('Top-Rope')}}
+                              </a>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ __('The rope is already in the belay at the top of the route.') }}</p>
+                          </div>
+                           <div class="flex-shrink-0 self-center text-blue-500" x-show='way =="top-rope"'>
+                            <x-icons.icon-check/>
+                          </div>
+                        </div>
+                      </li>
+                      <li x-on:click='way = "lead"'>
+                        <div class="group relative flex items-start space-x-3 py-4">
+                          <div class="flex-shrink-0">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-pink-500">
+                              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+                              </svg>
+                            </span>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900">
+                              <a href="#">
+                                <span class="absolute inset-0" aria-hidden="true"></span>
+                                {{__('Lead')}}
+                              </a>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ __('The climber places the rope in the quickdraws as he progresses up the route, or even the quickdraws..') }}</p>
+                          </div>
+                          <div class="flex-shrink-0 self-center text-pink-500" x-show='way =="lead"'>
+                            <x-icons.icon-check/>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                @endif
+
+                @if ($this->area->type == 'trad')
+                <div class="mt-2 w-full" x-show='step == 3'>
+                  @else
+                  <div class="mt-2 w-full" x-show='step == 2'>
+                  @endif
+                   <h2 class="text-base font-semibold leading-6 text-gray-900">{{ __('Your comments') }}</h2>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('you can comment this route and show the felt grade') }}</p>
+
                   <div class="grid grid-cols-2">
-                    <div>
-                      <fieldset wire:model="type" x-data="{type: $wire.entangle('type')}">
-                        <legend class="sr-only">{{__('Ascent way')}}</legend>
-                        <div class="-space-y-px bg-white">
-                          <label :class="type == 'view' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-hidden">
-                            <input x-model="type" type="radio" name="area-type" value="view" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 active:border-0   focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
-                            <span class="ml-3 flex flex-col">
-                              <span :class="type == 'view' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('View')}}</span>
-                              <span :class="type == 'view' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
-                            </span>
-                          </label>
-                          <label :class="type == 'flash' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="relative flex cursor-pointer border p-4 focus:outline-hidden">
-                            <input x-model="type" type="radio" name="area-type" value="flash" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
-                            <span class="ml-3 flex flex-col">
-                              <span :class="type == 'flash' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Flash')}}</span>
-                              <span :class="type == 'flash' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
-                            </span>
-                          </label>
-                          <label :class="type == 'work' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-hidden">
-                            <input x-model="type" type="radio" name="area-type" value="work" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
-                            <span class="ml-3 flex flex-col">
-                              <span :class="type == 'work' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('After work')}}</span>
-                              <span :class="type == 'work' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
-                            </span>
-                          </label>
-                        </div>
-                      </fieldset>
-                    </div>
-                    <div class="space-y-2 px-4">
-                      @if ($this->area->type == 'trad')
-                      <div class="w-full">
-                        <x-label for="name" value="{{ __('Type') }}" />
-                        <div class="mt-2">
-                          <select wire:model="way" id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
-                            <option value="top-rope">{{__('Moulinette')}}</option>
-                            <option value="lead">{{ __('En tete') }}</option>
-                          </select>
-                          <x-input-error for="name" class="mt-2" />
-                        </div>
-                      </div>
-                      @endif
-                      <div class="w-full">
+                      <div class="w-full col-span-2">
                         <x-label for="address" value="{{ __('Comments') }}" />
                         <div class="mt-2">
                           <textarea wire:model="comment" id="address" name="address" rows="2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"></textarea>
                           <x-input-error for="address" class="mt-2" />
                         </div>
                       </div>
-                      <div class="w-full">
+                      <div class="w-full mt-3">
                         <x-label for="name" value="{{ __('Your cotation') }}" />
                         <div class="mt-2 flex items-center gap-2">
                        <select wire:model='cotation' id="location" name="location" class=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
@@ -218,14 +329,15 @@ new class extends Component {
                         <x-input-error for="name" class="mt-2" />
                         </div>
                       </div>
-                    </div>
-                    <div class="w-full col-span-2 mt-3">
+                      <div class="w-full mt-3">
                       <x-label for="address" value="{{ __('Video URL') }}" />
                       <div class="mt-2">
-                        <x-input class="w-full" wire:model="address" id="address" name="address"/>
+                        <x-input class="text-xs w-full" wire:model="address" id="address" name="address"/>
                         <x-input-error for="address" class="mt-2" />
                       </div>
+
                     </div>
+                    
                     <div></div>
                   </div>
                 </div>
@@ -233,8 +345,8 @@ new class extends Component {
             </div>
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 sm:gap-x-1">
-            <x-secondary-button x-on:click="open = false" type="button">{{__('Cancel')}}</x-secondary-button>
-            <x-button @click="save()">{{__('Save')}}</x-button>
+            <x-secondary-button x-on:click="cancel_action()" type="button">{{__('Cancel')}}</x-secondary-button>
+            <x-button x-on:click='next_action()'>{{__('Continue')}}</x-button>
           </div>
         </div>
       </div>

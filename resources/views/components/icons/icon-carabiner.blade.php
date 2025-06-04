@@ -5,7 +5,9 @@
             version="1.1"
             id="svg1"
             xmlns="http://www.w3.org/2000/svg"
-            xmlns:svg="http://www.w3.org/2000/svg">
+            xmlns:svg="http://www.w3.org/2000/svg"
+            class='mx-auto mt-3'>
+
            <defs
               id="defs1" />
            <g

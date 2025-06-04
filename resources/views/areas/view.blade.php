@@ -10,7 +10,6 @@
           </div>
 
           <livewire:areas.view :area='$area'/>
-         
         </div>
       </div>
     </div>

@@ -192,4 +192,6 @@ new class extends Component {
           <x-area.card-route :logs="$logs" key='card-sm' :key_button="'button-sm'"/>
       </div>
   </div>
+  <!--hdhf/-->
+
 </div>

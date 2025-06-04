@@ -16,14 +16,22 @@
             @endif
           </p>
         </div>
-        <div class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
+        <div x-data class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
           @auth
           @if($key_button == 'button-md')
           <livewire:routes.registered :route='$this->route' key='button3'/>
-          <livewire:routes.logger :route='$this->route' key='button1'/>
+           <button @click="$dispatch('show_modal')" type="button" class=" cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
+      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+    </svg>
+  </button>
             @else
             <livewire:routes.registered :route='$this->route' key='button4'/>
-          <livewire:routes.logger :route='$this->route' key='button2'/>
+           <button @click="$dispatch('show_modal')" type="button" class=" cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
+      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+    </svg>
+  </button>
             @endif
             @endauth
             @guest
@@ -126,17 +134,17 @@
             </div>
           </div> 
           @empty
-          <div class="text-center rounded-lg border-2 border-dashed border-gray-300">
+          <div class="text-center rounded-lg border-2 border-dashed border-gray-300 mt-2">
   <x-icons.icon-comments/>
   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No comments') }}</h3>
   <p class="mt-1 text-sm text-gray-500"> {{ __('No comments for this route. If you manage to climb it, you can be the first to comment !') }}</p>
   <div class="mt-6">
-    <button type="button" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+   <x-button @click="$dispatch('show_modal')" class='mb-2'>
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
       <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
     </svg>
       {{ __('Register your ascent !') }}
-    </button>
+    </x-button>
   </div>
 </div>         
           @endforelse
@@ -188,17 +196,18 @@
             </div>
           </div> 
           @empty
-          <div class="text-center rounded-lg border-2 border-dashed border-gray-300">
-  <x-icons.icon-comments/>
+          <div class="text-center rounded-lg border-2 border-dashed border-gray-300 mt-2">
+            
+  <x-icons.icon-carabiner/>
   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No acsents') }}</h3>
   <p class="mt-1 text-sm text-gray-500"> {{ __('No ascents for this route. Maybe you are the fisrt to succes !') }}</p>
   <div class="mt-6">
-    <button type="button" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+    <x-button @click="$dispatch('show_modal')" class='mb-2'>
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
       <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
     </svg>
       {{ __('Register your ascent !') }}
-    </button>
+    </x-button>
   </div>
 </div>   
           @endforelse
@@ -210,4 +219,5 @@
         --}}
       </div>
     </div>
+    <livewire:routes.logger :route='$this->route'/>
   </div>
