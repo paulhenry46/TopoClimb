@@ -36,14 +36,9 @@
                     <livewire:dashboard.graph/>
                 </div>
                </div>
-               <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3">
-                <div class='px-4 py-4'>
-                    <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
-                       {{ __('Routes') }}
-                    </h2>
+               
                     <livewire:dashboard.routes/>
-                </div>
-               </div>
+                
         </div>
 
         </div>
