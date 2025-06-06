@@ -57,7 +57,19 @@
         </div>          
     </a>
     @empty
-        nothing to show
+        <div class="col-span-3 flex flex-col items-center justify-center py-24 text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor"><path d="M440-520v80q0 17 11.5 28.5T480-400q17 0 28.5-11.5T520-440v-80h80q17 0 28.5-11.5T640-560q0-17-11.5-28.5T600-600h-80v-80q0-17-11.5-28.5T480-720q-17 0-28.5 11.5T440-680v80h-80q-17 0-28.5 11.5T320-560q0 17 11.5 28.5T360-520h80Zm40 413q-14 0-28-5t-25-15q-65-60-115-117t-83.5-110.5q-33.5-53.5-51-103T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 45-17.5 94.5t-51 103Q698-301 648-244T533-127q-11 10-25 15t-28 5Z"/></svg>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-2">{{ __('No sites yet') }}</h3>
+        <p class="text-gray-500 mb-6 text-center max-w-md">{{ __("There are no climbing sites registered yet. When sites are added, they'll show up here!") }}</p>
+        @auth
+            <a wire:navigate href="{{ route('admin.sites.manage') }}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-md shadow hover:bg-gray-700 transition">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                {{ __('Add your first site') }}
+            </a>
+        @endauth
+    </div>
     @endforelse
 </div>
 </x-grid-pattern-layout >

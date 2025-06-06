@@ -28,7 +28,9 @@ new class extends Component {
             </select>
           </div>
 <div>
-    <table x-show='type_show == "history"' class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
+<div x-show='type_show == "history"'>
+  @if(!$this->logs->isEmpty())
+    <table  class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
         <tbody class="bg-white"> @foreach ($this->logs as $log) <tr 
           class="hover:bg-gray-50 cursor-pointer">
           <td class="bg-{{$log->route->color}}-300 border-2 border-{{$log->route->color}}-300 rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
@@ -74,8 +76,23 @@ new class extends Component {
             </td>
           </tr> @endforeach </tbody>
       </table>
+      @else
+      <div class="col-span-3 flex flex-col items-center justify-center text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor"><path d="M680-680h-40q-17 0-28.5-11.5T600-720q0-17 11.5-28.5T640-760h40v-40q0-17 11.5-28.5T720-840q17 0 28.5 11.5T760-800v40h40q17 0 28.5 11.5T840-720q0 17-11.5 28.5T800-680h-40v40q0 17-11.5 28.5T720-600q-17 0-28.5-11.5T680-640v-40ZM480-240l-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h225q18 0 27 16t1 33q-7 17-10 34t-3 37q0 72 45.5 127T680-524q12 2 21.5 2.5t18.5.5q17 0 28.5 10.5T760-484v243q0 43-36 66.5t-76 6.5l-168-72Z"/></svg>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-2">{{ __('No climbed routes yet') }}</h3>
+        <p class="text-gray-500 mb-6 text-center max-w-md">{{ __("Explore routes proposed by sites and come back !. When you will have climbed your first route, it will appear here !") }}</p>
+            <a wire:navigate href="{{ route('sites.public-index') }}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-md shadow hover:bg-gray-700 transition">
+                
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
 
-      <table x-show='type_show == "registered"' class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
+                {{ __('Explore sites') }}
+            </a>
+    </div>
+    @endif
+    </div>
+<div x-show='type_show == "registered"' >
+  @if(!$this->favorites->isEmpty())
+      <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
         <tbody class="bg-white"> @foreach ($this->favorites as $route) <tr 
           class="hover:bg-gray-50 cursor-pointer">
           <td class="bg-{{$route->color}}-300 border-2 border-{{$route->color}}-300 rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
@@ -93,6 +110,21 @@ new class extends Component {
             </td>
           </tr> @endforeach </tbody>
       </table>
+      @else
+       <div class="col-span-3 flex flex-col items-center justify-center text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor"><path d="M680-680h-40q-17 0-28.5-11.5T600-720q0-17 11.5-28.5T640-760h40v-40q0-17 11.5-28.5T720-840q17 0 28.5 11.5T760-800v40h40q17 0 28.5 11.5T840-720q0 17-11.5 28.5T800-680h-40v40q0 17-11.5 28.5T720-600q-17 0-28.5-11.5T680-640v-40ZM480-240l-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h225q18 0 27 16t1 33q-7 17-10 34t-3 37q0 72 45.5 127T680-524q12 2 21.5 2.5t18.5.5q17 0 28.5 10.5T760-484v243q0 43-36 66.5t-76 6.5l-168-72Z"/></svg>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-2">{{ __('No routes yet') }}</h3>
+        <p class="text-gray-500 mb-6 text-center max-w-md">{{ __("You have not yet favorited route. Explore routes proposed by sites and come back !") }}</p>
+            <a wire:navigate href="{{ route('sites.public-index') }}" class="inline-flex items-center px-4 py-2 bg-gray-900 text-white rounded-md shadow hover:bg-gray-700 transition">
+                
+                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M380-320q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l224 224q11 11 11 28t-11 28q-11 11-28 11t-28-11L532-372q-30 24-69 38t-83 14Zm0-80q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+
+                {{ __('Explore sites') }}
+            </a>
+    </div>
+      @endif
+
+    </div>
 </div>
 </div>
 </div>
