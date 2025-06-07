@@ -25,6 +25,7 @@ new class extends Component {
     public array $schema_data = [];
     public $cotations = [];
     public $tags_available;
+    public bool $new;
 
     public $selected_sector;
     public $selected_line;
@@ -80,6 +81,7 @@ new class extends Component {
       $this->tags_id = [];
       $this->cotation_to = 0;
       $this->cotation_from = 0;
+      $this->new = false;
       if(!empty($this->route_id)){
         $this->route = Route::find($this->route_id);
         $this->mobile_first_open = true;
@@ -91,6 +93,7 @@ new class extends Component {
       
       $this->user_state = 'all';
       $this->selected_line = 0;
+      //dump($this->route);
       }
 
     public function with(){
@@ -116,6 +119,9 @@ new class extends Component {
       ->when($this->cotation_from != 0, function($query, $cotation) {
           return $query->where('grade', '>=', $this->cotation_from);
       })
+      ->when($this->new, function($query, $cotation) {
+          return $query->where('created_at', '>=', now()->subDays(7));
+      })
       ->when($this->user_state == 'success', function($query) {
           return $query->whereHas('logs', function ($query) {
         $query->where('user_id', '=', Auth::id());
@@ -131,7 +137,7 @@ new class extends Component {
               $query->whereIn('tags.id', $this->tags_id);
           }, '>=', count($this->tags_id));
       });
-    return ['routes' => $routesQuery->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->take(3)->get(), 'lines' => $lines->get()];
+    return ['routes' => $routesQuery->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->take(3)->get(), 'lines' => $lines->get(), 'route'=> $this->route];
     }
 
     public function selectSector($id){
@@ -141,7 +147,6 @@ new class extends Component {
       $this->selected_line = $id;
     }
 }; ?>
-
 <div class="grid grid-cols-3 md:mt-8 gap-4 md:pt-2">
   <div class="col-span-3 md:col-span-2 flex flex-col" 
     @if($this->area->type == 'bouldering') 
@@ -157,13 +162,12 @@ new class extends Component {
     <x-area.table-routes :routes=$routes />
 
   </div>
+
   <div class='hidden md:block'>
     <x-area.card-route :logs=$logs key='card-md' :key_button="'button-md'"/>
   </div>
 
 <div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden">
-  <!-- Drawer Toggle Button -->
-
   <!-- Drawer -->
   <div style='display: none;'
       x-show="open" 
@@ -189,9 +193,8 @@ new class extends Component {
 
       <!-- Drawer Content -->
       <div class="p-4 overflow-y-auto max-h-[75vh]">
-          <x-area.card-route :logs="$logs" key='card-sm' :key_button="'button-sm'"/>
+          <x-area.card-route :logs=$logs key='card-sm' :key_button="'button-sm'"/>
       </div>
   </div>
   <!--hdhf/-->
-
 </div>

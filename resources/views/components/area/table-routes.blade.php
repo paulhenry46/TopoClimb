@@ -47,7 +47,18 @@ border-zinc-300'
                 <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   <div class="flex items-center">
                     <div>
-                      <div class="font-bold pb-1">{{$route->name}}</div> @if($route->line->local_id == 0) <div class="text-sm opacity-50">{{__('Sector')}} {{$route->line->sector->local_id}}</div> @else <div class="text-sm opacity-50">{{__('Line')}} {{$route->line->local_id}}</div> @endif
+                      <div class="font-bold pb-1">{{$route->name}}
+                         @if($route->created_at >= now()->subDays(7))
+      <span class=" top-1 left-1 bg-gray-900 text-white text-xs font-bold px-2 py-0.5 rounded shadow">New</span>
+    @endif
+                      </div> 
+                      @if($route->line->local_id == 0) 
+                      <div class="text-sm opacity-50">{{__('Sector')}} {{$route->line->sector->local_id}}
+                        </div> 
+                      @else 
+                      <div class="text-sm opacity-50">{{__('Line')}} {{$route->line->local_id}}
+                        </div> 
+                        @endif
                     </div>
                   </div>
                 </td>

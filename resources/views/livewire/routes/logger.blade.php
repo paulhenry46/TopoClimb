@@ -8,15 +8,10 @@ use App\Models\Line;
 use App\Models\User;
 use App\Models\Tag;
 use App\Models\Route;
-use Livewire\Attributes\Validate; 
-use Illuminate\Support\Str;
-use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 use Carbon\Carbon;
-use Livewire\Attributes\Reactive;
 new class extends Component {
-  use WithFileUploads;
-    #[Reactive]
+
     public Route $route;
     public User $user;
     public Area $area;
@@ -103,24 +98,14 @@ new class extends Component {
       $this->cotation = $this->route->grade;
     }
 }; ?>
-@if ($this->area->type == 'trad')
+
 <div x-data="{ open: false, save(){$wire.way = this.way; $wire.type= this.type; $wire.save(); this.open = false;}, step:1, type: 'work', way: 'top-rope', 
             next_action(){
-                if(this.step == 3){this.save()}else{this.step++;}
+                if(this.step == @if ($this->area->type == 'trad')3 @else 2 @endif ){this.save()}else{this.step++;}
                 },
                 cancel_action(){this.open = false; this.step = 1;} 
                 }" @show_modal.window="open = true">
-@else
-  <div x-data="{ open: false, save(){$wire.way = this.way; $wire.type= this.type; $wire.save(); this.open = false;}, step:1, type: 'work', way: 'top-rope', 
-            next_action(){
-                if(this.step == 2){this.save()}else{this.step++;}
-                },
-                cancel_action(){this.open = false; this.step = 1;} 
-                }" @show_modal.window="open = true">
-
-@endif
-
-  <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+  <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
     <div class="fixed inset-0 bg-gray-500/75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
       <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
