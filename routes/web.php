@@ -36,6 +36,10 @@ Route::middleware([
             Route::get('/', function (Site $site) {
                 return view('areas.index', compact('site'));
             })->middleware('can:edit_areas,site')->name('areas.manage');
+
+            Route::get('/stats', function (Site $site) {
+                return view('sites.stats', compact('site'));
+            })->middleware('can:edit_areas,site')->name('site.stats');
             
             Route::prefix('/areas/{area}')->group(function () {
                 Route::get('/', function (Site $site, Area $area) {

@@ -44,11 +44,22 @@
               <x-grid-pattern-item >
                 <livewire:sites.editor :$site/>
               </x-grid-pattern-item>
-              <x-grid-pattern-title >
-                {{ __('Stats') }}
-              </x-grid-pattern-title>
               
-                <livewire:sites.stats :$site/>
+              
+              
+ 
+    <div class='grid grid-cols-6 gap-2 mb-4'>
+        <div class="bg-white overflow-hidden  sm:rounded-lg col-span-6 flex justify-between items-center">
+            <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
+                {{ __('Stats of Site') }}
+            </h2>
+            <div class='flex items-center gap-2 ml-2 mr-2'>  <x-button href="{{ route('admin.site.stats', ['site'=> $site]) }}" wire:navigate>{{ __('Access') }}</x-button>
+            
+        </div>
+        </div>
+    
+
+</div>
              
                @endcan
                <x-grid-pattern-title >
