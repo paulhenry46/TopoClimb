@@ -13,13 +13,13 @@ new class extends Component {
       $this->user  = auth()->user();
       $hr = $this->user->hr();
 
-      if($hr = 'super-admin'){
+      if($hr == 'super-admin'){
         $this->color = 'amber';
-      }elseif($hr = 'owner'){
+      }elseif($hr == 'owner'){
         $this->color = 'red';
-      }elseif($hr = 'admin'){
+      }elseif($hr == 'admin'){
         $this->color = 'blue';
-      }elseif($hr = 'opener'){
+      }elseif($hr == 'opener'){
         $this->color = 'green';
       }else{
         $this->color = 'gray';

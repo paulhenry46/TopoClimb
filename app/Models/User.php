@@ -31,6 +31,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id'
     ];
 
     /**
@@ -83,7 +84,7 @@ class User extends Authenticatable
             }elseif(preg_grep("/^opener/", $roles_name)){
                 return 3;
             }else{
-                return null;
+                return 4;
             }
     }
 

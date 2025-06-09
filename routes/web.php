@@ -6,11 +6,17 @@ use App\Models\Site;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Volt\Volt;
+use App\Http\Controllers\GoogleController;
 
 Route::get('/', function(){
     return redirect(route('sites.public-index'));
 })->name('welcome');
+
+
+Route::controller(GoogleController::class)->group(function(){
+    Route::get('auth/google', 'redirectToGoogle')->name('auth.google');
+    Route::get('auth/google/callback', 'handleGoogleCallback');
+});
 
 Route::middleware([
     'auth:web',
