@@ -46,7 +46,7 @@ new class extends Component {
           dump($line);
         }
       }
-      dd($this->lines_sectors);
+      //dd($this->lines_sectors);
       $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' => $this->area->id], navigate: true);
       }
       }
