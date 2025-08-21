@@ -76,7 +76,7 @@ Route::middleware([
                         })->name('lines');
                         Route::get('/schema', function (Site $site, Area $area) {
                             $type = 'schema';
-                            return view('topo.wizard', compact('site', 'area', 'type'));
+                            return view('topo.wizard-schema', compact('site', 'area', 'type'));
                         })->name('schema');
                     });
 
