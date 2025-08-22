@@ -1,9 +1,20 @@
 <x-pdf-layout>
 <div class="pt-12 mx-3">
     <div class='justify-center flex'>
+      @if($type == 'schema')
+
+        <div class="relative w-full h-full min-h-96">
+                <div class="w-full h-96 z-0 flex items-center justify-center">
+                  <img class="object-contain h-96" src="{{ Storage::url('plans/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/schema') }}" />
+                </div>
+                <div class="absolute inset-0 flex justify-center items-center z-10"> {!! Storage::get('paths/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/edited/topo_export.svg') !!} </div>
+        </div> 
+
+        @else
         <div>
             <img src='{{ Storage::url('plans/site-'.$site->id.'/area-'.$area->id.'/topo_export_'.$type.'.svg') }}'/>
         </div>
+        @endif
     </div>
     <div>
         <div class="relative mt-2 -bottom-px col-span-full col-start-1 row-start-2 h-px bg-gray-200">
@@ -39,13 +50,19 @@
                 </div>
             </div>
             <div>
-                    QR CODE
+ <img class="h-24 mr-2 rounded-md object-cover" src="{{Storage::url('qrcode/site-'.$site->id.'/qrcode.svg')}}"/>
             </div>
         </div>
         <div class="h-10 -top-px  border-b border-t border-t-(--pattern-fg) bg-[image:repeating-linear-gradient(-45deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed">
         </div>
     </div>
+    @if($type !== 'schema')
     <div class=' print:hidden flex justify-end'>
       <a class='mr-2 mt-2' wire:navigate href='{{ route("admin.areas.topo.result.routes.$type", ['site'=>$area->site, 'area'=> $area]) }}'  > <x-button type="button">{{ __('Next') }}</x-button></a>
     </div>
+    @else
+    <div class=' print:hidden flex justify-end'>
+    <a class='mr-2 mt-2' wire:navigate href='{{route('admin.sectors.manage', ['site' => $site->id, 'area' => $area->id])}}'  > <x-button type="button">{{ __('Finish') }}</x-button></a>
+  </div>
+    @endif
 </x-pdf-layout>

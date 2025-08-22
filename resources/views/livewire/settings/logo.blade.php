@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Volt\Component;
-use ZipArchive;
+
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
 
@@ -18,7 +18,7 @@ new class extends Component {
 
 }; ?>
 
-<div class="px-4 sm:px-6 lg:px-8 py-8">
+<div class="px-4 sm:px-6 lg:px-8 py-8 bg-white sm:rounded-lg">
     <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
             <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Logo')}}</h1>

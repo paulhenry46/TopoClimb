@@ -7,6 +7,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\GoogleController;
+use App\Models\Sector;
 
 Route::get('/', function(){
     return redirect(route('sites.public-index'));
@@ -35,7 +36,7 @@ Route::middleware([
 
     Route::prefix('/admin')->name('admin.')->group(function () {
         Route::get('/', function () {
-            return view('sites.index');
+            return view('admin');
         })->middleware('can:sites')->name('sites.manage');
         
         Route::prefix('/site/{site}')->group(function () {
@@ -74,9 +75,9 @@ Route::middleware([
                             $type = 'lines';
                             return view('topo.wizard', compact('site', 'area', 'type'));
                         })->name('lines');
-                        Route::get('/schema', function (Site $site, Area $area) {
+                        Route::get('/schema/{sector}', function (Site $site, Area $area, Sector $sector) {
                             $type = 'schema';
-                            return view('topo.wizard-schema', compact('site', 'area', 'type'));
+                            return view('topo.wizard-schema', compact('site', 'area', 'type', 'sector'));
                         })->name('schema');
                     });
 
@@ -89,9 +90,9 @@ Route::middleware([
                             $type = 'lines';
                             return view('topo.pdf.map', compact('site', 'area', 'type'));
                         })->name('lines');
-                        Route::get('/schema', function (Site $site, Area $area) {
+                        Route::get('/schema/{sector}', function (Site $site, Area $area, Sector $sector) {
                             $type = 'schema';
-                            return view('topo.pdf.map', compact('site', 'area', 'type'));
+                            return view('topo.pdf.map', compact('site', 'area', 'type', 'sector'));
                         })->name('schema');
                     });
 

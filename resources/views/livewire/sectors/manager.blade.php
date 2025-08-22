@@ -514,7 +514,7 @@ new class extends Component {
 </x-grid-pattern-title >
 
   <x-grid-pattern-item class='mt-2'>
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
+    <div class="px-4 sm:px-6 lg:px-8 py-8" x-data="{ open: false}">
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Topo')}}</h1>
@@ -523,7 +523,60 @@ new class extends Component {
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
          <a wire:navigate href='{{ route("admin.areas.topo.initialize.lines", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Lines') }}</x-button></a>
          <a wire:navigate href='{{ route("admin.areas.topo.initialize.sectors", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Sectors') }}</x-button></a>
-          <a wire:navigate href='{{ route("admin.areas.topo.initialize.schema", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Schema') }}</x-button></a>
+          <a x-on:click='open=true'  > <x-button type="button">{{ __('Schema') }}</x-button></a>
+
+          <div>
+            <div style='display:none;' class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
+              <div class="fixed inset-0 bg-gray-500/75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
+                <div class="fixed inset-0 z-10 overflow-y-auto">
+                  <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                      <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                          <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                            <div class='mt-2 text-left'> 
+                              <h2 class="text-base font-semibold leading-6 text-gray-900">{{ __('Choose sector') }}</h2>
+                                <p class="mt-1 text-sm text-gray-500">{{ __('Get started by selecting the sector you want to get the schema') }}</p>
+                                
+                              <div class="mx-auto max-w-lg">
+                                
+
+                                <table class="min-w-full divide-y divide-gray-300">
+                  <thead>
+                    <tr>
+                      <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{__('Local ID')}}</th>
+                      <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Name')}}</th>
+                      <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                        <span class="sr-only">Edit</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white"> @foreach ($this->sectors() as $sector) <tr >
+                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">{{$sector->local_id}}</td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$sector->name}}</td>
+                      <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                        <a class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:navigate href='{{ route("admin.areas.topo.initialize.schema", ['site'=>$this->area->site, 'area'=> $this->area, 'sector'=>$sector]) }}' >
+                          <x-icons.icon-check />
+                        </a>
+                      </td>
+                    </tr> @endforeach </tbody>
+                </table>
+
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 sm:gap-x-1">
+                        <x-secondary-button x-on:click="open=false" type="button">{{__('Cancel')}}</x-secondary-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
         </div>
       </div>
       <div class="sm:flex sm:items-center mt-6">

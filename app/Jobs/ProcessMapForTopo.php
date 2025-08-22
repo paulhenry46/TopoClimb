@@ -17,7 +17,7 @@ class ProcessMapForTopo implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Site $site, public Area $area, public string $svg, public string $type)
+    public function __construct(public Site $site, public Area $area, public string $svg, public string $type, public ?int $sector_id)
     {
         //
     }
@@ -29,13 +29,16 @@ class ProcessMapForTopo implements ShouldQueue
     {
         if($this->type == 'sectors'){
             $output_name ='topo_export_sectors.svg';
+            $final_path = 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/'.$output_name;
             }elseif($this->type == 'lines'){
               $output_name ='topo_export_lines.svg';
+              $final_path = 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/'.$output_name;
             }else{
-              $output_name ='topo_export_schema.svg';
+              $final_path = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector_id.'/edited/topo_export.svg';
             }
 
-        $final_path = 'plans/site-'.$this->site->id.'/area-'.$this->area->id.'/'.$output_name;
+        
+        
         $xml = simplexml_load_string($this->svg);
         $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
@@ -45,6 +48,20 @@ class ProcessMapForTopo implements ShouldQueue
         foreach ($items as $item) {
             $item->remove();
         }
+        if($this->type == 'schema'){
+            $items = $dom->getElementsByTagName('svg');
+                foreach ($items as $item) {
+                    $width = $item->getAttribute('width');
+                    $height = $item->getAttribute('height');
+                    $item->removeAttribute('width');
+                    $item->removeAttribute('height');
+                    $item->setAttribute("viewBox", "0 0 $width $height");
+                }
+                foreach ($items as $item) {
+            $item->setAttribute("class", "h-96"); // We set the height of the svg to better scale it with css
+          }
+        }
+
         Storage::put($final_path, $dom->saveXML());
         $input_file_path = Storage::path($final_path, $dom->saveXML());
 

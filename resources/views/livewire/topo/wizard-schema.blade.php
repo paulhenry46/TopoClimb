@@ -18,22 +18,23 @@ new class extends Component {
     public $svg;
     public $url;
     public $routes;
+    public $sector;
 
-    public function mount(Site $site, Area $area){
+    public function mount(Site $site, Area $area, Sector $sector){
 
       $this->site = $site;
       $this->area = $area;
-      $sector = $this->area->sectors->first();
-      $this->url = Storage::url('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/edited/common_paths.svg');
-      $bg = Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema');
+      $this->sector = $sector;
+      $this->url = Storage::url('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/common_paths.svg');
+      $bg = Storage::url('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/schema');
 
      
-     $this->routes = $sector->routes()->pluck('name','id')->toJson();
+     $this->routes = $this->sector->routes()->pluck('name','id')->toJson();
     }
 
     public function save(){
-        ProcessMapForTopo::dispatchSync($this->site, $this->area, $this->svg, $this->type);
-        $this->redirectRoute('admin.areas.topo.result.map.'.$this->type, ['site'=>$this->site, 'area'=>$this->area], navigate:true);
+        ProcessMapForTopo::dispatchSync($this->site, $this->area, $this->svg, 'schema', $this->sector->id);
+        $this->redirectRoute('admin.areas.topo.result.map.schema', ['site'=>$this->site, 'area'=>$this->area, 'sector'=> $this->sector], navigate:true);
     }
 
 }; ?>
@@ -42,7 +43,7 @@ new class extends Component {
   <nav aria-label="Progress" class="p-4">
       <ol role="list" class="space-y-4 md:flex md:space-x-8 md:space-y-0">
           <li class="md:flex-1">
-              <!-- Current Step --> <a class="flex flex-col border-l-4 border-gray-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4" aria-current="step"> <span class="text-sm font-medium text-gray-600">{{__('Step')}} 1</span> <span class="text-sm font-medium">{{__('Edit map')}}</span> </a>
+              <!-- Current Step --> <a class="flex flex-col border-l-4 border-gray-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4" aria-current="step"> <span class="text-sm font-medium text-gray-600">{{__('Step')}} 1</span> <span class="text-sm font-medium">{{__('Edit schema')}}</span> </a>
           </li>
           <li class="md:flex-1">
               <!-- Upcoming Step --> <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 hover:border-gray-300 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"> <span class="text-sm font-medium text-gray-500 group-hover:text-gray-700">{{__('Step')}} 2</span> <span class="text-sm font-medium">{{__('Configure Topo')}}</span> </a>
@@ -205,13 +206,13 @@ new class extends Component {
           document.addEventListener('terminated', () => {
             console.log(project.exportJSON());
             addText();
-            /*var evt = new CustomEvent('svg_sent', {
+            var evt = new CustomEvent('svg_sent', {
               detail: {
                   message: project.exportSVG({
                       asString: true
                   }),
               }
-          });*/
+          });
           window.dispatchEvent(evt);
           
             var evt = new CustomEvent('sent_to_wire', {

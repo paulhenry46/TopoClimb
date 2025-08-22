@@ -58,17 +58,14 @@
           @endif
           @if(auth()->user()->hr() <= 0)
           <x-grid-pattern-title >
-                {{ __('Backups') }}
+                {{ __('Others') }}
             </x-grid-pattern-title >
-          <x-grid-pattern-item >
+          <div class='overflow-hidden  mb-4' >
+            <div class='grid grid-cols-2 space-x-4'>
             <livewire:settings.backup />
-          </x-grid-pattern-item >
-          <x-grid-pattern-title >
-                {{ __('Logo') }}
-            </x-grid-pattern-title >
-          <x-grid-pattern-item >
             <livewire:settings.logo />
-          </x-grid-pattern-item >
+            </div>
+          </div>
           <x-grid-pattern-title >
                 {{ __('Mails') }}
             </x-grid-pattern-title >

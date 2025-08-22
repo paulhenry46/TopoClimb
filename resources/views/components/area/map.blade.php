@@ -22,7 +22,7 @@
         </div>
       </div>
     </div> 
-    @else 
+@else 
     <div class="bg-white overflow-hidden sm:rounded-lg">
       <div class="px-4 sm:px-6 lg:px-8 py-8" 
       @if(count($this->schema_data['sectors']) > 1) 
@@ -73,7 +73,8 @@
             </div> 
             @else 
             <div > 
-              @foreach ($this->schema_data['data'] as $data) <div class="relative w-full h-full min-h-96" x-show="sector_selected == {{$data['id']}}" style='display : none;'>
+              @foreach ($this->schema_data['data'] as $data) 
+              <div class="relative w-full h-full min-h-96" x-show="sector_selected == {{$data['id']}}" style='display : none;'>
                 <div class="w-full h-96 z-0 flex items-center justify-center">
                   <img class="object-contain h-96" src="{{ $data['bg'] }}" />
                 </div>
