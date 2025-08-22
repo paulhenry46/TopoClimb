@@ -523,7 +523,8 @@ new class extends Component {
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
          <a wire:navigate href='{{ route("admin.areas.topo.initialize.lines", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Lines') }}</x-button></a>
          <a wire:navigate href='{{ route("admin.areas.topo.initialize.sectors", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Sectors') }}</x-button></a>
-          <a x-on:click='open=true'  > <x-button type="button">{{ __('Schema') }}</x-button></a>
+          @if($area->type == 'trad')
+         <a x-on:click='open=true'  > <x-button type="button">{{ __('Schema') }}</x-button></a>
 
           <div>
             <div style='display:none;' class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
@@ -576,7 +577,7 @@ new class extends Component {
                 </div>
               </div>
             </div>
-          
+          @endif
         </div>
       </div>
       <div class="sm:flex sm:items-center mt-6">
