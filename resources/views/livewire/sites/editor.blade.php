@@ -98,11 +98,12 @@ new class extends Component {
   <div class="px-4 sm:px-6 lg:px-8 py-8">
     <div class="sm:flex sm:items-center mb-3">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Site : ')}} {{$this->name}}</h1>
+        <h1 class="text-base font-semibold leading-6 text-gray-900">{{$this->name}}</h1>
         <p class="mt-2 text-sm text-gray-700">{{__('Édit contact and other other data of this website')}}</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-        <x-button wire:navigate href="{{ route('site.view', $this->site->slug) }}" >{{__('See site page')}} </x-button>
+        <x-button href="{{ route('admin.site.stats', ['site'=> $site]) }}" wire:navigate><x-icons.icon-graph/>  <p class='ml-2'>{{ __('Stats ') }}</p></x-button>
+        <x-button wire:navigate href="{{ route('site.view', $this->site->slug) }}" ><x-icons.icon-see class='mr-2'/> <p class='ml-2'>{{__('Site page')}}</p> </x-button>
       </div>
     </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

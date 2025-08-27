@@ -77,6 +77,7 @@ Route::middleware([
                         })->name('lines');
                         Route::get('/schema/{sector}', function (Site $site, Area $area, Sector $sector) {
                             $type = 'schema';
+                            
                             return view('topo.wizard-schema', compact('site', 'area', 'type', 'sector'));
                         })->name('schema');
                     });
