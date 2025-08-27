@@ -40,6 +40,8 @@ new class extends Component {
     public $local_id;
 
     public $id_editing;
+
+    public array $schemas_sector;
     
 
     public function save()
@@ -126,6 +128,13 @@ new class extends Component {
         $this->schemas[$sector->id] = null;
         $this->schemas[14] = null;
       }
+      $this->sector = Sector::where('area_id', $this->area->id)->first();
+      $this->schemas_sector = [];
+      $this->schemas_sector = $this->sectors->mapWithKeys(function ($sector) {
+        return [
+          $sector->id => Storage::exists('plans/site-' . $this->area->site->id . '/area-' . $this->area->id . '/sector-' . $sector->id . '/schema')
+        ];
+      })->toArray();
     }
 
     public function open_modal(){
@@ -327,69 +336,6 @@ new class extends Component {
           </div>
         </div>
       </div>
-
-      <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg mt-8">
-        <div class="px-4 sm:px-6 lg:px-8 py-8">
-          <div class="sm:flex sm:items-center">
-            <div class="sm:flex-auto ">
-              <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Schemas')}}</h1>
-              <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Schemas of the sectors of this area')}}</p>
-              @foreach ($this->sectors as $sector)
-              @if ($this->schemas[$sector->id]) 
-              <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
-              <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Your schema :')}}</p>
-              <img class="rounded-lg" src="{{$this->schemas[$sector->id]->temporaryUrl() }}">
-              <div class="mt-4 flex items-center justify-end gap-x-6">
-              <x-button wire:click="saveSchema()" class="mt-1">{{__('Validate')}}</x-button>
-              </div>
-              @elseif(Storage::exists('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema'))
-              <div x-data="{ expanded: false }">
-              <div  @click="expanded = ! expanded" class="hover:cursor-pointer mt-4 mb-2 align-center flex items-center justify-between gap-x-6">
-                
-                <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
-                <span class="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                  <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
-                    <circle cx="3" cy="3" r="3"></circle>
-                  </svg>
-                  {{('OK')}}
-                </span>
-                </div>
-                <div x-show="expanded" x-collapse>
-              <img class="rounded-lg" src="{{Storage::url('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$sector->id.'/schema')}}">
-              <div class="mt-4 flex items-center justify-end gap-x-6">
-                @if($this->editable)
-              <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
-                <span>{{__('Edit')}}</span>
-                <input wire:model="schemas.{{$sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
-              </label>
-              @endif
-            </div>
-            </div>
-            </div>
-              @else
-              <h1 class="align-center text-base font-semibold leading-6 text-gray-900">{{$sector->name}}</h1>
-              <div class="relative block w-full rounded-lg border-2 border-dashed  p-12 text-center border-gray-400">
-                  <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
-                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd" />
-                  </svg>
-                  <h3 class="mt-2 text-sm font-semibold text-gray-900">{{__('No schema')}}</h3>
-                  <p class="mt-1 text-sm text-gray-500">{{('Schemas allow to draw the route over a schema of the sector')}}</p>
-                  <div class="mt-6">
-                    @if($this->editable)
-                    <label for="file-upload" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
-                      <span>{{__('Add Schema')}}</span>
-                      <input wire:model="schemas.{{$sector->id}}" id="file-upload" name="file-upload" type="file" class="sr-only">
-                    </label>
-                    @endif
-                  </div>
-              </div>
-              @endif
-
-              @endforeach
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
     <div class=" sm:pl-6 lg:pl-8 lg:col-span-1">
       <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-lg">
@@ -419,7 +365,17 @@ new class extends Component {
                   <tbody class="bg-white"> 
                     @foreach ($this->sectors() as $sector) 
                     <tr class="border-t border-gray-200" x-on:mouseover="selectSector({{$sector->id}})" :class="currentSector == {{$sector->id}} ? 'bg-gray-100' : ''">
-                      <th colspan="1" scope="colgroup" class="bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">{{$sector->name}} ({{$sector->local_id}})</th>
+                      <th colspan="1" scope="colgroup" class=" bg-gray-50 py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3">
+                        <div class='items-center flex'>
+                        {{$sector->name}} ({{$sector->local_id}})
+                        @if(!$this->schemas_sector[$sector->id])
+                        <span class="ml-2 inline-flex items-center gap-x-1.5 rounded-md bg-red-100 px-2 py-1 font-medium text-red-700">
+                 <svg class='mr-2 w-5 h-5' xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M109-120q-11 0-20-5.5T75-140q-5-9-5.5-19.5T75-180l370-640q6-10 15.5-15t19.5-5q10 0 19.5 5t15.5 15l370 640q6 10 5.5 20.5T885-140q-5 9-14 14.5t-20 5.5H109Zm371-120q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm0-120q17 0 28.5-11.5T520-400v-120q0-17-11.5-28.5T480-560q-17 0-28.5 11.5T440-520v120q0 17 11.5 28.5T480-360Z"/></svg>
+                  {{('No schema')}}
+                </span>
+                @endif
+              </div>
+                      </th>
                       <th scope="colgroup" class="bg-gray-50 relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <button wire:click="open_item({{$sector->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
                           <x-icons.icon-edit />
@@ -482,6 +438,53 @@ new class extends Component {
                               <x-input disabled wire:model="local_id" type="text" name="id" id="project-name" class="block w-full" />
                             </div>
                           </div>
+
+                          <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                            <x-label for="id" value="{{ __('Schema') }}" />
+                            
+                            <div class="sm:col-span-2">
+                              
+
+                                                        @if ($this->schemas[$this->sector->id])
+              <p class="mt-2 mb-4 text-sm text-gray-700">{{__('Your schema :')}}</p>
+              <img class="rounded-lg" src="{{$this->schemas[$this->sector->id]->temporaryUrl() }}">
+              <div class="mt-4 flex items-center justify-end gap-x-6">
+              <x-button wire:click="saveSchema()" class="mt-1">{{__('Validate')}}</x-button>
+              </div>
+              @elseif($this->schemas_sector[$this->sector->id])
+              <div>
+                <div>
+              <img class="rounded-lg" src="{{Storage::url('plans/site-'.$this->area->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/schema')}}">
+              <div class="mt-4 flex items-center justify-end gap-x-6">
+                @if($this->editable)
+              <label for="file-edit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
+                <span>{{__('Edit')}}</span>
+                <input wire:model="schemas.{{$this->sector->id}}" id="file-edit" name="file-edit" type="file" class="sr-only">
+              </label>
+              @endif
+            </div>
+            </div>
+            </div>
+              @else
+              <div class="relative block w-full rounded-lg border-2 border-dashed  p-12 text-center border-gray-400">
+                  
+                  <h3 class="mt-2 text-sm font-semibold text-gray-900 flex space-x-2 items-center justify-center">
+                    <svg class='mr-2' xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M109-120q-11 0-20-5.5T75-140q-5-9-5.5-19.5T75-180l370-640q6-10 15.5-15t19.5-5q10 0 19.5 5t15.5 15l370 640q6 10 5.5 20.5T885-140q-5 9-14 14.5t-20 5.5H109Zm371-120q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm0-120q17 0 28.5-11.5T520-400v-120q0-17-11.5-28.5T480-560q-17 0-28.5 11.5T440-520v120q0 17 11.5 28.5T480-360Z"/></svg>
+                    {{__('No schema')}}</h3>
+                  <p class="mt-1 text-sm text-gray-500">{{('Schemas allow to draw the route over a schema of the sector')}}</p>
+                  <div class="mt-6">
+                    @if($this->editable)
+                    <label for="file-upload" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150">
+                      <span>{{__('Add Schema')}}</span>
+                      <input wire:model="schemas.{{$this->sector->id}}" id="file-upload" name="file-upload" type="file" class="sr-only">
+                    </label>
+                    @endif
+                  </div>
+              </div>
+              @endif
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                       <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
