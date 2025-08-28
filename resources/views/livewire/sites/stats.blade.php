@@ -227,7 +227,7 @@ new class extends Component {
             <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
                 {{ __('Stats of Site') }}
             </h2>
-            <div class='flex items-center gap-2 ml-2'> {{ __('Areas') }}
+            <div class='flex items-center gap-2 px-2'> {{ __('Areas') }}
             <select wire:model.live='area' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
                 <option value="null">{{ __('All') }}</option>
                 @foreach ($areas as $area)

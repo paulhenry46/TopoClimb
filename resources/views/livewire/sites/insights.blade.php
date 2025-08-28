@@ -112,7 +112,7 @@ new class extends Component {
             <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
                 {{ __('Routes Insights') }}
             </h2>
-            <div class='flex items-center gap-2 ml-2'> {{ __('Order by') }}
+            <div class='flex items-center gap-2 px-2'> {{ __('Order by') }}
             <select wire:model.live='type' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
                 <option value="removal">{{ __('Removeal Score') }}</option>
                 <option value="old">{{ __('Old') }}</option>
