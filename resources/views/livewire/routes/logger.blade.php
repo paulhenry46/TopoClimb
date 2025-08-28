@@ -110,7 +110,7 @@ new class extends Component {
                 },
                 cancel_action(){this.open = false; this.step = 1;} 
                 }" @show_modal.window="open = true">
-  <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
+  <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open" x-cloak>
     <div class="fixed inset-0 bg-gray-500/75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
     <div class="fixed inset-0 z-10 overflow-y-auto">
       <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
