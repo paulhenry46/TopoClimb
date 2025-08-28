@@ -132,7 +132,6 @@ new class extends Component {
 
      $this->tags_id = $tags_id;
      $this->tags_choosen = $tags;
-     //dd($this->tags_id);
      $this->opener_selected = [];
      $users_temp = $this->route->users;
      foreach($users_temp as $user){
@@ -261,14 +260,14 @@ new class extends Component {
       </div>
     </div>
     <div class="flow-root"  >
-            <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show='open_modal' style='display: none;'>
+            <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show='open_modal' x-cloak>
          
-          <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 bg-gray-500/75  transition-opacity" x-show='open_modal' style='display: none;'></div>
+          <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 bg-gray-500/75  transition-opacity" x-show='open_modal' x-cloak></div>
 
           <div class="fixed inset-0 z-10 overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               
-              <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" x-show='open_modal' style='display: none;'>
+              <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" x-show='open_modal' x-cloak>
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -363,7 +362,7 @@ new class extends Component {
                     <x-icons.icon-edit />
                   </button>
                   <button x-on:click='toogle({{$route->id}})' class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
-                    <span x-show='selected.includes({{$route->id}})' style='display: hidden;'>
+                    <span x-show='selected.includes({{$route->id}})' x-cloak>
                     <x-icons.icon-delete-filled />
                     </span>
                     <span x-show='!selected.includes({{$route->id}})'>
@@ -391,7 +390,7 @@ new class extends Component {
     </div>
   </div>
   <div x-data="{ open: $wire.entangle('modal_open') }">
-    <div class="relative z-10 overflow-y-auto" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;" x-trap.noscroll="open">
+    <div class="relative z-10 overflow-y-auto" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak x-trap.noscroll="open">
       <!-- Background backdrop, show/hide based on slide-over state. -->
       <div class="fixed inset-0"></div>
       <div class="fixed inset-0 overflow-hidden">

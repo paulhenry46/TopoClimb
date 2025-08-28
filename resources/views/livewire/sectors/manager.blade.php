@@ -62,8 +62,7 @@ new class extends Component {
     public function saveSchema()
     {
       if($this->editable){
-        $this->validateOnly('schemas'); 
-        //dd($this->schemas);
+        $this->validateOnly('schemas');
         foreach ($this->schemas as $key => $value) {
           
          if ($value != null){
@@ -251,7 +250,7 @@ new class extends Component {
           </div>
         </div>
         <div x-data="{ open: $wire.entangle('modal_open') }">
-          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak>
             <!-- Background backdrop, show/hide based on slide-over state. -->
             <div class="fixed inset-0"></div>
             <div class="fixed inset-0 overflow-hidden">
@@ -397,7 +396,7 @@ new class extends Component {
           </div>
         </div>
         <div x-data="{ open: $wire.entangle('modal_open') }">
-          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+          <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak>
             <!-- Background backdrop, show/hide based on slide-over state. -->
             <div class="fixed inset-0"></div>
             <div class="fixed inset-0 overflow-hidden">
@@ -530,7 +529,7 @@ new class extends Component {
          <a x-on:click='open=true'  > <x-button type="button">{{ __('Schema') }}</x-button></a>
 
           <div>
-            <div style='display:none;' class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
+            <div x-cloak class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show="open">
               <div class="fixed inset-0 bg-gray-500/75 transition-opacity" x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
                 <div class="fixed inset-0 z-10 overflow-y-auto">
                   <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">

@@ -169,7 +169,7 @@ new class extends Component {
 
 <div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden">
   <!-- Drawer -->
-  <div style='display: none;'
+  <div x-cloak
       x-show="open" 
       x-transition:enter="transition ease-out duration-300" 
       x-transition:enter-start="translate-y-full" 

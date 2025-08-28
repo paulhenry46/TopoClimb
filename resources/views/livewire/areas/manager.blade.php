@@ -181,7 +181,7 @@ new class extends Component {
     </div>
   </div>
 <div x-data="{ open: $wire.entangle('modal_open') }">
-  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" style="display: none;">
+  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak>
     <!-- Background backdrop, show/hide based on slide-over state. -->
     <div class="fixed inset-0"></div>
     <div class="fixed inset-0 overflow-hidden">

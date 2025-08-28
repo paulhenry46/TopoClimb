@@ -2,7 +2,7 @@
 
 <div x-data="{{ json_encode(['show' => true, 'style' => $style, 'message' => $message]) }}"
     :class="{ 'bg-indigo-500': style == 'success', 'bg-red-700': style == 'danger', 'bg-yellow-500': style == 'warning', 'bg-gray-500': style != 'success' && style != 'danger' && style != 'warning'}"
-            style="display: none;"
+            x-cloak
             x-show="show && message"
             x-on:banner-message.window="
                 style = event.detail.style;

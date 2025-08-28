@@ -87,7 +87,6 @@ new class extends Component {
       $route->update(['created_at' => Carbon::createFromFormat('Y-m-d', $this->date)->toDateTimeString()]);
       
       $route->tags()->attach($this->tags_id);
-      //dd($route);
 
       $temp_openers_id = [];
 
@@ -106,7 +105,6 @@ new class extends Component {
 
     public function add_opener(){
       $user = User::where('name', $this->opener_search)->first();
-      //dd($this->opener_search);
       if($user != null){
         array_push($this->opener_selected, ['name' => $user->name, 'id' => $user->id, 'url' => $user->profile_photo_url]);
         $this->opener_search = null;

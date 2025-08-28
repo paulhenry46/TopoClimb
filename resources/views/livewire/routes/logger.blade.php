@@ -16,19 +16,25 @@ new class extends Component {
     public User $user;
     public Area $area;
     
-    #[Validate('required')]
     public Int $cotation;
-    #[Validate('required')]
     public $type;
-    #[Validate('string')]
     public string $way;
-    #[Validate('string')]
     public  $comment;
-    #[Validate('url')]
     public string $videoUrl;
 
     public $date;
     public $cotations;
+
+        public function rules()
+    {
+        return [
+            'cotation' => 'required|integer',
+            'type' => 'required',
+            'way' => 'string',
+            'comment' => 'string|nullable',
+            'videoUrl' => 'url|nullable',
+        ];
+    }
 
     public function mount(Route $route){
       $this->route = $route;
@@ -66,7 +72,6 @@ new class extends Component {
         return;
     }
 
-    dd($this->way);
         $this->validate();
         $log = new Log;
         $log->user_id = $this->user->id;
