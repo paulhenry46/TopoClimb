@@ -150,7 +150,7 @@
     <span  :class="enabled ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
   </button>
   <span class="ml-3 text-sm" id="annual-billing-label">
-    <span class="font-medium text-gray-900">{{ ('Only new routes') }}</span>
+    <span class="font-medium text-gray-900">{{__('Only new routes') }}</span>
   </span>
 </div>
                     </div>

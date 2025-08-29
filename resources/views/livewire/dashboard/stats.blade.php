@@ -45,13 +45,13 @@ new class extends Component {
     $route_t = $this->logs_t->pluck('route')->sortBy('grade')->first();
     
     
-    if($route_b !== null){
+    if($route_b !== null and $route_b->gradeFormated() !== null){
         $this->level_b = $route_b->gradeFormated();
     }else{
         $this->level_b = '3a';
     }
 
-    if($route_t !== null){
+    if($route_t !== null and $route_t->gradeFormated() !== null){
         $this->level_t = $route_t->gradeFormated();
     }else{
         $this->level_t = '3a';

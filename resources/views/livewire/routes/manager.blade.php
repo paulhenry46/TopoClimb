@@ -276,7 +276,7 @@ new class extends Component {
                       </svg>
                     </div>
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">{{ (' Set the route dismantling date') }}</h3>
+                      <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">{{__(' Set the route dismantling date') }}</h3>
                       <div class="mt-2">
                         <p class="text-sm text-gray-500">{{ __('Are you sure you want to remove this routes ? Set the date below') }}</p>
                         <x-input x-ref='date' id="date" type="date" class="mt-1 block w-full"/>

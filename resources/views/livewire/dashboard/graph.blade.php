@@ -36,7 +36,7 @@ new class extends Component {
     'labels' => $routesByGrade->keys()->toArray(),
     'datasets' => [
         [
-            'label' => 'Routes climbed',
+            'label' => __('Routes climbed'),
             'data' => $routesByGrade->values()->toArray(),
             'backgroundColor' => 'rgba(0, 0, 0, 0.2)',
             'borderColor' => 'rgba(0, 0, 0, 1)',

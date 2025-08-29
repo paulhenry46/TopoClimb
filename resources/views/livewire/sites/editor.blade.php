@@ -174,7 +174,7 @@ new class extends Component {
     
         <!-- Picture -->
         <div>
-            <x-label for="picture" value="{{ __('Picture') }}" />
+            <x-label for="picture" value="{{ __('Profile picture') }}" />
             <x-input wire:model="picture" type="file" name="picture" id="project-name" class="mt-1 block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150" />
             <x-input-error for="picture" class="mt-2" />
         </div>

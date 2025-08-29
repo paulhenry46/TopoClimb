@@ -195,7 +195,7 @@ new class extends Component {
                                 @if ($hr == 0)
                                 <div class='text-amber-500 flex aling-center gap-x-1 font-bold'>
                                     <x-icons.icon-police />
-                                    {{ ('Super Admin') }}
+                                    {{__('Super Admin') }}
                                 </div>
                                 @elseif($hr == 1)
                                 <div class='text-red-500 flex aling-center gap-x-1 font-bold'>

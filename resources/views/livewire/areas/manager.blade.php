@@ -152,7 +152,7 @@ new class extends Component {
                     <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
                       <circle cx="3" cy="3" r="3"></circle>
                     </svg>
-                    {{('Uninitialized')}}
+                    {{__('Uninitialized')}}
                   </span>
                    
                   @else
