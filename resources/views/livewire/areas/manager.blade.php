@@ -180,36 +180,9 @@ new class extends Component {
       </div>
     </div>
   </div>
-<div x-data="{ open: $wire.entangle('modal_open') }">
-  <div class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak>
-    <!-- Background backdrop, show/hide based on slide-over state. -->
-    <div class="fixed inset-0"></div>
-    <div class="fixed inset-0 overflow-hidden">
-      <div class="absolute inset-0 overflow-hidden">
-        <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-          <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-            <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
-              <div class="flex-1">
-                <!-- Header -->
-                <div class="bg-gray-50 px-4 py-6 sm:px-6">
-                  <div class="flex items-start justify-between space-x-3">
-                    <div class="space-y-1">
-                      <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
-                      <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
-                    </div>
-                    <div class="flex h-7 items-center">
-                      <button x-on:click="open = ! open" type="button" class="cursor-pointer relative text-gray-400 hover:text-gray-500">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <!-- Divider container -->
-                <div class="space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                  <!-- Project name -->
-                  <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+  <x-drawer open='modal_open' save_method_name='save' :title="$this->modal_title" :subtitle="$this->modal_subtitle">
+                  
+    <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="name" value="{{ __('Area name') }}" />
                     <div class="sm:col-span-2">
                       <x-input wire:model="name" type="text" name="name" id="project-name" class="block w-full" />
@@ -224,14 +197,14 @@ new class extends Component {
                         <legend class="sr-only">{{__('Area Type')}}</legend>
                         <div class="-space-y-px bg-white">
                           <label :class="type == 'trad' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class=" rounded-t-md relative flex cursor-pointer border p-4 focus:outline-hidden">
-                            <input x-model="type" type="radio" name="area-type" value="trad" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description">
+                            <input x-model="type" type="radio" name="area-type" value="trad" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-0-label" aria-describedby="privacy-setting-0-description"/>
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'trad' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-0-label" class="block text-sm font-medium">{{__('Type Traditional')}}</span>
                               <span :class="type == 'trad' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-0-description" class="block text-sm"> {{__('Area for climbing with distinct lines')}}</span>
                             </span>
                           </label>
                           <label :class="type == 'bouldering' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-hidden">
-                            <input x-model="type" type="radio" name="area-type" value="bouldering" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description">
+                            <input x-model="type" type="radio" name="area-type" value="bouldering" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0  active:ring-gray-600" aria-labelledby="privacy-setting-1-label" aria-describedby="privacy-setting-1-description"/>
                             <span class="ml-3 flex flex-col">
                               <span :class="type == 'bouldering' ? 'text-gray-900' : 'text-gray-900'" id="privacy-setting-1-label" class="block text-sm font-medium">{{__('Type Bouldering')}}</span>
                               <span :class="type == 'bouldering' ? 'text-gray-700' : 'text-gray-500'" id="privacy-setting-1-description" class="block text-sm">{{__('Area for bouldering without line')}}</span>
@@ -249,20 +222,11 @@ new class extends Component {
                     <img class="rounded-lg mt-2" x-bind:src="picture_url" />
                   </div>
                 </div>
-                </div>
-              </div>
-              <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+              <x-slot name="footer">
                 <div class="flex justify-end space-x-3">
                   <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                   <x-button type="submit">{{$this->modal_submit_message}}</x-button>
                 </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+              </x-slot>
+            </x-drawer>
 </div>

@@ -213,7 +213,6 @@ new class extends Component {
                                     {{ __('Opener') }}
                                 </div>
                                 @endif
-
                               </td>
                               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3"> <button class='cursor-pointer' wire:click="open_item({{$user->id}})" class="text-gray-600 hover:text-gray-900 mr-2">
                                       <x-icons.icon-edit />
@@ -226,15 +225,8 @@ new class extends Component {
           </div>
       </div>
   </div>
-  <div x-data="{ open: $wire.entangle('modal_open') }">
-      <div class="relative z-10 overflow-y-auto" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak x-trap.noscroll="open">
-          <!-- Background backdrop, show/hide based on slide-over state. -->
-          <div class="fixed inset-0"></div>
-          <div class="fixed inset-0 overflow-hidden">
-              <div class="absolute inset-0 overflow-hidden">
-                  <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-                      <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-                          <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl" x-data="{
+  <x-drawer open='modal_open' save_method_name='save' :title="$this->modal_title" :subtitle="$this->modal_subtitle">
+ <div x-data="{
             roles_sites: $wire.$entangle('roles_sites'), 
             roles: $wire.roles, 
             sites: $wire.sites, 
@@ -245,21 +237,6 @@ new class extends Component {
             add_role(){this.roles_sites.push({site: {name : this.sites[this.current_site_id], id:Number(this.current_site_id) }, role:{name : this.roles[this.current_role_id], id:Number(this.current_role_id)}})}
             }
             ">
-                              <div class="flex-1 overflow-y-auto">
-                                  <!-- Header -->
-                                  <div class="bg-gray-50 px-4 py-6 sm:px-6">
-                                      <div class="flex items-start justify-between space-x-3">
-                                          <div class="space-y-1">
-                                              <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
-                                              <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
-                                          </div>
-                                          <div class="flex h-7 items-center"> <button x-on:click="open = ! open" type="button" class="cursor-pointer relative text-gray-400 hover:text-gray-500"> <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                  </svg> </button> </div>
-                                      </div>
-                                  </div> <!-- Divider container -->
-                                  <div class="overflow-y-auto space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                                      <!-- Project name -->
                                       <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                                           <x-label for="name" value="{{ __('Name') }}" />
                                           <div class="sm:col-span-2">
@@ -327,22 +304,14 @@ new class extends Component {
                                               </div>
                                               <x-button class='mt-2' type='button' @click='add_role()'>{{__('Add role')}}</x-button>
                                             </div>
-
                                           </div>
                                       </div>
-                                  </div>
-                                  <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+                                    </div>
+                                  <x-slot name="footer">
                                       <div class="flex justify-end space-x-3">
                                           <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                                           <x-button type="submit">{{$this->modal_submit_message}}</x-button>
                                       </div>
-                                  </div>
-                              </div>
-                          </form>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+                                  </x-slot>
+                              </x-drawer>
 </div>

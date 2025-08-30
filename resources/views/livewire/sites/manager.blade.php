@@ -117,35 +117,6 @@ new class extends Component {
         }
     }
 
-    public function open_item($id){
-      $item = Site::find($id);
-      $this->site = $item;
-      $this->name = $item->name;
-      $this->address = $item->address;
-      $this->state = $item->state;
-        $this->coord = $item->coord;
-        $this->description = $item->description;
-        $this->mail = $item->mail;
-        $this->phone = $item->phone;
-        $this->website = $item->website;
-      $this->id_editing = $id;
-      $this->modal_title = __('Editing ').$this->name;
-      $this->modal_subtitle = __('Check the informations about this site.');
-      $this->modal_submit_message = __('Edit');
-      $this->modal_open = true;
-
-      if(Storage::exists('pictures/site-'.$this->site->id.'/profile')){
-        $this->picture_url = Storage::url('pictures/site-'.$this->site->id.'/profile');
-      }else{
-        $this->picture_url = null;
-      }
-
-      if(Storage::exists('pictures/site-'.$this->site->id.'/banner')){
-        $this->banner_url = Storage::url('pictures/site-'.$this->site->id.'/banner');
-      }else{
-        $this->banner_url = null;
-      }
-    }
 
     public function delete_item($id){
       $item = Site::find($id);
@@ -228,35 +199,8 @@ new class extends Component {
       </div>
     </div>
   </div>
-<div x-data="{ open: $wire.entangle('modal_open') }">
-  <div class="relative z-10 overflow-y-auto" aria-labelledby="slide-over-title" role="dialog" aria-modal="true" x-show="open" x-cloak x-trap.noscroll="open">
-    <!-- Background backdrop, show/hide based on slide-over state. -->
-    <div class="fixed inset-0"></div>
-    <div class="fixed inset-0 overflow-hidden">
-      <div class="absolute inset-0 overflow-hidden">
-        <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
-          <div class="pointer-events-auto w-screen max-w-2xl" x-show="open" x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
-            <form wire:submit="save" class="flex h-full flex-col bg-white shadow-xl">
-              <div class="flex-1 overflow-y-auto">
-                <!-- Header -->
-                <div class="bg-gray-50 px-4 py-6 sm:px-6">
-                  <div class="flex items-start justify-between space-x-3">
-                    <div class="space-y-1">
-                      <h2 class="text-base font-semibold leading-6 text-gray-900" id="slide-over-title">{{$this->modal_title}}</h2>
-                      <p class="text-sm text-gray-500">{{$this->modal_subtitle}}</p>
-                    </div>
-                    <div class="flex h-7 items-center">
-                      <button x-on:click="open = ! open" type="button" class="cursor-pointer relative text-gray-400 hover:text-gray-500">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <!-- Divider container -->
-                <div class="overflow-y-auto space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
-                  <!-- Project name -->
+<x-drawer open='modal_open' save_method_name='save' :title="$this->modal_title" :subtitle="$this->modal_subtitle">
+<div>
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="name" value="{{ __('Site name') }}" />
                     <div class="sm:col-span-2">
@@ -330,22 +274,13 @@ new class extends Component {
               <img class="rounded-lg mt-2" x-bind:src="picture_url" />
             </div>
           </div>
-              
-            
-                </div>
               </div>
-              <div class="shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
+              <x-slot name="footer">
                 <div class="flex justify-end space-x-3">
                   <x-secondary-button x-on:click="open = ! open" type="button">{{__('Cancel')}}</x-secondary-button>
                   <x-button type="submit">{{$this->modal_submit_message}}</x-button>
                 </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+              </x-slot>
+              </x-drawer>
 
 </div>
