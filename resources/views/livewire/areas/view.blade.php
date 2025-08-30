@@ -87,7 +87,7 @@ new class extends Component {
         $this->mobile_first_open = true;
 
       }else{
-        $this->route = Route::first();
+        $this->route = Route::whereIn('line_id', Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id'))->first();
         $this->mobile_first_open = false;
       }
       
