@@ -39,11 +39,11 @@ new class extends Component {
 
     public function rules(){
         return [
-            'name'    => 'required',
+            'name'    => 'required|string',
             'comment' => 'nullable|string',
-            'line'    => 'string',
+            'line'    => 'required|integer',
             'grade'   => 'required|regex:/[3-9][abc][+]?/',
-            'color'   => 'required',
+            'color'   => 'required|string',
             'date'    => 'required',
             'opener_selected' => 'required|array|min:1',
         ];
