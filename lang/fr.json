@@ -494,5 +494,7 @@
     "Continue by selecting the type of ascent" : "Sélectionner le type de montée",
     "Ascent way" : "Type de montée",
     "Your comments" : "Commentaires",
-    "you can comment this route and show the felt grade" : "Vous pouvez commenter la voie et indiquer votre cotation ressentie"
+    "you can comment this route and show the felt grade" : "Vous pouvez commenter la voie et indiquer votre cotation ressentie",
+    "No users with this name were found." : "Aucun utilisateur trouvé.",
+    "Choosen tags :" : "Tags choisis :"
 }
