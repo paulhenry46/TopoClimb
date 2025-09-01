@@ -9,7 +9,7 @@ use App\Models\Route as ModelRoute;
 use Livewire\Attributes\Validate; 
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
-use Livewire\Attributes\Computed;
+use App\Jobs\ImageFilter;
 new class extends Component {
   use WithFileUploads;
 
@@ -39,7 +39,10 @@ new class extends Component {
      
       $this->validateOnly('photo');
       $name = 'route-'.$this->route->id.'';
-      $this->photo->storeAs(path: 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
+      $path = $this->photo->storeAs(path: 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
+      $filtered_path = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-filtered-'.$this->route->id;
+      ImageFilter::dispatch($this->route->color, $path, $filtered_path);
+
 
       $this->redirectRoute('admin.routes.circle', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
