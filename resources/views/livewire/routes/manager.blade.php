@@ -12,7 +12,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Attributes\Locked; 
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
-use App\Jobs\DeleteRoute;
+use Carbon\Carbon;
 use Livewire\Attributes\Computed;
 new class extends Component {
   use WithPagination;
@@ -100,9 +100,15 @@ new class extends Component {
     public function routes()
     {
       if($this->all_routes){
-        return Route::whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
+        return Route::where(function($query) {
+      $query->whereNull('removing_at')
+          ->orWhere('removing_at', '>', now());
+    })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
       }else{
-        return auth()->user()->routes()->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
+        return auth()->user()->routes()->where(function($query) {
+      $query->whereNull('removing_at')
+          ->orWhere('removing_at', '>', now());
+    })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
       }
     }
 
@@ -225,7 +231,7 @@ new class extends Component {
                                     open_modal: false, 
                                     remove(){$wire.set_remove_date(this.selected, $refs.date.value); this.open_modal = false; this.selected = []},
                                     cancel_modal(){this.open_modal = false; this.selected = []},
-                                    remove_now(){$wire.set_remove_date(this.selected, "now");  this.open_modal = false; this.selected = []},
+                                    remove_now(){$wire.set_remove_date(this.selected, "today");  this.open_modal = false; this.selected = []},
                                     toogle(id){
                                     if(this.selected.includes(id)){this.selected.splice(this.selected.indexOf(id), 1);}else{this.selected.push(id); }}
                                     }'>

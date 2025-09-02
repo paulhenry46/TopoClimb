@@ -80,7 +80,10 @@ new class extends Component {
         $this->mobile_first_open = true;
 
       }else{
-        $this->route = Route::whereIn('line_id', Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id'))->first();
+        $this->route = Route::where(function($query) {
+      $query->whereNull('removing_at')
+          ->orWhere('removing_at', '>', now());
+    })->whereIn('line_id', Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id'))->first();
         $this->mobile_first_open = false;
       }
       
@@ -103,6 +106,10 @@ new class extends Component {
       
       //return $routes;
     $routesQuery = Route::whereIn('line_id', $lines_selected)
+    ->where(function($query) {
+      $query->whereNull('removing_at')
+          ->orWhere('removing_at', '>', now());
+    })
       ->when($this->search, function($query, $search) {
           return $query->where('name', 'LIKE', "%{$this->search}%");
       })
