@@ -36,7 +36,7 @@ class SoftDeleteRoute implements ShouldQueue
         Storage::delete('paths/site-'.$site->id.'/area-'.$area->id.'/route-'.$this->route->id.'.svg');
 
         #Delete photo of route
-        Storage::delete('photos/site-'.$site->id.'/area-'.$area->id.'/route-'.$this->route->id.'');
+        Storage::delete('photos/site-'.$site->id.'/area-'.$area->id.'/route-filtered-'.$this->route->id.'');
         Storage::delete('photos/site-'.$site->id.'/area-'.$area->id.'/route-'.$this->route->id.'-thumbnail');
         
         #Delete circle of route

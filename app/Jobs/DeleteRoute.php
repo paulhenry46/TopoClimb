@@ -25,6 +25,13 @@ class DeleteRoute implements ShouldQueue
      */
     public function handle(): void
     {
+        $line = $this->route->line;
+        $sector = $line->sector;
+        $area = $sector->area;
+        $site = $area->site;
+
+        Storage::delete('photos/site-'.$site->id.'/area-'.$area->id.'/route-'.$this->route->id.'');
+        
         $grade =  $this->route->cotation;
         $logs = $this->route->logs();
         $line = $this->route->line;

@@ -14,7 +14,7 @@ Schedule::call(function () {
 })->daily();
 
 Schedule::call(function () {
-   foreach(Route::where('removing_at', '=', Carbon::now()->toDateString())->where('comment', '!=', 'softDeleted')->get() as $route){
+   foreach(Route::where('removing_at', '<=', Carbon::now()->toDateString())->where('comment', '!=', 'softDeleted')->get() as $route){
       SoftDeleteRoute::dispatchSync($route);
    }
 })->daily();
