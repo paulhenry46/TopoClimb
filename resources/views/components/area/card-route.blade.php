@@ -1,8 +1,27 @@
 @props(['logs', 'key_button' => 'default-button'])
+<div class='relative' x-data="{filtered : false, toogle(){this.filtered = !this.filtered;}}">
+<div x-show="!filtered" class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
+</div>
+<div x-cloak x-show="filtered" class=" bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->filteredPicture() }}'); background-position-y: 50%;">
+</div>
 
-<div class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; filter: opacity(99.9%) grayscale(100%);"></div>
-  <div class="rounded-2xl bg-center bg-cover  z-10 h-96 -mt-96" style="
-              background-image: url('{{$this->route->circle()}}'); filter: opacity(99.9%);"></div>
+  <div x-show="!filtered" class="rounded-2xl bg-center bg-cover  z-10 h-96 -mt-96" style="
+              background-image: url('{{$this->route->circle()}}'); filter: opacity(99.9%);">
+  </div>
+    
+<div class="flex items-center absolute bottom-0 left-0 bg-white p-3 rounded-tr-2xl" >
+  <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
+  <button x-on:click="toogle()" :class="filtered ? 'bg-gray-600' : 'bg-gray-200'" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2" role="switch" aria-checked="false" aria-labelledby="annual-billing-label">
+    <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+    <span :class="filtered ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+  </button>
+  <span class="ml-3 text-sm" id="annual-billing-label">
+    <span class="font-medium text-gray-900">{{ __('Focus') }}</span>
+  </span>
+</div>
+
+</div>
+
   <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex items-center">

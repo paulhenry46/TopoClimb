@@ -60,6 +60,14 @@ class Route extends Model
         }
     }
 
+    public function filteredPicture(){
+        if(Storage::exists('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-filtered-'.$this->id)){
+            return Storage::url('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-filtered-'.$this->id);
+        }else{
+            return $this->picture();
+        }
+    }
+
     public function circle(){
         if(Storage::exists('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg')){
             return Storage::url('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg');
