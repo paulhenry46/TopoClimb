@@ -132,6 +132,7 @@ class ProcessPathOfRoute implements ShouldQueue
           $item = $xpath->query("//*[@id='path_$route_id']")->item(0);
           $item->setAttribute("x-on:mouseover", "hightlightRoute($route_id)");
           $item->setAttribute("x-on:click", "selectRoute($route_id)");
+          $item->setAttribute("x-show", "filtered_routes.includes($route_id)");
           $item->setAttribute("x-bind:style", "(selectedRoute == $route_id || hightlightedRoute == $route_id) ? 'stroke-width :8;' : ''");
   
         Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/common_paths.svg', $dom_common->saveXML());

@@ -7,14 +7,10 @@ use App\Models\Line;
 use App\Models\Route;
 use App\Models\Tag;
 use App\Models\Log;
-use Livewire\Attributes\Validate; 
-use Illuminate\Support\Str;
 use Livewire\WithPagination;
-use Livewire\Attributes\Computed;
-use Livewire\WithFileUploads;
 use Livewire\Attributes\Url;
 new class extends Component {
-  use WithPagination, WithFileUploads;
+  use WithPagination;
 
   
     public Area $area;
@@ -36,10 +32,16 @@ new class extends Component {
     public int $cotation_to;
     public $user_state;
     public $mobile_first_open;
+    public $filtered_routes;
+
+    private $routes_query;
+    private $available_lines;
+
 
   public function open_route($id){
     $this->route = Route::find($id);
     $this->route_id = $id;
+    $this->updateRoutesQuery();
   }
 
     public function mount(Area $area){
@@ -83,61 +85,73 @@ new class extends Component {
         $this->route = Route::where(function($query) {
       $query->whereNull('removing_at')
           ->orWhere('removing_at', '>', now());
-    })->whereIn('line_id', Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id'))->first();
+      })->whereIn('line_id', Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id'))->first();
         $this->mobile_first_open = false;
       }
       
       $this->user_state = 'all';
       $this->selected_line = 0;
       //dump($this->route);
-      }
+      $this->updateRoutesQuery();
+    }
+
+    public function updated($property, $value){
+      if(true){
+         $this->updateRoutesQuery();
+        }
+    }
+
+    private function updateRoutesQuery(){
+       if($this->selected_sector != null and $this->selected_sector != '0'){
+          $lines = Line::where('sector_id', $this->selected_sector);
+        }else{
+          $lines = Line::whereIn('sector_id', $this->area->sectors()->pluck('id'));
+        }
+        if($this->selected_line == 0){
+          $lines_selected = $lines->pluck('id');
+        }else{
+          $lines_selected = [$this->selected_line];
+        }
+        $this->available_lines = $lines;
+        
+        //return $routes;
+        $this->routes_query = Route::whereIn('line_id', $lines_selected)
+        ->where(function($query) {
+          $query->whereNull('removing_at')
+              ->orWhere('removing_at', '>', now());
+        })
+        ->when($this->search, function($query, $search) {
+            return $query->where('name', 'LIKE', "%{$this->search}%");
+        })
+        ->when($this->cotation_to != 0, function($query, $cotation) {
+            return $query->where('grade', '<=', $this->cotation_to);
+        })
+        ->when($this->cotation_from != 0, function($query, $cotation) {
+            return $query->where('grade', '>=', $this->cotation_from);
+        })
+        ->when($this->new, function($query, $cotation) {
+            return $query->where('created_at', '>=', now()->subDays(7));
+        })
+        ->when($this->user_state == 'success', function($query) {
+            return $query->whereHas('logs', function ($query) {
+          $query->where('user_id', '=', Auth::id());
+        });
+          })
+          ->when($this->user_state == 'fail', function($query) {
+              return $query->whereDoesntHave('logs', function ($query) {
+            $query->where('user_id', '=', Auth::id());
+        });
+          })
+          ->when(!empty($this->tags_id), function($query) {
+              return $query->whereHas('tags', function ($query) {
+                  $query->whereIn('tags.id', $this->tags_id);
+              }, '>=', count($this->tags_id));
+          });
+        $this->filtered_routes = $this->routes_query->pluck('id');
+    }
 
     public function with(){
-      if($this->selected_sector != null and $this->selected_sector != '0'){
-        $lines = Line::where('sector_id', $this->selected_sector);
-      }else{
-        $lines = Line::whereIn('sector_id', $this->area->sectors()->pluck('id'));
-      }
-      if($this->selected_line == 0){
-        $lines_selected = $lines->pluck('id');
-      }else{
-        $lines_selected = [$this->selected_line];
-      }
-      
-      //return $routes;
-    $routesQuery = Route::whereIn('line_id', $lines_selected)
-    ->where(function($query) {
-      $query->whereNull('removing_at')
-          ->orWhere('removing_at', '>', now());
-    })
-      ->when($this->search, function($query, $search) {
-          return $query->where('name', 'LIKE', "%{$this->search}%");
-      })
-      ->when($this->cotation_to != 0, function($query, $cotation) {
-          return $query->where('grade', '<=', $this->cotation_to);
-      })
-      ->when($this->cotation_from != 0, function($query, $cotation) {
-          return $query->where('grade', '>=', $this->cotation_from);
-      })
-      ->when($this->new, function($query, $cotation) {
-          return $query->where('created_at', '>=', now()->subDays(7));
-      })
-      ->when($this->user_state == 'success', function($query) {
-          return $query->whereHas('logs', function ($query) {
-        $query->where('user_id', '=', Auth::id());
-    });
-      })
-      ->when($this->user_state == 'fail', function($query) {
-          return $query->whereDoesntHave('logs', function ($query) {
-        $query->where('user_id', '=', Auth::id());
-    });
-      })
-      ->when(!empty($this->tags_id), function($query) {
-          return $query->whereHas('tags', function ($query) {
-              $query->whereIn('tags.id', $this->tags_id);
-          }, '>=', count($this->tags_id));
-      });
-    return ['routes' => $routesQuery->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->take(3)->get(), 'lines' => $lines->get(), 'route'=> $this->route];
+      return ['routes' => $this->routes_query->paginate(10), 'logs' => Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->take(3)->get(), 'lines' => $this->available_lines->get(), 'route'=> $this->route];
     }
 
     public function selectSector($id){
@@ -152,7 +166,16 @@ new class extends Component {
     @if($this->area->type == 'bouldering') 
       x-data="{ hightlightedSector: 0, selectedSector: 0, selectSector(id){ this.selectedSector = id; $wire.selectSector(id); }, hightlightSector(id){ this.hightlightedSector = id; }, }" 
     @else 
-      x-data="{ hightlightedRoute: 0, selectedRoute: 0, selectRoute(id){ this.selectedRoute = id; $wire.open_route(id); }, hightlightRoute(id){ this.hightlightedRoute = id; }, hightlightedLine: 0, selectedLine: 0, selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, hightlightLine(id){ this.hightlightedLine = id; }, }" > 
+      x-data="{ hightlightedRoute: 0, 
+            selectedRoute: 0, 
+            selectRoute(id){ this.selectedRoute = id; $wire.open_route(id); }, 
+            hightlightRoute(id){ this.hightlightedRoute = id; }, 
+            hightlightedLine: 0, 
+            selectedLine: 0, 
+            selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, 
+            hightlightLine(id){ this.hightlightedLine = id; }, 
+            filtered_routes : $wire.entangle('filtered_routes'),
+            }" > 
     @endif 
     
     <x-area.map /> 
