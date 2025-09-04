@@ -13,6 +13,7 @@ use Livewire\Attributes\Locked;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Carbon\Carbon;
+use App\Jobs\RouteColorChanged;
 use Livewire\Attributes\Computed;
 new class extends Component {
   use WithPagination;
@@ -32,7 +33,7 @@ new class extends Component {
 
     #[Validate('required')]
     public $name;
-    #[Validate('string')]
+    #[Validate('string|nullable')]
     public $comment;
     #[Validate('required')]
     public $line;
@@ -72,6 +73,7 @@ new class extends Component {
     {
       if($this->all_routes or $this->route->users()->where('user_id', auth()->id())->exists()){
         $this->validate(); 
+        $color = $this->route->color;
       $this->route->slug = Str::slug($this->name, '-');
       $this->route->name = $this->name;
       $this->route->comment = $this->comment;
@@ -87,7 +89,9 @@ new class extends Component {
         array_push($temp_openers_id, $opener['id']);
       }
       $this->route->users()->sync($temp_openers_id);
-
+      if($color != $this->color){
+        RouteColorChanged::dispatchSync($this->site, $this->area, $this->route);
+      }
       $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
         
         $this->modal_open = false;
@@ -103,12 +107,12 @@ new class extends Component {
         return Route::where(function($query) {
       $query->whereNull('removing_at')
           ->orWhere('removing_at', '>', now());
-    })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
+      })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
       }else{
         return auth()->user()->routes()->where(function($query) {
       $query->whereNull('removing_at')
           ->orWhere('removing_at', '>', now());
-    })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
+      })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
       }
     }
 
@@ -421,15 +425,15 @@ new class extends Component {
                         <fieldset>
                           <div class="mt-4 flex items-center gap-2">
                         <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-red-300" x-on:click="colorChosen = 'red'" :class="colorChosen == 'red' ? 'ring-2' : ''"> <input type="radio" name="color-choice" value=" red " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-red-50"> red </span> <span aria-hidden="true" class="h-8 w-8 bg-red-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-orange-300" x-on:click="colorChosen ='orange'" :class="colorChosen ==' orange' ? 'ring-2' : ''"> <input type="radio" name="color-choice" value=" orange " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-orange-50"> orange </span> <span aria-hidden="true" class="h-8 w-8 bg-orange-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-amber-300" x-on:click="colorChosen = 'amber'" :class="colorChosen == ' amber' ? 'ring-2' : ''"> <input type="radio" name="color-choice" value=" amber " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-amber-50"> amber </span> <span aria-hidden="true" class="h-8 w-8 bg-amber-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-yellow-300" x-on:click="colorChosen = 'yellow'" :class="colorChosen == 'yellow' ? 'ring-2': ''"> <input type="radio" name="color-choice" value=" yellow " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-yellow-50"> yellow </span> <span aria-hidden="true" class="h-8 w-8 bg-yellow-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-lime-300" x-on:click="colorChosen = 'lime'" :class="colorChosen == 'lime' ? 'ring-2': ''"> <input type="radio" name="color-choice" value=" lime " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-lime-50"> lime </span> <span aria-hidden="true" class="h-8 w-8 bg-lime-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-green-300" x-on:click="colorChosen = 'green'" :class="colorChosen == 'green' ? 'ring-2': ''"> <input type="radio" name="color-choice" value=" green " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-green-50"> green </span> <span aria-hidden="true" class="h-8 w-8 bg-green-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-emerald-300" x-on:click="colorChosen = 'emerald '" :class="colorChosen == 'emerald '? 'ring-2': ''"> <input type="radio" name="color-choice" value=" emerald " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-emerald-50"> emerald </span> <span aria-hidden="true" class="h-8 w-8 bg-emerald-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-teal-300" x-on:click="colorChosen = 'teal'" :class="colorChosen == 'teal' ? 'ring-2': ''"> <input type="radio" name="color-choice" value=" teal " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-teal-50"> teal </span> <span aria-hidden="true" class="h-8 w-8 bg-teal-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-cyan-300" x-on:click="colorChosen = 'cyan'" :class="colorChosen == 'cyan' ? 'ring-2': ''"> <input type="radio" name="color-choice" value=" cyan " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-cyan-50"> cyan </span> <span aria-hidden="true" class="h-8 w-8 bg-cyan-300 rounded-full border border-black/10"></span> </label>
-                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-sky-300" x-on:click="colorChosen = 'sky'" :class="colorChosen == 'sky' ? 'ring-2': ''"> <input type="radio" name="color-choice" value=" sky " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-sky-50"> sky </span> <span aria-hidden="true" class="h-8 w-8 bg-sky-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-orange-300" x-on:click="colorChosen ='orange'" :class="colorChosen =='orange' ? 'ring-2' : ''"> <input type="radio" name="color-choice" value="orange" class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-orange-50"> orange </span> <span aria-hidden="true" class="h-8 w-8 bg-orange-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-amber-300" x-on:click="colorChosen = 'amber'" :class="colorChosen == 'amber' ? 'ring-2' : ''"> <input type="radio" name="color-choice" value="amber " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-amber-50"> amber </span> <span aria-hidden="true" class="h-8 w-8 bg-amber-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-yellow-300" x-on:click="colorChosen = 'yellow'" :class="colorChosen == 'yellow' ? 'ring-2': ''"> <input type="radio" name="color-choice" value="yellow " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-yellow-50"> yellow </span> <span aria-hidden="true" class="h-8 w-8 bg-yellow-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-lime-300" x-on:click="colorChosen = 'lime'" :class="colorChosen == 'lime' ? 'ring-2': ''"> <input type="radio" name="color-choice" value="lime " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-lime-50"> lime </span> <span aria-hidden="true" class="h-8 w-8 bg-lime-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-green-300" x-on:click="colorChosen = 'green'" :class="colorChosen == 'green' ? 'ring-2': ''"> <input type="radio" name="color-choice" value="green " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-green-50"> green </span> <span aria-hidden="true" class="h-8 w-8 bg-green-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-emerald-300" x-on:click="colorChosen = 'emerald'" :class="colorChosen == 'emerald '? 'ring-2': ''"> <input type="radio" name="color-choice" value=" emerald " class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-emerald-50"> emerald </span> <span aria-hidden="true" class="h-8 w-8 bg-emerald-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-teal-300" x-on:click="colorChosen = 'teal'" :class="colorChosen == 'teal' ? 'ring-2': ''"> <input type="radio" name="color-choice" value="teal" class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-teal-50"> teal </span> <span aria-hidden="true" class="h-8 w-8 bg-teal-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-cyan-300" x-on:click="colorChosen = 'cyan'" :class="colorChosen == 'cyan' ? 'ring-2': ''"> <input type="radio" name="color-choice" value="cyan" class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-cyan-50"> cyan </span> <span aria-hidden="true" class="h-8 w-8 bg-cyan-300 rounded-full border border-black/10"></span> </label>
+                        <label class="relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-hidden ring-sky-300" x-on:click="colorChosen = 'sky'" :class="colorChosen == 'sky' ? 'ring-2': ''"> <input type="radio" name="color-choice" value="sky" class="sr-only" aria-labelledby="color-choice-4-label"> <span id="color-choice-4-label" class="sr-only bg-sky-50"> sky </span> <span aria-hidden="true" class="h-8 w-8 bg-sky-300 rounded-full border border-black/10"></span> </label>
 
                             </div>
                           <div class="mt-4 flex items-center gap-2">
