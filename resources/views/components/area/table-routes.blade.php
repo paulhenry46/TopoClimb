@@ -8,7 +8,7 @@
             <tbody class="bg-white"> @foreach ($routes as $route) <tr 
               @if($this->area->type == 'bouldering')
               x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" 
-              @click="$wire.open_route({{$route->id}}); $dispatch('open_modal')"
+              @click="selectRoute({{$route->id}}); $dispatch('open_modal')"
               @else
               x-on:mouseout="hightlightRoute(0)" x-on:mouseover="hightlightRoute({{$route->id}})" 
               @click="selectRoute({{$route->id}}); $dispatch('open_modal')"

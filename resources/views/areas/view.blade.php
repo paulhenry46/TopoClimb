@@ -10,6 +10,7 @@
           </div>
 
           <livewire:areas.view :area='$area'/>
+          <livewire:routes.view :area='$area' />
         </div>
       </div>
     </div>
