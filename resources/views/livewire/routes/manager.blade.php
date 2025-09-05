@@ -286,7 +286,7 @@ new class extends Component {
 
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
+          <table x-data='{show_item(id){$dispatch("route-changed", { id: id});}}' class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
             <thead>
               <tr>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
@@ -348,6 +348,9 @@ new class extends Component {
                 </td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                   <div class='flex items-center justify-end' >
+                  <button x-on:click="show_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
+                    <x-icons.icon-see />
+                  </button>
                   <button wire:click="open_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
                     <x-icons.icon-edit />
                   </button>

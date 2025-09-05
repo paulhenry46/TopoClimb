@@ -1,25 +1,111 @@
-@props(['logs', 'key_button' => 'default-button'])
-<div class='relative' x-data="{filtered : false, toogle(){this.filtered = !this.filtered;}}">
-<div x-show="!filtered" class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
-</div>
-<div x-cloak x-show="filtered" class=" bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->filteredPicture() }}'); background-position-y: 50%;">
-</div>
+<?php
 
-  <div x-show="!filtered" class="rounded-2xl bg-center bg-cover  z-10 h-96 -mt-96" style="
-              background-image: url('{{$this->route->circle()}}'); filter: opacity(99.9%);">
-  </div>
+use Livewire\Volt\Component;
+use App\Models\Area;
+use App\Models\Route;
+use App\Models\Line;
+use Livewire\Attributes\On; 
+new class extends Component {
+
+    public Area $area;
+    public Route $route;
+    public $route_id;
+    public $logs;
+    public $modal_open; 
+    public $gradeUser;
+    public $data_routes_week;
+    public $public_url;
+
+
+    public function mount(Area $area){
+        $this->area = $area;
+        $this->route = Route::where(function($query) {
+        $query->whereNull('removing_at')
+            ->orWhere('removing_at', '>', now());
+        })->whereIn('line_id', Line::whereIn('sector_id', $this->area->sectors()->pluck('id'))->pluck('id'))->first();
+        $this->logs = $this->route->logs;
+        $this->gradeAccordingToUsers();
+        $this->getDataForGraph();
+        $this->public_url = route('route.shortUrl', ['route' => $this->route->id]);
+    }
+
+    #[On('route-changed')] 
+    public function readRoute($id)
+    {
+        $this->route  = Route::find($id);
+        $this->route_id = $id;
+        $this->logs = $this->route->logs;
+        $this->modal_open = true;
+        $this->gradeAccordingToUsers();
+        $this->getDataForGraph();
+        $this->public_url = route('route.shortUrl', ['route' => $this->route->id]);
+    }
+
+    public function gradeAccordingToUsers(){
+        $grades = $this->logs->pluck('grade')->toArray();
+        if(count($grades)>0){
+             $average = array_sum($grades) / count($grades);
+             $this->gradeUser = config('climb.default_cotation_reverse')[$this->findClosest(config('climb.default_cotation_reverse'), $average)];
+        }else{
+            $this->gradeUser = $this->route->gradeFormated();
+        }
+    }
+
+    private function getDataForGraph(){
+        $weeks = collect();
+        for ($i = 7; $i >= 0; $i--) {
+            $start = now()->subWeeks($i)->startOfWeek();
+            $end = now()->subWeeks($i)->endOfWeek();
+            $count = $this->route->logs()
+                ->whereBetween('created_at', [$start, $end])
+                ->count();
+            $weeks->push([
+                'label' => $start->format('d/m'),
+                'count' => $count,
+            ]);
+        }
+        $this->data_routes_week = [
+                'labels' => $weeks->pluck('label'),
+                'datasets' => [
+                    [
+                        'label' => __('Number of logs by week'),
+                        'data' => $weeks->pluck('count'),
+                        'backgroundColor' => 'rgba(0, 0, 0, 0.2)',
+                        'borderColor' => 'rgba(0, 0, 0, 1)',
+                        'borderWidth' => 1,
+                    ],
+                ],
+            ];
+    }
     
-<div class="flex items-center absolute bottom-0 left-0 bg-white p-3 rounded-tr-2xl" >
-  <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
-  <button x-on:click="toogle()" :class="filtered ? 'bg-gray-600' : 'bg-gray-200'" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2" role="switch" aria-checked="false" aria-labelledby="annual-billing-label">
-    <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
-    <span :class="filtered ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-  </button>
-  <span class="ml-3 text-sm" id="annual-billing-label">
-    <span class="font-medium text-gray-900">{{ __('Focus') }}</span>
-  </span>
-</div>
 
+
+    private function findClosest($array, $target) {
+        $closest = null;
+        $minDiff = 100;
+
+        foreach ($array as $value => $key) {
+            $diff = abs($target - $value);
+            if ($diff < $minDiff) {
+                $minDiff = $diff;
+                $closest = $value;
+            }
+        }
+
+        return $closest;
+}
+
+
+}; ?>
+
+<x-drawer save_method_name='nothing' open='modal_open' :title="__('Route n°') . $this->route->id " :subtitle="__('See route details')">
+     @assets
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ @endassets
+
+    <div>
+<div class="bg-center bg-cover h-42 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
+</div>
 </div>
 
   <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
@@ -35,41 +121,8 @@
             @endif
           </p>
         </div>
-        <div x-data class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
-          @auth
-          @if($key_button == 'button-md')
-             <livewire:routes.registered :route='$this->route' key='buttonhdfhdf3'/>
-            <livewire:routes.logger :route='$this->route' key='butdddssdcton7'/>
-           <button @click="$dispatch('show_modal')" type="button" class=" cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
-      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-    </svg>
-  </button>
-            @else
-            <livewire:routes.registered :route='$this->route' key='button4'/>
-              <livewire:routes.logger :route='$this->route' key='butynjututon6'/>
-           <button @click="$dispatch('show_modal')" type="button" class=" cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
-      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-    </svg>
-  </button>
-            @endif
-            @endauth
-            @guest
-              <a href='{{ route('login') }}' wire:navigate  class="rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-      <path d="m480-240-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v519q0 43-36 66.5t-76 6.5l-168-72Zm0-88 200 86v-518H280v518l200-86Zm0-432H280h400-200Z"></path>
-    </svg>
-  </a>
-   <a href='{{ route('login') }}' wire:navigate class="cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
-      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-    </svg>
-  </a>
-            @endguest
-        </div>
       </div>
-      <div class="grid grid-cols-3 mt-4 gap-x-2">
+      <div class="grid grid-cols-4 mt-4 gap-x-2">
         <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-2">
           <dt class="flex-none">
             <span class="sr-only">Mail</span>
@@ -96,6 +149,13 @@
             </svg>
           </dt>
           <dd class="text-sm leading-6 ">{{ $this->route->gradeFormated() }}</dd>
+        </div>
+        <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-2">
+          <dt class="flex-none">
+            <span class="sr-only">Mail</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-400h320v-22q0-44-44-71t-116-27q-72 0-116 27t-44 71v22Zm160-160q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560ZM240-240l-92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Z"/></svg>
+          </dt>
+          <dd class="text-sm leading-6 ">{{ $this->gradeUser }}</dd>
         </div>
         <div class="text-gray-500 mt-5 flex w-full flex-none gap-x-2">
           <dt class="flex-none">
@@ -125,9 +185,9 @@
                 {{ __('Ascents') }}
                 <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->count()}}</span>
               </a>
-              <a @click="activeTab = 2" :class="activeTab == 2 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium" aria-current="page">
-                {{ __('Video') }}
-                <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('video_url', '!=', null)->count()}}</span>
+               <a @click="activeTab = 2" :class="activeTab == 2 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class=" flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                {{ __('Data') }}
+               
               </a>
             </nav>
           </div>
@@ -160,12 +220,6 @@
   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No comments') }}</h3>
   <p class="mt-1 text-sm text-gray-500"> {{ __('No comments for this route. If you manage to climb it, you can be the first to comment !') }}</p>
   <div class="mt-6">
-   <x-button @click="$dispatch('show_modal')" class='mb-2'>
-      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
-      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-    </svg>
-      {{ __('Register your ascent !') }}
-    </x-button>
   </div>
 </div>         
           @endforelse
@@ -223,21 +277,32 @@
   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No acsents') }}</h3>
   <p class="mt-1 text-sm text-gray-500"> {{ __('No ascents for this route. Maybe you are the fisrt to succes !') }}</p>
   <div class="mt-6">
-    <x-button @click="$dispatch('show_modal')" class='mb-2'>
-      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
-      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
-    </svg>
-      {{ __('Register your ascent !') }}
-    </x-button>
   </div>
 </div>   
           @endforelse
         </div>
-        {{--  
-        <div x-show="activeTab == 2" class='min-h-56'> {{ __('Videos') }} 
+        <div x-show="activeTab == 2" class='min-h-56'>
+                        <div x-data="{
+        data: $wire.entangle('data_routes_week'),
+        updateChart(){
+        if (Chart.getChart('data_routes_week')){ Chart.getChart('data_routes_week').destroy(); }
+         new Chart(document.getElementById('data_routes_week').getContext('2d'), 
+{ type: 'bar', data: this.data, options: {} });}
+ }"
+x-init="updateChart()"
+x-effect="updateChart()" class='mx-2'>
+
+ <canvas id="data_routes_week" class='h-96'></canvas>
+</div>
 
         </div>
-        --}}
       </div>
     </div>
   </div>
+<x-slot name="footer">
+                <div class="flex justify-end space-x-3">
+                  <x-secondary-button x-on:click="open = ! open" type="button">{{__('Close')}}</x-secondary-button>
+                  <a  class='inline-flex cursor-pointer items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-hidden disabled:opacity-50 transition ease-in-out duration-150' href="{{ $this->public_url }}">{{__('See on public page')}}</a>
+                </div>
+              </x-slot>
+            </x-drawer>

@@ -469,7 +469,7 @@
     "Site page" : "Page publique",
     "Uninitialized" : "Non initialisée",
     "Registered sectors and lines in this area" : "Lignes et secteurs de cette zone",
-    "Generate Topo for this area" : "Générer le topo de cette zone",
+    "Generate Topo for this area." : "Générer le topo de cette zone.",
     "Sectors" : "Secteurs",
     "Schema" : "Schéma",
     "Generate Tags for routes of this area" : "Générer les étiquettes de pied de voie pour cette zone",
@@ -496,5 +496,6 @@
     "Your comments" : "Commentaires",
     "you can comment this route and show the felt grade" : "Vous pouvez commenter la voie et indiquer votre cotation ressentie",
     "No users with this name were found." : "Aucun utilisateur trouvé.",
-    "Choosen tags :" : "Tags choisis :"
+    "Choosen tags :" : "Tags choisis :",
+    "You can choose how the tracks will be classified: by line or by sector. You can also print the diagram of a sector with the tracks named as a supplement." : "Vous pouvez choisir la façon dont les voies seront classées : par ligne ou par secteur. Vous pouvez également imprimer le schéma d'un secteur avec les voies nommées en complément."
 }

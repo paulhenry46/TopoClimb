@@ -441,6 +441,7 @@ new class extends Component {
 
   <x-grid-pattern-item >
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
+    <livewire:routes.card-admin :area='$this->area'>
   </x-grid-pattern-item >
 @can('site.'.$this->area->site->id)
 <x-grid-pattern-title >
@@ -452,7 +453,7 @@ new class extends Component {
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Topo')}}</h1>
-          <p class="mt-2 text-sm text-gray-700">{{__('Generate Topo for this area')}}</p>
+          <p class="mt-2 text-sm text-gray-700">{{__('Generate Topo for this area.')}} {{__('You can choose how the tracks will be classified: by line or by sector. You can also print the diagram of a sector with the tracks named as a supplement.')}}</p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
          <a wire:navigate href='{{ route("admin.areas.topo.initialize.lines", ['site'=>$this->area->site, 'area'=> $this->area]) }}'  > <x-button type="button">{{ __('Lines') }}</x-button></a>
