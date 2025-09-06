@@ -45,7 +45,10 @@ new class extends Component {
 
 
         
-        $routes = Route::whereHas('line.sector.area.site', function($query){
+        $routes = Route::where(function($query) {
+          $query->whereNull('removing_at')
+              ->orWhere('removing_at', '>', now());
+        })->whereHas('line.sector.area.site', function($query){
             $query->where('id', $this->site->id);
             })
             ->withCount('logs')
@@ -61,7 +64,10 @@ new class extends Component {
         $this->averageLogsPerMonth = round($routes_logs->avg('logs_per_month'), 2);
         $this->routesByLogsPerMonth = $routes_logs->sortBy('logs_per_month')->values()->take(10);
 
-        $this->OldRoutes = Route::whereHas('line.sector.area.site', function($query){
+        $this->OldRoutes = Route::where(function($query) {
+          $query->whereNull('removing_at')
+              ->orWhere('removing_at', '>', now());
+        })->whereHas('line.sector.area.site', function($query){
                 $query->where('id', $this->site->id);
             })
             ->orderBy('created_at', 'asc')

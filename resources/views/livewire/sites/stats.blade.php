@@ -32,7 +32,10 @@ new class extends Component {
     }
     public function getValues(){
             #Number of routes by difficulty (bar chart) with 2 bars for each type (bouldering and sport climbing)
-            $routes = Route::whereHas('line.sector.area.site', function ($query) {
+            $routes = Route::where(function($query) {
+          $query->whereNull('removing_at')
+              ->orWhere('removing_at', '>', now());
+        })->whereHas('line.sector.area.site', function ($query) {
                 $query->where('id', $this->site->id);
             })
             ->when(($this->area != null), function ($query) {
@@ -133,7 +136,10 @@ new class extends Component {
         $tags = Tag::withCount(['routes' => function ($query) {
             $query->whereHas('line.sector.area.site', function ($query) {
                 $query->where('id', $this->site->id);
-            });
+            })->where(function($query) {
+          $query->whereNull('removing_at')
+              ->orWhere('removing_at', '>', now());
+        });
             if ($this->area != null) {
                 $query->whereHas('line.sector.area', function ($query) {
                     $query->where('id', $this->area);
