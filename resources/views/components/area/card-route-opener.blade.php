@@ -1,259 +1,125 @@
-<?php
+@props(['logs', 'key_button' => 'default-button'])
+<div class='relative' x-data="{filtered : false, toogle(){this.filtered = !this.filtered;}}">
+<div x-show="!filtered" class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
+</div>
+<div x-cloak x-show="filtered" class=" bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->filteredPicture() }}'); background-position-y: 50%;">
+</div>
 
-use Livewire\Volt\Component;
-use App\Models\Site;
-use App\Models\Route;
-use App\Models\Area;
-use App\Models\Line;
-use App\Models\Tag;
-use App\Models\Sector;
-use App\Models\User;
-use Livewire\Attributes\Validate; 
-use Livewire\Attributes\Locked; 
-use Illuminate\Support\Str;
-use Livewire\WithPagination;
-use Carbon\Carbon;
-use App\Jobs\RouteColorChanged;
-use Livewire\Attributes\Computed;
-new class extends Component {
-  use WithPagination;
-
-    public Site $site;
-    public Area $area;
-    public Route $route;
-    #[Locked]
-    public $all_routes;
-    public $lines;
-    public $lines_available;
-
-    public $modal_open;
-    public $modal_title;
-    public $modal_subtitle;
-    public $modal_submit_message;
-
-    #[Validate('required')]
-    public $name;
-    #[Validate('string|nullable')]
-    public $comment;
-    #[Validate('required')]
-    public $line;
-    #[Validate('required|regex:/[3-9][abc][+]?/')]
-    public string $grade;
-    #[Validate('required')]
-    public string $color;
-    #[Validate('required')]
-    public $date;
-
-    public $sector;
-    public $sectors;
-
-    public $opener_search;
-    public $opener_selected  = [];
-    public $error_user;
-
-    public $slug;
-
-    public array $tags_id;
-
-    public array $tags_choosen;
-
-    public $tags_available;
-
-    public $id_editing;
+  <div x-show="!filtered" class="rounded-2xl bg-center bg-cover  z-10 h-96 -mt-96" style="
+              background-image: url('{{$this->route->circle()}}'); filter: opacity(99.9%);">
+  </div>
     
-    public function updated($property, $value)
-    {
-        if ($property === 'sector') {
-            $this->line = Line::where('sector_id', $this->sector)->first()->id;
-            $this->lines_available = Line::where('sector_id', $this->sector)->get();
-        }
-    }
+<div class="flex items-center absolute bottom-0 left-0 bg-white p-3 rounded-tr-2xl" >
+  <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
+  <button x-on:click="toogle()" :class="filtered ? 'bg-gray-600' : 'bg-gray-200'" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2" role="switch" aria-checked="false" aria-labelledby="annual-billing-label">
+    <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+    <span :class="filtered ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+  </button>
+  <span class="ml-3 text-sm" id="annual-billing-label">
+    <span class="font-medium text-gray-900">{{ __('Focus') }}</span>
+  </span>
+</div>
 
-    public function saveRoute()
-    {
-      if($this->all_routes or $this->route->users()->where('user_id', auth()->id())->exists()){
-        $this->validate(); 
-        $color = $this->route->color;
-      $this->route->slug = Str::slug($this->name, '-');
-      $this->route->name = $this->name;
-      $this->route->comment = $this->comment;
-      $this->route->line_id = $this->line;
-      $this->route->grade = $this->gradeToInt($this->grade);
-      $this->route->color = $this->color;
-      $this->route->created_at = $this->date;
-      $this->route->save();
-      $this->route->tags()->sync($this->tags_id);
-      $temp_openers_id = [];
+</div>
 
-      foreach ($this->opener_selected as $key => $opener) {
-        array_push($temp_openers_id, $opener['id']);
-      }
-      $this->route->users()->sync($temp_openers_id);
-      if($color != $this->color){
-        RouteColorChanged::dispatchSync($this->site, $this->area, $this->route);
-      }
-      $this->dispatch('action_ok', title: 'Route saved', message: 'Your modifications has been registered !');
+  <div class="bg-white overflow-hidden /*shadow-xl*/ sm:rounded-b-lg">
+    <div class="px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex items-center">
+        <div class="flex-auto">
+          <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{$this->route->name}}</h1>
+          <p class="mt-1 text-sm text-gray-700">
+            @if($this->area->type == 'bouldering')
+            {{$this->route->line->sector->name}},
+            @else
+           {{ __('Line') }}  {{$this->route->line->local_id}},
+            @endif
+            #{{$this->route->id  }}
+          </p>
+        </div>
+        <div x-data class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
+          @auth
+          @if($key_button == 'button-md')
+             <livewire:routes.registered :route='$this->route' key='buttonhdfhdf3'/>
+            <livewire:routes.logger :route='$this->route' key='butdddssdcton7'/>
+           <button @click="$dispatch('show_modal')" type="button" class=" cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
+      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+    </svg>
+  </button>
+            @else
+            <livewire:routes.registered :route='$this->route' key='button4'/>
+              <livewire:routes.logger :route='$this->route' key='butynjututon6'/>
+           <button @click="$dispatch('show_modal')" type="button" class=" cursor-pointer rounded-md bg-gray-800 p-2 text-white shadow-xs hover:bg-gray-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
+      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+    </svg>
+  </button>
+            @endif
+            @endauth
+            
+        </div>
+      </div>
+      <div class="grid grid-cols-3 mt-4 gap-x-2">
+        <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-2">
+          <dt class="flex-none">
+            <span class="sr-only">Mail</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M480-440q58 0 99-41t41-99q0-58-41-99t-99-41q-58 0-99 41t-41 99q0 58 41 99t99 41ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-46q-54-53-125.5-83.5T480-360q-83 0-154.5 30.5T200-246v46Z" />
+            </svg>
+          </dt>
+          <dd class="text-sm leading-6 "> @foreach ($this->route->users as $user) {{ $user->name }} @endforeach </dd>
+        </div>
+        <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-2">
+          <dt class="flex-none">
+            <span class="sr-only">Mail</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M360-300q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z" />
+            </svg>
+          </dt>
+          <dd class="text-sm leading-6 ">{{ $this->route->created_at->format('d/m/y') }}</dd>
+        </div>
+        <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-2">
+          <dt class="flex-none">
+            <span class="sr-only">Mail</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M480-269 314-169q-11 7-23 6t-21-8q-9-7-14-17.5t-2-23.5l44-189-147-127q-10-9-12.5-20.5T140-571q4-11 12-18t22-9l194-17 75-178q5-12 15.5-18t21.5-6q11 0 21.5 6t15.5 18l75 178 194 17q14 2 22 9t12 18q4 11 1.5 22.5T809-528L662-401l44 189q3 13-2 23.5T690-171q-9 7-21 8t-23-6L480-269Z" />
+            </svg>
+          </dt>
+          <dd class="text-sm leading-6 ">{{ $this->route->gradeFormated() }}</dd>
+        </div>
+        <div class="text-gray-500 mt-5 flex w-full flex-none gap-x-2">
+          <dt class="flex-none">
+            <span class="sr-only">Mail</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+              <path d="M856-390 570-104q-12 12-27 18t-30 6q-15 0-30-6t-27-18L103-457q-11-11-17-25.5T80-513v-287q0-33 23.5-56.5T160-880h287q16 0 31 6.5t26 17.5l352 353q12 12 17.5 27t5.5 30q0 15-5.5 29.5T856-390ZM260-640q25 0 42.5-17.5T320-700q0-25-17.5-42.5T260-760q-25 0-42.5 17.5T200-700q0 25 17.5 42.5T260-640Z" />
+            </svg>
+          </dt>
+          <dd class="text-sm leading-6 flex gap-x-1"> @foreach ($this->route->tags as $tag) <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+              <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+                <circle cx="3" cy="3" r="3"></circle>
+              </svg>
+              {{ $tag->name }}
+            </span> @endforeach </dd>
+        </div>
+      </div>
+      <h1 class="text-2xl mt-6 mb-3 font-semibold leading-6 text-gray-900">{{__('Settings')}}</h1>
+      <div class='grid grid-cols-4' x-data='{open_modal : false}' x-on:action_ok.window='open_modal=false'>
         
-        $this->modal_open = false;
-        $this->render();
-      }
-      
-    }
+          
+                  <button wire:click="open_item({{$this->route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
+                    <x-icons.icon-edit />
+                  </button>
+                  <button x-on:click='open_modal = true' class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
+                    
+                    <span>
+                    <x-icons.icon-delete />
+                    </span>
 
-    #[Computed]
-    public function routes()
-    {
-      if($this->all_routes){
-        return Route::where(function($query) {
-      $query->whereNull('removing_at')
-          ->orWhere('removing_at', '>', now());
-      })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
-      }else{
-        return auth()->user()->routes()->where(function($query) {
-      $query->whereNull('removing_at')
-          ->orWhere('removing_at', '>', now());
-      })->whereIn('line_id', $this->lines->pluck('id'))->paginate(10);
-      }
-    }
+                  </button>
 
-    public function open_item($id){
-      $item = Route::find($id);
-      $this->route = $item;
-      $this->name = $item->name;
-      $this->comment = $item->comment;
-      $this->line = $item->line_id;
-      $this->sector = $item->line->sector_id;
-      $this->lines_available = Line::where('sector_id', $this->sector)->get();
-      $this->grade = $this->IntToGrade($item->grade);
-      $this->color = $item->color;
-      $this->date = $item->created_at->format('Y-m-d');
 
-      $this->modal_open = true;
-
-      $tags_temp = $this->route->tags()->pluck('tags.id', 'name')->toArray();
-    
-
-      $tags = [];
-      $tags_id = [];
-     foreach($tags_temp as $name => $key){
-      array_push($tags, ['name' => $name, 'id' => $key]);
-      array_push($tags_id, $key);
-     }
-
-     $this->tags_id = $tags_id;
-     $this->tags_choosen = $tags;
-     $this->opener_selected = [];
-     $users_temp = $this->route->users;
-     foreach($users_temp as $user){
-      array_push($this->opener_selected, ['name' => $user->name, 'id' => $user->id, 'url' => $user->profile_photo_url]);
-      
-    }
-  }
-
-    public function remove_item($id){
-      $item = Route::find($id);
-      $item->removed_at = Carbon::today()->toDateTime();
-      $this->dispatch('action_ok', title: 'Route deleted', message: 'Your modifications has been registered !');
-      $this->render();
-    }
-
-    public function set_remove_date($ids, $date){
-      if($date == 'today'){
-        $date = Carbon::today()->toDateTime();
-      }
-
-      Route::whereIn('id', $ids)->update(['removing_at' => $date]);
-    }
-
-    public function mount($lines, Site $site, Area $area){
-
-      if(auth()->user()->can('lines-sectors.'.$area->site->id)){
-        $this->all_routes == true;
-      }else{
-        $this->all_routes == false;
-      }
-
-      $this->modal_title = __('Editing route ').$this->name;
-      $this->modal_subtitle = __('Check the informations about this route.');
-      $this->modal_submit_message = __('Edit');
-      
-      $this->lines = $lines;
-      $this->lines_available = $lines;
-      $this->line = null;
-      $this->site = $site;
-      $this->area = $area;
-
-      $tags_temp = Tag::all()->pluck('id', 'name')->toArray();
-    
-
-      $tags = [];
-     foreach($tags_temp as $name => $key){
-      array_push($tags, ['name' => $name, 'id' => $key]);
-     }
-      $this->sectors = Sector::where('area_id', $this->area->id)->get();
-      $this->sector = Sector::where('area_id', $this->area->id)->first()->id;
-     
-
-     $this->tags_available = $tags;
-    }
-
-    public function add_opener(){
-      $user = User::where('name', $this->opener_search)->first();
-      if($user != null){
-        array_push($this->opener_selected, ['name' => $user->name, 'id' => $user->id, 'url' => $user->profile_photo_url]);
-        $this->opener_search = null;
-        $this->error_user = false;
-      }else{
-        $this->error_user = true;
-      }
-
-    }
-
-    public function remove_opener($id)
-    {
-      foreach ($this->opener_selected as $subKey => $opener){
-        if($opener['id'] == $id){
-          unset($this->opener_selected[$subKey]);
-        }
-      }
-    }
-
-    protected function gradeToInt($grade){
-        $array = config('climb.default_cotation');
-        return $array[$grade];
-    }
-
-    protected function intToGrade($int){
-        $grades = config('climb.default_cotation_reverse');
-
-        return $grades[$int] ?? null;
-    }
-}; ?>
-
-<div>
-  <div class="px-4 sm:px-6 lg:px-8 py-8" x-data='{selected:[], 
-                                    open_modal: false, 
-                                    remove(){$wire.set_remove_date(this.selected, $refs.date.value); this.open_modal = false; this.selected = []},
-                                    cancel_modal(){this.open_modal = false; this.selected = []},
-                                    remove_now(){$wire.set_remove_date(this.selected, "today");  this.open_modal = false; this.selected = []},
-                                    toogle(id){
-                                    if(this.selected.includes(id)){this.selected.splice(this.selected.indexOf(id), 1);}else{this.selected.push(id); }}
-                                    }'>
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Routes')}}</h1>
-        <p class="mt-2 text-sm text-gray-700">{{__('Registered routes')}}</p>
-      </div>
-      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-       <x-button x-on:click='open_modal = !open_modal' type="button" x-show='selected.length >0'>{{__('Remove')}}</x-button>
-       <a href="{{route('admin.routes.new', ['site' => $this->site->id, 'area' => $this->area->id])}}" wire:navigate> <x-button type="button">{{__('Add route')}}</x-button></a>
-      </div>
-    </div>
-    <div class="flow-root"  >
-            <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true" x-show='open_modal' x-cloak>
-         
         <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 bg-gray-500/75  transition-opacity" x-show='open_modal' x-cloak></div>
-          <div class="fixed inset-0 z-10 overflow-y-auto">
+          <div class="fixed inset-0 z-10 overflow-y-auto" x-show='open_modal' x-cloak>
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" x-show='open_modal' x-cloak>
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -273,113 +139,161 @@ new class extends Component {
                   </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button @click='remove()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Set date of removing') }}</button>
-                  <button @click='remove_now()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Remove now') }}</button>
-                  <button @click='cancel_modal()' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                  <button @click='$wire.remove_current()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Set date of removing') }}</button>
+                  <button @click='$wire.remove_current_now()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Remove now') }}</button>
+                  <button @click='open_modal = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <table x-data='{show_item(id){$dispatch("route-changed", { id: id});}}' class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
-            <thead>
-              <tr>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
-                  <span class="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white"> @foreach ($this->routes as $route) <tr class="hover:bg-gray-50">
-                
-                <td class="rounded-l-md text-xl text-center w-4 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                 
-                  {{$route->gradeFormated()}}
-                </td>
-                <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                  <div class="flex items-center">
-                    <div>
-                      <div class="font-bold pb-1">{{$route->name}}</div>
-                      @if($route->line->local_id == 0)
-                      <div class="text-sm opacity-50">{{__('Sector')}} {{$route->line->sector->local_id}}</div>
-                      @else
-                      <div class="text-sm opacity-50">{{__('Line')}} {{$route->line->local_id}}</div>
-                      @endif
-                    </div>
-                  </div>
-                </td>
-                <td class=" relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                 
-                  @forelse ( $route->users as $opener)
-                            <span class=" flex-none mr-2 inline-flex items-center gap-x-1.5 rounded-md  px-2 text-sm font-medium text-gray-700">
-                              <img
-                                alt="{{ $opener->name }}"
-                                src="{{ $opener->profile_photo_url }}"
-                                class=" h-8 w-8  rounded-md object-cover object-center"
-                              />
-                              {{ $opener->name }}
-                            </span>
-                            @empty
-                        @endforelse
-                </td>
-                <td class=" relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                  @forelse ($route->tags as $tag)
-                  
-                  <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">{{$tag->name}}</span>
-                  @empty
-                  @endforelse
-                </td>
-                <td class="items-center relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3 flex">
-                 @if($route->removing_at !=  null)
-                  <x-icons.icon-schedule/>
-                  {{ $route->removing_at }}
-                  @else
-                  <x-icons.icon-infinity/>
-                  @endif
-                </td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                  <div class='flex items-center justify-end' >
-                  <button x-on:click="show_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
-                    <x-icons.icon-see />
-                  </button>
-                  <button wire:click="open_item({{$route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
-                    <x-icons.icon-edit />
-                  </button>
-                  <button x-on:click='toogle({{$route->id}})' class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2" wire:confirm="{{ __('Are you sure you want to delete this project?') }}">
-                    <span x-show='selected.includes({{$route->id}})' x-cloak>
-                    <x-icons.icon-delete-filled />
-                    </span>
-                    <span x-show='!selected.includes({{$route->id}})'>
-                    <x-icons.icon-delete />
-                    </span>
+          
 
-                  </button>
-                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="cursor-pointer mr-2 text-gray-600 hover:text-gray-900" >
-                    <button>
+                  <a wire:navigate href="{{Route('admin.routes.path', ['site' => $this->area->site->id, 'area' => $this->area->id, 'route' => $this->route->id])}}" class="cursor-pointer mr-2 text-gray-600 hover:text-gray-900" >
+                    
                     <x-icons.icon-path />
-                    </button>
+                    
                   </a>
-                  <a wire:navigate href="{{Route('admin.routes.photo', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $route->id])}}" class="cursor-pointer text-gray-600 hover:text-gray-900" >
+                  <a wire:navigate href="{{Route('admin.routes.photo', ['site' => $this->area->site->id, 'area' => $this->area->id, 'route' => $this->route->id])}}" class="cursor-pointer text-gray-600 hover:text-gray-900" >
                     <button>
                     <x-icons.icon-picture />
                     </button>
                   </a>
-                  </div>
-                </td>
-              </tr> @endforeach </tbody>
-          </table>
-          {{ $this->routes->links() }}
+        
+      </div>
+      <div class="mt-12" x-data="{ activeTab:  0 }">
+        <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{__('Activity')}}</h1>
+        <div class="">
+          <div class="border-b border-gray-200">
+            <nav class="-mb-px flex justify-between" aria-label="Tabs">
+              <a @click="activeTab = 0" :class="activeTab == 0 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                {{ __('Comments') }}
+                <span :class="activeTab == 0 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('comment', '!=', null)->count()}}</span>
+              </a>
+              <a @click="activeTab = 1" :class="activeTab == 1 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class=" flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
+                {{ __('Ascents') }}
+                <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->count()}}</span>
+              </a>
+              <a @click="activeTab = 2" :class="activeTab == 2 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium" aria-current="page">
+                {{ __('Video') }}
+                <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('video_url', '!=', null)->count()}}</span>
+              </a>
+            </nav>
+          </div>
         </div>
+        <div x-show="activeTab == 0" class='min-h-56'> 
+          @forelse ($logs->where('comment','!=', null) as $log) <div class=" mt-2 flex  items-start space-x-3">
+            <div>
+              <div class=" px-1">
+                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                  <img class="rounded-md" src="{{ $log->user->profile_photo_url }}" />
+                </div>
+              </div>
+            </div>
+            <div class="min-w-0 flex-1 py-0">
+              <div class="text-sm leading-6 text-gray-500">
+                <span class="">
+                  <a href="#" class="font-medium text-gray-900">{{ $log->user->name }}</a>
+                  <span class="whitespace-nowrap">{{ $log->created_at->format('d/m/Y') }}</span>
+                  </br>
+                </span>
+                <span class="">
+                  {{ $log->comment }}
+                </span>
+              </div>
+            </div>
+          </div> 
+          @empty
+          <div class="text-center rounded-lg  mt-2">
+  <x-icons.icon-comments/>
+  <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No comments') }}</h3>
+  <p class="mt-1 text-sm text-gray-500"> {{ __('No comments for this route. If you manage to climb it, you can be the first to comment !') }}</p>
+  <div class="mt-6">
+   <x-button @click="$dispatch('show_modal')" class='mb-2'>
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
+      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+    </svg>
+      {{ __('Register your ascent !') }}
+    </x-button>
+  </div>
+</div>         
+          @endforelse
+        </div>
+        <div x-show="activeTab == 1" class='min-h-56'> 
+          @forelse ($logs as $log) 
+          <div class=" mt-2 flex items-center items-start space-x-3">
+            <div>
+              <div class=" px-1">
+                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                  <img class="rounded-md" src="{{ $log->user->profile_photo_url }}" />
+                </div>
+              </div>
+            </div>
+            <div class="min-w-0 flex-1 py-0">
+              <div class="text-sm leading-6 text-gray-500">
+                <span class="">
+                  <a href="#" class="font-medium text-gray-900">{{ $log->user->name }}</a>
+                  <span class="whitespace-nowrap">{{ $log->created_at->format('d/m/Y') }}</span>
+                  </br>
+                </span>
+                <span class=""> @if($log->way == 'top-rope') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('Top-rope') }}
+                  </a> @elseif($log->way == 'lead') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('Leading') }}
+                  </a> @endif @if($log->type == 'view') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-indigo-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('View') }}
+                  </a> @elseif($log->type == 'work') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-emerald-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('After work') }}
+                  </a> @elseif($log->type == 'flash') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-amber-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('Flash') }}
+                  </a> @endif </span>
+              </div>
+            </div>
+          </div> 
+          @empty
+          <div class="text-center rounded-lg  mt-2">
+            
+  <x-icons.icon-carabiner/>
+  <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No acsents') }}</h3>
+  <p class="mt-1 text-sm text-gray-500"> {{ __('No ascents for this route. Maybe you are the fisrt to succes !') }}</p>
+  <div class="mt-6">
+    <x-button @click="$dispatch('show_modal')" class='mb-2'>
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" fill="currentColor">
+      <path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z" />
+    </svg>
+      {{ __('Register your ascent !') }}
+    </x-button>
+  </div>
+</div>   
+          @endforelse
+        </div>
+        {{--  
+        <div x-show="activeTab == 2" class='min-h-56'> {{ __('Videos') }} 
+
+        </div>
+        --}}
       </div>
     </div>
-                  <x-drawer open='modal_open' save_method_name='saveRoute' :title="$this->modal_title" :subtitle="$this->modal_subtitle">
+
+
+    
+
+     <x-drawer open='modal_open' save_method_name='saveRoute' :title="$this->modal_title" :subtitle="$this->modal_subtitle">
                     <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="name" value="{{ __('Name') }}" />
                       <div class="sm:col-span-2">
@@ -552,5 +466,7 @@ new class extends Component {
                       <x-button type="submit">{{$this->modal_submit_message}}</x-button>
                     </div>
                   </x-slot>
-                </x-drawer>
+      </x-drawer>
+                
+  
               </div>

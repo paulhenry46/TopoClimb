@@ -141,7 +141,6 @@ new class extends Component {
       $this->selected_line = $id;
     }
 }; ?>
-<div class="grid grid-cols-3 md:mt-8 gap-4 md:pt-2">
   <div class="col-span-3 md:col-span-2 flex flex-col" 
     @if($this->area->type == 'bouldering') 
       x-data="{ selectedRoute: 0, 
