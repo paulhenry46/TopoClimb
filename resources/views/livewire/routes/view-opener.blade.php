@@ -45,6 +45,7 @@ new class extends Component {
 
     public $sector;
     public $sectors;
+    public $data_routes_week;
 
     public $opener_search;
     public $opener_selected  = [];
@@ -95,6 +96,7 @@ new class extends Component {
      
 
      $this->tags_available = $tags;
+     $this->getDataForGraph();
     }
 
     #[On('route-changed')] 
@@ -102,6 +104,7 @@ new class extends Component {
     {
         $this->route  = Route::find($id);
         $this->route_id = $id;
+        $this->getDataForGraph();
     }
 
     public function with(){
@@ -230,6 +233,33 @@ new class extends Component {
         $grades = config('climb.default_cotation_reverse');
 
         return $grades[$int] ?? null;
+    }
+
+    private function getDataForGraph(){
+        $weeks = collect();
+        for ($i = 7; $i >= 0; $i--) {
+            $start = now()->subWeeks($i)->startOfWeek();
+            $end = now()->subWeeks($i)->endOfWeek();
+            $count = $this->route->logs()
+                ->whereBetween('created_at', [$start, $end])
+                ->count();
+            $weeks->push([
+                'label' => $start->format('d/m'),
+                'count' => $count,
+            ]);
+        }
+        $this->data_routes_week = [
+                'labels' => $weeks->pluck('label'),
+                'datasets' => [
+                    [
+                        'label' => __('Number of logs by week'),
+                        'data' => $weeks->pluck('count'),
+                        'backgroundColor' => 'rgba(0, 0, 0, 0.2)',
+                        'borderColor' => 'rgba(0, 0, 0, 1)',
+                        'borderWidth' => 1,
+                    ],
+                ],
+            ];
     }
    
 }; ?>

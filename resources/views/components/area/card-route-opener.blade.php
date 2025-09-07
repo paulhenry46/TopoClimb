@@ -1,4 +1,7 @@
 @props(['logs', 'key_button' => 'default-button'])
+     @assets
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ @endassets
 <div class='relative' x-data="{filtered : false, toogle(){this.filtered = !this.filtered;}}">
 <div x-show="!filtered" class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
 </div>
@@ -103,7 +106,7 @@
         </div>
       </div>
       <h1 class="text-2xl mt-6 mb-3 font-semibold leading-6 text-gray-900">{{__('Settings')}}</h1>
-      <div class='grid grid-cols-4' x-data='{open_modal : false}' x-on:action_ok.window='open_modal=false'>
+      <div class='grid grid-cols-5' x-data='{open_modal : false, open_stats : false}' x-on:action_ok.window='open_modal=false'>
         
           
                   <button wire:click="open_item({{$this->route->id}})" class="cursor-pointer text-gray-600 hover:text-gray-900 mr-2">
@@ -159,6 +162,44 @@
                     <x-icons.icon-picture />
                     </button>
                   </a>
+                   <button x-on:click='open_stats = true' class='cursor-pointer text-gray-600 hover:text-gray-900 mr-2'>
+                    <x-icons.icon-graph />
+                    </button>
+                  
+                    <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 bg-gray-500/75  transition-opacity" x-show='open_stats' x-cloak></div>
+          <div class="fixed inset-0 z-10 overflow-y-auto" x-show='open_stats' x-cloak>
+            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" x-show='open_stats' x-cloak>
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                  <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                       <div x-data="{
+                              data: $wire.entangle('data_routes_week'),
+                              updateChart(){
+                              if (Chart.getChart('data_routes_week')){ Chart.getChart('data_routes_week').destroy(); }
+                              new Chart(document.getElementById('data_routes_week').getContext('2d'), 
+                              { type: 'bar', data: this.data, options: {} });}
+                              }"
+                              x-init="updateChart()"
+                              x-effect="updateChart()" class='mx-2'>
+
+                        <canvas id="data_routes_week" class='h-96 w-96'></canvas>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <button @click='open_stats = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         
       </div>
       <div class="mt-12" x-data="{ activeTab:  0 }">
