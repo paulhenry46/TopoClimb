@@ -9,6 +9,7 @@ use App\Models\Route;
 use App\Models\Tag;
 use App\Models\Sector;
 use Carbon\Carbon;
+use App\Jobs\RouteColorChanged;
 
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;

@@ -441,7 +441,6 @@ new class extends Component {
 
   <x-grid-pattern-item >
     <livewire:routes.manager :lines='$this->lines()->get()' :site='$this->area->site' :area='$this->area'>
-    <livewire:routes.card-admin :area='$this->area'>
   </x-grid-pattern-item >
 @can('site.'.$this->area->site->id)
 <x-grid-pattern-title >
