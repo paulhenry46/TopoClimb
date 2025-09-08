@@ -40,7 +40,7 @@
           </p>
         </div>
         <div x-data class="mt-4 sm:ml-16 sm:mt-0 flex gap-x-1">
-          @auth
+      
           @if($key_button == 'button-md')
              <livewire:routes.registered :route='$this->route' key='buttonhdfhdf3'/>
             <livewire:routes.logger :route='$this->route' key='butdddssdcton7'/>
@@ -58,10 +58,23 @@
     </svg>
   </button>
             @endif
-            @endauth
             
         </div>
       </div>
+
+@if($this->route->removing_at !== NULL)
+      <div class="rounded-md bg-orange-50 p-4 mt-4">
+          <div class="flex">
+            <div class="shrink-0">
+              <svg class="h-5 w-5 text-orange-400" xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M109-120q-11 0-20-5.5T75-140q-5-9-5.5-19.5T75-180l370-640q6-10 15.5-15t19.5-5q10 0 19.5 5t15.5 15l370 640q6 10 5.5 20.5T885-140q-5 9-14 14.5t-20 5.5H109Zm371-120q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm0-120q17 0 28.5-11.5T520-400v-120q0-17-11.5-28.5T480-560q-17 0-28.5 11.5T440-520v120q0 17 11.5 28.5T480-360Z"/></svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-orange-800">{{__('This route will be removed the')}} {{$this->route->removing_at}}</h3>
+              
+            </div>
+          </div>
+        </div>
+@endif
       <div class="grid grid-cols-3 mt-4 gap-x-2">
         <div class="text-gray-500 mt-4 flex w-full flex-none gap-x-2">
           <dt class="flex-none">
@@ -88,7 +101,7 @@
               <path d="M480-269 314-169q-11 7-23 6t-21-8q-9-7-14-17.5t-2-23.5l44-189-147-127q-10-9-12.5-20.5T140-571q4-11 12-18t22-9l194-17 75-178q5-12 15.5-18t21.5-6q11 0 21.5 6t15.5 18l75 178 194 17q14 2 22 9t12 18q4 11 1.5 22.5T809-528L662-401l44 189q3 13-2 23.5T690-171q-9 7-21 8t-23-6L480-269Z" />
             </svg>
           </dt>
-          <dd class="text-sm leading-6 ">{{ $this->route->gradeFormated() }}</dd>
+          <dd class="text-sm leading-6 ">{{ $this->route->gradeFormated() }} ({{ $this->gradeUser }})</dd>
         </div>
         <div class="text-gray-500 mt-5 flex w-full flex-none gap-x-2">
           <dt class="flex-none">
@@ -105,7 +118,7 @@
             </span> @endforeach </dd>
         </div>
       </div>
-      <h1 class="text-2xl mt-6 mb-3 font-semibold leading-6 text-gray-900">{{__('Settings')}}</h1>
+      <div class="border-b border-gray-200 h-2 my-2"></div>
       <div class='grid grid-cols-5' x-data='{open_modal : false, open_stats : false}' x-on:action_ok.window='open_modal=false'>
         
           
@@ -144,7 +157,7 @@
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button @click='$wire.remove_current()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Set date of removing') }}</button>
                   <button @click='$wire.remove_current_now()' type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">{{ __('Remove now') }}</button>
-                  <button @click='open_modal = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                  <button @click='open_modal = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">{{ __('Cancel') }}</button>
                 </div>
               </div>
             </div>
@@ -172,11 +185,7 @@
               <div x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" x-show='open_stats' x-cloak>
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
-                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                      </svg>
-                    </div>
+                    
                     <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                        <div x-data="{
                               data: $wire.entangle('data_routes_week'),
@@ -194,7 +203,7 @@
                   </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button @click='open_stats = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                  <button @click='open_stats = false' type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">{{ __('Close') }}</button>
                 </div>
               </div>
             </div>

@@ -1,3 +1,4 @@
+
 <div class="bg-white overflow-hidden sm:rounded-lg mt-2">
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
@@ -153,6 +154,33 @@
     <span class="font-medium text-gray-900">{{__('Only new routes') }}</span>
   </span>
 </div>
+
+@if($admin == 'true')
+<div class="flex items-center mt-2" x-data="{enabled: $wire.entangle('own'), toogle(){this.enabled = !this.enabled;
+      $wire.set('own', this.enabled);}}">
+  <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
+  <button x-on:click='toogle()' :class="enabled ? 'bg-gray-600' : 'bg-gray-200'" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2" role="switch" aria-checked="false" aria-labelledby="annual-billing-label">
+    <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+    <span  :class="enabled ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+  </button>
+  <span class="ml-3 text-sm" id="annual-billing-label">
+    <span class="font-medium text-gray-900">{{__('Only my routes') }}</span>
+  </span>
+</div>
+
+<div class="flex items-center mt-2" x-data="{enabled: $wire.entangle('deleted'), toogle(){this.enabled = !this.enabled;
+      $wire.set('deleted', this.enabled);}}">
+  <!-- Enabled: "bg-indigo-600", Not Enabled: "bg-gray-200" -->
+  <button x-on:click='toogle()' :class="enabled ? 'bg-gray-600' : 'bg-gray-200'" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2" role="switch" aria-checked="false" aria-labelledby="annual-billing-label">
+    <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" -->
+    <span  :class="enabled ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+  </button>
+  <span class="ml-3 text-sm" id="annual-billing-label">
+    <span class="font-medium text-gray-900">{{__('Only deleted Routes') }}</span>
+  </span>
+</div>
+
+@endif
                     </div>
                   </div>
                 </div>

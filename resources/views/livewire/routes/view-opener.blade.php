@@ -55,6 +55,7 @@ new class extends Component {
     public array $tags_choosen;
     public $tags_available;
     public $id_editing;
+    public $gradeUser;
 
     public function mount( Site $site, Area $area){
         $lines = Line::whereIn('sector_id', $this->area->sectors->pluck('id'))->get();
@@ -97,7 +98,32 @@ new class extends Component {
 
      $this->tags_available = $tags;
      $this->getDataForGraph();
+     $this->gradeAccordingToUsers();
     }
+
+    private function gradeAccordingToUsers(){
+        $grades = $this->route->logs->pluck('grade')->toArray();
+        if(count($grades)>0){
+             $average = array_sum($grades) / count($grades);
+             $this->gradeUser = config('climb.default_cotation_reverse')[$this->findClosest(config('climb.default_cotation_reverse'), $average)];
+        }else{
+            $this->gradeUser = $this->route->gradeFormated();
+        }
+    }
+    private function findClosest($array, $target) {
+        $closest = null;
+        $minDiff = 100;
+
+        foreach ($array as $value => $key) {
+            $diff = abs($target - $value);
+            if ($diff < $minDiff) {
+                $minDiff = $diff;
+                $closest = $value;
+            }
+        }
+
+        return $closest;
+}
 
     #[On('route-changed')] 
     public function readRoute($id)
@@ -105,6 +131,7 @@ new class extends Component {
         $this->route  = Route::find($id);
         $this->route_id = $id;
         $this->getDataForGraph();
+        $this->gradeAccordingToUsers();
     }
 
     public function with(){

@@ -18,6 +18,8 @@ new class extends Component {
     public $cotations = [];
     public $tags_available;
     public bool $new;
+    public bool $own;
+    public bool $deleted;
 
     public $selected_sector;
     public $selected_line;
@@ -71,6 +73,8 @@ new class extends Component {
       
       $this->user_state = 'all';
       $this->selected_line = 0;
+      $this->own = false;
+      $this->deleted = false;
       //dump($this->route);
       $this->updateRoutesQuery();
     }
@@ -79,6 +83,25 @@ new class extends Component {
       if(true){
          $this->updateRoutesQuery();
         }
+    }
+
+    public function set_remove_date($ids, $date)
+    {
+      //No need to check authorization because we alerady check before showing opener version of view
+        $routes = Route::whereIn('id', $ids)->with('line.sector.area.site')->get();
+
+        foreach ($routes as $route) {
+            if ($route->line->sector->area->site->id !== $this->site->id) {
+                abort(403, 'Route does not belong to this site.');
+            }
+        }
+
+        if ($date == 'today') {
+            $date = Carbon::today()->toDateTime();
+        }
+
+        Route::whereIn('id', $ids)->update(['removing_at' => $date]);
+        $this->updateRoutesQuery();
     }
 
     private function updateRoutesQuery(){
@@ -96,9 +119,17 @@ new class extends Component {
         
         //return $routes;
         $this->routes_query = Route::whereIn('line_id', $lines_selected)
-        ->where(function($query) {
+        ->when(!$this->deleted, function($query) {
           $query->whereNull('removing_at')
               ->orWhere('removing_at', '>', now());
+        })
+        ->when($this->deleted, function($query) {
+          return $query->where('removing_at', '<', now());
+        })
+        ->when($this->own, function($query) {
+            $query->whereHas('users', function($q) {
+                $q->where('id', Auth::id());
+            });
         })
         ->when($this->search, function($query, $search) {
             return $query->where('name', 'LIKE', "%{$this->search}%");
@@ -165,8 +196,8 @@ new class extends Component {
     
     <x-area.map /> 
 
-    <x-area.filter :lines=$lines :admin='false'/>
+    <x-area.filter :lines=$lines :admin='true' />
 
-    <x-area.table-routes :routes=$routes />
+    <x-area.table-routes-opener :routes=$routes />
 
   </div>
