@@ -57,7 +57,7 @@ new class extends Component {
             array_push($this->schema_data['sectors'], $sector->local_id);
           }
       }
-        $this->cotations = $this->site->cotations(); /*config('climb.default_cotation');*/
+        $this->cotations = $this->site->cotations();/* config('climb.default_cotation');*/
         
       $tags_temp = Tag::all()->pluck('id', 'name')->toArray();
       $tags = [];
@@ -119,12 +119,15 @@ new class extends Component {
         
         //return $routes;
         $this->routes_query = Route::whereIn('line_id', $lines_selected)
-        ->when(!$this->deleted, function($query) {
-          $query->whereNull('removing_at')
-              ->orWhere('removing_at', '>', now());
-        })
+
         ->when($this->deleted, function($query) {
-          return $query->where('removing_at', '<', now());
+            return $query->where('removing_at', '<', now());
+        })
+        ->when(!$this->deleted, function($query) {
+            return $query->where(function($q) {
+                $q->whereNull('removing_at')
+                  ->orWhere('removing_at', '>', now());
+            });
         })
         ->when($this->own, function($query) {
             $query->whereHas('users', function($q) {

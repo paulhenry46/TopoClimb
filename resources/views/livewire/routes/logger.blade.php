@@ -299,15 +299,7 @@ new class extends Component {
                         <x-input-error for="name" class="mt-2" />
                         </div>
                       </div>
-                      <div class="w-full mt-3">
-                      <x-label for="address" value="{{ __('Video URL') }}" />
-                      <div class="mt-2">
-                        <x-input class="text-xs w-full" wire:model="address" id="address" name="address"/>
-                        <x-input-error for="address" class="mt-2" />
-                      </div>
-
-                    </div>
-                    
+                      
                     <div></div>
                   </div>
                 </div>
