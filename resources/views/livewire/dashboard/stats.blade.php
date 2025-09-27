@@ -48,13 +48,13 @@ new class extends Component {
     if($route_b !== null and $route_b->defaultGradeFormated() !== null){
         $this->level_b = $route_b->defaultGradeFormated();
     }else{
-        $this->level_b = '3a';
+        $this->level_b = array_key_first(config('climb.default_cotation.points'));
     }
 
     if($route_t !== null and $route_t->defaultGradeFormated() !== null){
         $this->level_t = $route_t->defaultGradeFormated();
     }else{
-        $this->level_t = '3a';
+        $this->level_t = array_key_first(config('climb.default_cotation.points'));
     }
 
     }

@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Models\Sector;
 use Carbon\Carbon;
 use App\Jobs\RouteColorChanged;
+use App\Rules\GradeInSiteGradeSystem;
 
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
@@ -38,7 +39,7 @@ new class extends Component {
     public $comment;
     #[Validate('required')]
     public $line;
-    #[Validate('required|regex:/[3-9][abc][+]?/')]
+    #[Validate(['required'])]
     public string $grade;
     #[Validate('required')]
     public string $color;
@@ -58,6 +59,13 @@ new class extends Component {
     public $tags_available;
     public $id_editing;
     public $gradeUser;
+
+    public function rules()
+{
+    return [
+        'grade' => ['required', new GradeInSiteGradeSystem($this->site)],
+    ];
+}
 
     public function mount( Site $site, Area $area){
         $lines = Line::whereIn('sector_id', $this->area->sectors->pluck('id'))->get();

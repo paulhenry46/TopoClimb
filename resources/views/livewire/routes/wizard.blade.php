@@ -13,6 +13,7 @@ use Livewire\WithFileUploads;
 use Livewire\Attributes\Computed;
 use App\Jobs\GenerateQRCodeOfRoute;
 use Carbon\Carbon;
+use App\Rules\GradeInSiteGradeSystem;
 new class extends Component {
   use WithFileUploads;
 
@@ -42,7 +43,7 @@ new class extends Component {
             'name'    => 'required|string',
             'comment' => 'nullable|string',
             'line'    => 'required|integer',
-            'grade'   => 'required|regex:/[3-9][abc][+]?/',
+            'grade'   => ['required', new GradeInSiteGradeSystem($this->site)],
             'color'   => 'required|string',
             'date'    => 'required',
             'opener_selected' => 'required|array|min:1',
