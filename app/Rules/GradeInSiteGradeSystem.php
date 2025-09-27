@@ -22,10 +22,10 @@ class GradeInSiteGradeSystem implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $cotations = $this->site->cotations();
+        $cotations = $this->site->cotations(true);
 
-        if (!array_key_exists($value, $cotations)) {
-            $fail("The selected grade is not valid for this site.");
+        if (!array_key_exists($value, $cotations['points'])) {
+            $fail('Grade is not valid for this site. See hint : '. $cotations['hint']);
         }
     }
 }

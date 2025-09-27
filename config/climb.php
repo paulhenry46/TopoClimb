@@ -14,6 +14,7 @@ return [
 
     'default_cotation' => [
         'free' => false,
+        'hint' => 'System is Fontainebleau scale : https://fr.wikipedia.org/wiki/Cotation_en_escalade#Cotation_fran%C3%A7aise_2',
         'points'=>
         ['3a' => 300, '3a+' => 310, '3b' => 320, '3b+' => 330, '3c' => 340, '3c+' => 350, 
         '4a' => 400, '4a+' => 410, '4b' => 420, '4b+' => 430, '4c' => 440, '4c+' => 450, 
@@ -35,6 +36,7 @@ return [
 
     'site_1_cotation' =>
     ['free'=> true, //or false
+    'hint' => 'very easy, easy, medium, hard, very hard, impossible',
     'points' =>[//always betwwen 300 and 950.
         'very easy' => 300, 
         'easy' => 500, 

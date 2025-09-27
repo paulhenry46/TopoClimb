@@ -190,7 +190,7 @@ new class extends Component {
                   <div class="space-y-2 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
                       <x-label for="grade" value="{{ __('Grade') }}" />
                       <div class="sm:col-span-2">
-                          <x-input placeholder="7a+" wire:model="grade" type="text" name="grade" id="project-name" class="block w-full" />
+                          <x-input wire:model="grade" type="text" name="grade" id="project-name" class="block w-full" />
                           <x-input-error for="grade" class="mt-2" />
                       </div>
                   </div>

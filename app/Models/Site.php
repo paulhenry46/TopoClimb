@@ -27,15 +27,15 @@ class Site extends Model
         }
     }
 
-    public function cotations($with_type=false){
+    public function cotations($full=false){
         if($this->default_cotation == true){
-            if($with_type){
+            if($full){
                 return config('climb.default_cotation');
             }else{
                 return config('climb.default_cotation')['points'];
             }
         }else{
-            if($with_type){
+            if($full){
                 return config('climb.site_'.$this->id.'_cotation');
             }else{
                 return config('climb.site_'.$this->id.'_cotation')['points'];
