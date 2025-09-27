@@ -48,13 +48,13 @@ new class extends Component {
             $logs = Log::whereIn('route_id', ($routes->pluck('id')))->with('route')->get();
 
             $logsByGrade = $logs->groupBy(function ($log) {
-            return $log->route->gradeFormated();
+            return $log->route->defaultGradeFormated();
         })->map(function ($group) {
             return $group->count();
         });
 
         $routesByGrade = (clone $routes)->groupBy(function ($route) {
-            return $route->gradeFormated();
+            return $route->defaultGradeFormated();
         })->map(function ($group) {
             return $group->count();
         });

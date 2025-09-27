@@ -55,7 +55,7 @@ new class extends Component {
             array_push($this->schema_data['sectors'], $sector->local_id);
           }
       }
-        $this->cotations = config('climb.default_cotation');
+        $this->cotations = $this->site->cotations();/* config('climb.default_cotation');*/
         
       $tags_temp = Tag::all()->pluck('id', 'name')->toArray();
       $tags = [];

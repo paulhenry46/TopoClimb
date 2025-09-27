@@ -128,7 +128,7 @@ new class extends Component {
       }
     }
     protected function gradeToInt($grade){
-        $array = config('climb.default_cotation');
+        $array = $this->site->cotations();
         return $array[$grade];
     }
 }; ?>

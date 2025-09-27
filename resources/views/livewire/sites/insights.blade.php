@@ -145,7 +145,7 @@ new class extends Component {
                 
                 <td class="rounded-l-md text-xl text-center w-4 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                  
-                  {{$route->gradeFormated()}}
+                  {{$route->defaultGradeFormated()}}
                 </td>
                 <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   <div class="flex items-center">

@@ -34,7 +34,7 @@
                <div :class='hightlightedRoute == {{$route->id}} ? "grayscale-0" : "grayscale"' class='rounded-l h-full w-full bg-cover' style="background-image: url({{ $route->thumbnail() }})"></div>
               </td>
                 <td class=" text-2xl text-center w-16 bg-{{$route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-3">
-                  {{$route->gradeFormated()}}
+                  {{$route->defaultGradeFormated()}}
                 </td>
                 <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                   <div class="flex items-center">

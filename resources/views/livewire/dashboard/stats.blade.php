@@ -45,18 +45,17 @@ new class extends Component {
     $route_t = $this->logs_t->pluck('route')->sortBy('grade')->first();
     
     
-    if($route_b !== null and $route_b->gradeFormated() !== null){
-        $this->level_b = $route_b->gradeFormated();
+    if($route_b !== null and $route_b->defaultGradeFormated() !== null){
+        $this->level_b = $route_b->defaultGradeFormated();
     }else{
         $this->level_b = '3a';
     }
 
-    if($route_t !== null and $route_t->gradeFormated() !== null){
-        $this->level_t = $route_t->gradeFormated();
+    if($route_t !== null and $route_t->defaultGradeFormated() !== null){
+        $this->level_t = $route_t->defaultGradeFormated();
     }else{
         $this->level_t = '3a';
     }
-
 
     }
 }; ?>
@@ -282,7 +281,7 @@ new class extends Component {
                       <div class='grayscale rounded-l h-full w-full bg-cover' style="background-image: url({{ $log->route->thumbnail() }})"></div>
                       </td>
                         <td class=" text-2xl text-center w-16 bg-{{$log->route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-3">
-                          {{$log->route->gradeFormated()}}
+                          {{$log->route->defaultGradeFormated()}}
                         </td>
                         <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                           <div class="flex items-center">
@@ -391,7 +390,7 @@ new class extends Component {
                       <div class='grayscale rounded-l h-full w-full bg-cover' style="background-image: url({{ $log->route->thumbnail() }})"></div>
                       </td>
                         <td class=" text-2xl text-center w-16 bg-{{$log->route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-3">
-                          {{$log->route->gradeFormated()}}
+                          {{$log->route->defaultGradeFormated()}}
                         </td>
                         <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                           <div class="flex items-center">

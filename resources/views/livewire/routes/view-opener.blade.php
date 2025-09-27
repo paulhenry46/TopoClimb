@@ -20,6 +20,7 @@ new class extends Component {
     public string $route_id ='';
     public Route $route;
     public Area $area;
+    public Site $site;
     public $mobile_first_open;
 
      public $all_routes;
@@ -61,6 +62,7 @@ new class extends Component {
     public function mount( Site $site, Area $area){
         $lines = Line::whereIn('sector_id', $this->area->sectors->pluck('id'))->get();
         $this->area = $area;
+        $this->site = $site;
         if(!empty($this->route_id)){
             $this->route = Route::find($this->route_id);
             $this->mobile_first_open = true;
@@ -106,9 +108,9 @@ new class extends Component {
         $grades = $this->route->logs->pluck('grade')->toArray();
         if(count($grades)>0){
              $average = array_sum($grades) / count($grades);
-             $this->gradeUser = config('climb.default_cotation_reverse')[$this->findClosest(config('climb.default_cotation_reverse'), $average)];
+             $this->gradeUser = $this->site->cotations_reverse()[$this->findClosest($this->site->cotations_reverse(), $average)];
         }else{
-            $this->gradeUser = $this->route->gradeFormated();
+            $this->gradeUser = $this->route->defaultGradeFormated();
         }
     }
     private function findClosest($array, $target) {
@@ -253,12 +255,12 @@ new class extends Component {
     }
 
     protected function gradeToInt($grade){
-        $array = config('climb.default_cotation');
+        $array = $this->site->cotations();
         return $array[$grade];
     }
 
     protected function intToGrade($int){
-        $grades = config('climb.default_cotation_reverse');
+        $grades = $this->site->cotations_reverse();
 
         return $grades[$int] ?? null;
     }

@@ -41,7 +41,7 @@ new class extends Component {
       $this->area = $route->line->sector->area;
       $this->user = Auth::user();
       $this->comment = null;
-      $this->cotations = config('climb.default_cotation');
+      $this->cotations = $this->area->site->cotations();/* config('climb.default_cotation');*/
         $this->cotation = $this->route->grade;
         $this->type = 'view';
         if($this->area->type == 'trad'){

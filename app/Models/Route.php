@@ -45,7 +45,7 @@ class Route extends Model
 
     public $fillable=['created_at'];
 
-    public function gradeFormated(){
+    public function defaultGradeFormated(){
         $grades = config('climb.default_cotation_reverse');
 
         return $grades[$this->grade] ?? null;

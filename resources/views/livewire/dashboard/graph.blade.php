@@ -26,7 +26,7 @@ new class extends Component {
 
     // Group logs by route grade and count them
     $routesByGrade = $logs->groupBy(function ($log) {
-        return $log->route->gradeFormated(); // Assuming `grade` is a column in the `routes` table
+        return $log->route->defaultGradeFormated(); // Assuming `grade` is a column in the `routes` table
     })->map(function (Collection $group) {
         return $group->count();
     });

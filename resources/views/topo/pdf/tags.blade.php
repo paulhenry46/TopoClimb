@@ -6,7 +6,7 @@
         
         <div class='col-span-2 ml-3 text-center'>
             <div class=' mt-7 mb-1 text-4xl'>
-                {{ $route->gradeFormated() }}
+                {{ $route->defaultGradeFormated() }}
             </div>
             <div class='rounded-md h-8 bg-{{ $route->color }}-500 mt-2 mb-10' >
             </div>

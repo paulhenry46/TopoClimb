@@ -27,6 +27,31 @@ class Site extends Model
         }
     }
 
+    public function cotations($with_type=false){
+        if($this->default_cotation == true){
+            if($with_type){
+                return config('climb.default_cotation');
+            }else{
+                return config('climb.default_cotation')['points'];
+            }
+        }else{
+            if($with_type){
+                return config('climb.site_'.$this->id.'_cotation');
+            }else{
+                return config('climb.site_'.$this->id.'_cotation')['points'];
+            }
+        }
+    }
+
+    public function cotations_reverse(){
+        if($this->default_cotation == true){
+            $temp_cotation = config('climb.default_cotation');
+        }else{
+            $temp_cotation = config('climb.site_'.$this->id.'_cotation');
+        }
+        return array_flip($temp_cotation['points']);
+    }
+
     protected $fillable = [
         'name',
         'slug',
