@@ -17,7 +17,7 @@ class ProcessMapForTopo implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Site $site, public Area $area, public string $svg, public string $type, public ?int $sector_id)
+    public function __construct(public Site $site, public Area $area, public string $svg, public string $type, public ?int $sector_id = null)
     {
         //
     }
