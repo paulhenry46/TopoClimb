@@ -37,7 +37,12 @@
             <div class="text-center w-16 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                 <p class="font-mono text-pretty   uppercase text-3xl"> {{ $line->local_id }}</p>
             </div>
-            <div class=" w-full relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3"> @foreach ($area->routes()->where('line_id', $line->id) as $route) <div class=' my-3 justify-between items-center w-full flex'>
+            <div class=" w-full relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3"> 
+                @foreach ($area->routes()->where('line_id', $line->id)
+    ->filter(function($route) {
+        return is_null($route->removing_at) || $route->removing_at > now();
+    }) as $route)
+                <div class=' my-3 justify-between items-center w-full flex'>
                     <div class='flex items-center'>
                         <div class="bg-{{$route->color}}-300 border-4 border-{{$route->color}}-300  rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
                             <div class='grayscale  rounded-l h-full w-full bg-cover' style="background-image: url({{ $route->thumbnail() }})"></div>
@@ -64,7 +69,14 @@
             <div class="text-center w-16 relative whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                 <p class="font-mono text-pretty   uppercase text-3xl"> {{ $sector->local_id }}</p>
             </div>
-            <div class=" w-full relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3"> @foreach ($sector->routes() as $route) <div class=' my-3 justify-between items-center w-full flex'>
+            <div class=" w-full relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3"> 
+               
+                
+                @foreach ($sector->routes()->filter(function($route) {
+        return is_null($route->removing_at) || $route->removing_at > now();
+    }) as $route)
+
+                <div class=' my-3 justify-between items-center w-full flex'>
                     <div class='flex items-center'>
                         <div class="bg-{{$route->color}}-300 border-4 border-{{$route->color}}-300  rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
                             <div class='grayscale  rounded-l h-full w-full bg-cover' style="background-image: url({{ $route->thumbnail() }})"></div>
