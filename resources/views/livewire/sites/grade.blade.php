@@ -1,6 +1,7 @@
 <?php
 use Livewire\Volt\Component;
 use App\Models\Site;
+use App\Models\Route;
 use Livewire\Attributes\Validate; 
 new class extends Component {
 
@@ -33,12 +34,25 @@ new class extends Component {
 
         $this->site->custom_cotation = $final_array;
         $this->site->save();
+        $grades_array = $points_array;
 
         }else{
         $this->site->custom_cotation = NULL;
         $this->site->save();
+        $grades_array = config('climb.default_cotation.points');
         }
        
+        $routes = Route::whereHas('line.sector.area.site', function($query) {
+            $query->where('id', $this->site->id);
+        })->get();
+
+
+        foreach ($routes as $route) {
+            // Find the closest grade value for this route
+            $route->grade = $this->findClosest($grades_array, $route->grade);
+            $route->save();
+        }
+
         $this->modal_open_grade = false;
     }
 
@@ -67,11 +81,31 @@ new class extends Component {
         $this->points = [];
       }
     
-      $this->modal_open_grade = true;
+      $this->modal_open_grade = false;
     }
-}; ?>
 
-<div>
+    public function open(){
+        $this->modal_open_grade =true;
+    }
+
+    private function findClosest($array, $target) {
+        $closest = null;
+        $minDiff = 10000;
+
+        foreach ($array as $key => $value) {
+            $diff = abs($target - $value);
+            if ($diff < $minDiff) {
+                $minDiff = $diff;
+                $closest = $value;
+            }
+        }
+        return $closest;
+}
+}
+?>
+
+<div class='inline-flex cursor-pointer items-center '>
+     <x-button wire:click="open" ><x-icons.icon-settings class='mr-2'/> <p class='ml-2'>{{__('Grading System')}}</p> </x-button>
  <x-drawer open='modal_open_grade' save_method_name='save' :title="$this->site->name" :subtitle="__('Edit grading system')">
                     <div class="space-y-2 px-4 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5"
                     x-data="{points: $wire.points,

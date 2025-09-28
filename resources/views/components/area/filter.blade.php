@@ -121,6 +121,7 @@
                   </div>
                 </div>
               </div> @endif 
+              @auth
               <div class="col-span-1">
                 <div class="space-y-2 px-4">
                   <div class="w-full mt-3">
@@ -136,7 +137,7 @@
                   </div>
                 </div>
               </div>
-
+              @endauth
               <div class="col-span-1">
                 <div class="space-y-2 px-4">
                   <div class="w-full mt-3">

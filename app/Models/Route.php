@@ -52,6 +52,10 @@ class Route extends Model
 
     }
 
+    public function gradeFormated($grades){
+        return $grades[$this->grade] ?? null;
+    }
+
     public function picture(){
         if(Storage::exists('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id)){
             return Storage::url('photos/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id);

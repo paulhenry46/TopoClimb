@@ -131,7 +131,18 @@ new class extends Component {
     }
 
     public function with(){
-      return ['routes' => $this->routes_query->paginate(10), 'lines' => $this->available_lines->get()];
+
+       $grades = $this->site->cotations_reverse();
+      $routes = $this->routes_query->paginate(10);
+
+     // Transform each route to add gradeFormated property
+    $routes->getCollection()->transform(function ($route) use ($grades) {
+        // Format the grade using site cotations (or your own logic)
+        $route->gradeFormated = $grades[$route->grade] ?? $route->grade;
+        return $route;
+    }); 
+
+      return ['routes' => $routes, 'lines' => $this->available_lines->get()];
     }
 
     public function selectSector($id){

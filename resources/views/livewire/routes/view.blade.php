@@ -16,10 +16,12 @@ new class extends Component {
     public string $route_id ='';
     public Route $route;
     public Area $area;
+    public Site $site;
     public $mobile_first_open;
 
     public function mount($area){
         $this->area = $area;
+        $this->site = $this->area->site;
         if(!empty($this->route_id)){
         $this->route = Route::find($this->route_id);
         $this->mobile_first_open = true;

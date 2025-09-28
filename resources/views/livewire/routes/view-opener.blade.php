@@ -118,14 +118,15 @@ new class extends Component {
              $average = array_sum($grades) / count($grades);
              $this->gradeUser = $this->site->cotations_reverse()[$this->findClosest($this->site->cotations_reverse(), $average)];
         }else{
-            $this->gradeUser = $this->route->defaultGradeFormated();
+            $this->gradeUser = $this->route->gradeFormated($this->site->cotations_reverse());
         }
     }
     private function findClosest($array, $target) {
         $closest = null;
-        $minDiff = 100;
+        $minDiff = 1000;
 
         foreach ($array as $value => $key) {
+          
             $diff = abs($target - $value);
             if ($diff < $minDiff) {
                 $minDiff = $diff;
