@@ -36,9 +36,9 @@ class Site extends Model
             }
         }else{
             if($full){
-                return config('climb.site_'.$this->id.'_cotation');
+                return $this->custom_cotation;
             }else{
-                return config('climb.site_'.$this->id.'_cotation')['points'];
+                return $this->custom_cotation['points'];
             }
         }
     }
@@ -47,7 +47,7 @@ class Site extends Model
         if($this->default_cotation == true){
             $temp_cotation = config('climb.default_cotation');
         }else{
-            $temp_cotation = config('climb.site_'.$this->id.'_cotation');
+            $temp_cotation = $this->custom_cotation;
         }
         return array_flip($temp_cotation['points']);
     }
@@ -63,4 +63,8 @@ class Site extends Model
         return $this->belongsToMany(User::class);
 
     }
+
+    protected $casts = [
+        'custom_cotation' => 'array',
+    ];
 }
