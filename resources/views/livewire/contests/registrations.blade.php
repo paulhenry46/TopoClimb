@@ -4,7 +4,7 @@ use Livewire\Volt\Component;
 use App\Models\Contest;
 use App\Models\User;
 use App\Models\Route;
-use App\Models\ContestRegistration;
+use App\Models\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Computed;
 
@@ -17,32 +17,39 @@ new class extends Component {
     #[Validate('required|exists:routes,id')]
     public $route_id = '';
 
+    #[Validate('nullable|in:work,flash,view')]
+    public $type = 'flash';
+
+    #[Validate('nullable|in:top-rope,lead,bouldering')]
+    public $way = 'bouldering';
+
+    #[Validate('nullable|string')]
+    public $comment = '';
+
     public $search_user = '';
 
     public function registerClimb()
     {
         $this->validate();
 
-        // Check if already registered
-        $existing = ContestRegistration::where('contest_id', $this->contest->id)
-            ->where('route_id', $this->route_id)
-            ->where('user_id', $this->user_id)
-            ->first();
+        // Get the route to determine the grade
+        $route = Route::findOrFail($this->route_id);
 
-        if ($existing) {
-            $this->dispatch('action_error', title: 'Already registered', message: 'This climb has already been registered!');
-            return;
-        }
-
-        ContestRegistration::create([
-            'contest_id' => $this->contest->id,
+        // Create a log with verified_by set to current staff member
+        Log::create([
             'route_id' => $this->route_id,
             'user_id' => $this->user_id,
-            'registered_by' => auth()->id(),
+            'grade' => $route->grade,
+            'type' => $this->type,
+            'way' => $this->way,
+            'comment' => $this->comment,
+            'verified_by' => auth()->id(),
         ]);
 
         $this->dispatch('action_ok', title: 'Climb registered', message: 'The climb has been registered successfully!');
-        $this->reset(['user_id', 'route_id', 'search_user']);
+        $this->reset(['user_id', 'route_id', 'search_user', 'comment', 'type', 'way']);
+        $this->type = 'flash';
+        $this->way = 'bouldering';
     }
 
     #[Computed]
@@ -54,8 +61,10 @@ new class extends Component {
     #[Computed]
     public function recentRegistrations()
     {
-        return ContestRegistration::where('contest_id', $this->contest->id)
-            ->with(['user', 'route', 'registrar'])
+        return Log::whereIn('route_id', $this->contest->routes->pluck('id'))
+            ->whereNotNull('verified_by')
+            ->whereBetween('created_at', [$this->contest->start_date, $this->contest->end_date])
+            ->with(['user', 'route', 'verifiedBy'])
             ->orderBy('created_at', 'desc')
             ->limit(20)
             ->get();
@@ -83,8 +92,8 @@ new class extends Component {
 
     public function deleteRegistration($id)
     {
-        $registration = ContestRegistration::findOrFail($id);
-        $registration->delete();
+        $log = Log::findOrFail($id);
+        $log->delete();
         
         $this->dispatch('action_ok', title: 'Registration deleted', message: 'The registration has been deleted successfully!');
     }
@@ -106,7 +115,7 @@ new class extends Component {
         <div class="sm:flex sm:items-center mb-6">
             <div class="sm:flex-auto">
                 <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Register Climbs')}}</h1>
-                <p class="mt-2 text-sm text-gray-700">{{__('Register successful climbs for participants in this official contest')}}</p>
+                <p class="mt-2 text-sm text-gray-700">{{__('Register successful climbs for participants in this official contest. Logs will be marked as verified.')}}</p>
             </div>
         </div>
 
@@ -164,6 +173,42 @@ new class extends Component {
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <div>
+                        <label for="type" class="block text-sm font-medium leading-6 text-gray-900">{{__('Type')}}</label>
+                        <select 
+                            id="type"
+                            wire:model="type"
+                            class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        >
+                            <option value="flash">{{__('Flash')}}</option>
+                            <option value="work">{{__('Work')}}</option>
+                            <option value="view">{{__('View')}}</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="way" class="block text-sm font-medium leading-6 text-gray-900">{{__('Way')}}</label>
+                        <select 
+                            id="way"
+                            wire:model="way"
+                            class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        >
+                            <option value="bouldering">{{__('Bouldering')}}</option>
+                            <option value="top-rope">{{__('Top-rope')}}</option>
+                            <option value="lead">{{__('Lead')}}</option>
+                        </select>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label for="comment" class="block text-sm font-medium leading-6 text-gray-900">{{__('Comment (optional)')}}</label>
+                        <textarea 
+                            id="comment"
+                            wire:model="comment"
+                            rows="2"
+                            class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        ></textarea>
+                    </div>
                 </div>
 
                 <div class="mt-4">
@@ -177,7 +222,7 @@ new class extends Component {
         <!-- Recent Registrations -->
         <div class="bg-white shadow sm:rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4">{{__('Recent Registrations')}}</h3>
+                <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4">{{__('Recent Verified Registrations')}}</h3>
                 
                 @if($this->recentRegistrations->count() > 0)
                     <div class="overflow-x-auto">
@@ -186,7 +231,8 @@ new class extends Component {
                                 <tr>
                                     <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">{{__('Climber')}}</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Route')}}</th>
-                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Registered By')}}</th>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Type')}}</th>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Verified By')}}</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{__('Date')}}</th>
                                     <th class="relative py-3.5 pl-3 pr-4">
                                         <span class="sr-only">{{__('Actions')}}</span>
@@ -194,23 +240,26 @@ new class extends Component {
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
-                                @foreach($this->recentRegistrations as $registration)
+                                @foreach($this->recentRegistrations as $log)
                                     <tr>
                                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">
-                                            {{ $registration->user->name }}
+                                            {{ $log->user->name }}
                                         </td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                            {{ $registration->route->name }}
+                                            {{ $log->route->name }}
                                         </td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                            {{ $registration->registrar?->name ?? __('Unknown') }}
+                                            {{ ucfirst($log->type) }}
                                         </td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                            {{ $registration->created_at->format('Y-m-d H:i') }}
+                                            {{ $log->verifiedBy?->name ?? __('Unknown') }}
+                                        </td>
+                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            {{ $log->created_at->format('Y-m-d H:i') }}
                                         </td>
                                         <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
                                             <button 
-                                                wire:click="deleteRegistration({{ $registration->id }})"
+                                                wire:click="deleteRegistration({{ $log->id }})"
                                                 wire:confirm="{{__('Are you sure you want to delete this registration?')}}"
                                                 class="text-red-600 hover:text-red-900"
                                             >
@@ -223,7 +272,7 @@ new class extends Component {
                         </table>
                     </div>
                 @else
-                    <p class="text-sm text-gray-500">{{__('No registrations yet.')}}</p>
+                    <p class="text-sm text-gray-500">{{__('No verified registrations yet.')}}</p>
                 @endif
             </div>
         </div>

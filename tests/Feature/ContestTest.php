@@ -4,7 +4,7 @@ use App\Models\User;
 use App\Models\Site;
 use App\Models\Contest;
 use App\Models\Route;
-use App\Models\ContestRegistration;
+use App\Models\Log;
 
 test('contest can be created', function () {
     $user = User::factory()->create();
@@ -185,17 +185,20 @@ test('contest registration can be created', function () {
     ]);
 
     $user = User::factory()->create();
-    $registrar = User::factory()->create();
+    $staff = User::factory()->create();
 
-    $registration = ContestRegistration::create([
-        'contest_id' => $contest->id,
+    // Create a verified log
+    $log = Log::create([
         'route_id' => $route->id,
         'user_id' => $user->id,
-        'registered_by' => $registrar->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => $staff->id,
     ]);
 
-    expect($registration->contest_id)->toBe($contest->id);
-    expect($registration->route_id)->toBe($route->id);
-    expect($registration->user_id)->toBe($user->id);
-    expect($registration->registered_by)->toBe($registrar->id);
+    expect($log->route_id)->toBe($route->id);
+    expect($log->user_id)->toBe($user->id);
+    expect($log->verified_by)->toBe($staff->id);
+    expect($log->verifiedBy->id)->toBe($staff->id);
 });

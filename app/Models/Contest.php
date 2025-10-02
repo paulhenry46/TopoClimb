@@ -35,11 +35,6 @@ class Contest extends Model
         return $this->belongsToMany(User::class, 'contest_user');
     }
 
-    public function registrations()
-    {
-        return $this->hasMany(ContestRegistration::class);
-    }
-
     public function isActive()
     {
         $now = now();
@@ -54,5 +49,13 @@ class Contest extends Model
     public function isFuture()
     {
         return $this->start_date > now();
+    }
+
+    public function verifiedLogs()
+    {
+        return Log::whereIn('route_id', $this->routes->pluck('id'))
+            ->whereNotNull('verified_by')
+            ->whereBetween('created_at', [$this->start_date, $this->end_date])
+            ->get();
     }
 }

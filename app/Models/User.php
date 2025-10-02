@@ -103,9 +103,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Contest::class, 'contest_user');
     }
 
-    public function contestRegistrations()
+    public function verifiedLogs()
     {
-        return $this->hasMany(ContestRegistration::class);
+        return $this->hasMany(Log::class, 'verified_by');
     }
 
 }

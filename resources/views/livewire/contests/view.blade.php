@@ -4,7 +4,7 @@ use Livewire\Volt\Component;
 use App\Models\Contest;
 use App\Models\Site;
 use App\Models\Route;
-use App\Models\ContestRegistration;
+use App\Models\Log;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
@@ -64,17 +64,21 @@ new class extends Component {
         $totalRoutes = $contest->routes()->count();
         
         if ($contest->mode === 'free') {
-            // In free mode, check logs
+            // In free mode, check all logs (verified or not)
             $completedRoutes = $contest->routes()
-                ->whereHas('logs', function($query) {
-                    $query->where('user_id', auth()->id());
+                ->whereHas('logs', function($query) use ($contest) {
+                    $query->where('user_id', auth()->id())
+                        ->whereBetween('created_at', [$contest->start_date, $contest->end_date]);
                 })
                 ->count();
         } else {
-            // In official mode, check registrations
-            $completedRoutes = ContestRegistration::where('contest_id', $contestId)
-                ->where('user_id', auth()->id())
-                ->distinct('route_id')
+            // In official mode, check only verified logs
+            $completedRoutes = $contest->routes()
+                ->whereHas('logs', function($query) use ($contest) {
+                    $query->where('user_id', auth()->id())
+                        ->whereNotNull('verified_by')
+                        ->whereBetween('created_at', [$contest->start_date, $contest->end_date]);
+                })
                 ->count();
         }
 
