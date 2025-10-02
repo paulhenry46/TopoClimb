@@ -168,6 +168,7 @@ new class extends Component {
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                   <a href="{{ route('admin.contests.routes', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-blue-600 hover:text-blue-900 mr-4">{{__('Routes')}}</a>
                   @if($contest->mode === 'official')
+                    <a href="{{ route('admin.contests.staff', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-blue-600 hover:text-blue-900 mr-4">{{__('Staff')}}</a>
                     <a href="{{ route('admin.contests.registrations', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-blue-600 hover:text-blue-900 mr-4">{{__('Registrations')}}</a>
                   @endif
                   <button wire:click="edit({{ $contest->id }})" class="text-gray-600 hover:text-gray-900 mr-4">{{__('Edit')}}</button>
