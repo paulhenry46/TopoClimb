@@ -3,6 +3,7 @@
 use App\Models\Area;
 use App\Models\Route as ModelsRoute;
 use App\Models\Site;
+use App\Models\Contest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -47,6 +48,14 @@ Route::middleware([
             Route::get('/stats', function (Site $site) {
                 return view('sites.stats', compact('site'));
             })->middleware('can:edit_areas,site')->name('site.stats');
+
+            Route::get('/contests', function (Site $site) {
+                return view('contests.manage', compact('site'));
+            })->middleware('can:edit_areas,site')->name('contests.manage');
+
+            Route::get('/contests/{contest}/routes', function (Site $site, Contest $contest) {
+                return view('contests.routes', compact('site', 'contest'));
+            })->middleware('can:edit_areas,site')->name('contests.routes');
             
             Route::prefix('/areas/{area}')->group(function () {
                 Route::get('/', function (Site $site, Area $area) {

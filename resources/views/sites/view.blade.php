@@ -12,6 +12,8 @@
               <x-site.infobox :site='$site'/>
             </div>
           </div>
+          <x-grid-pattern-title >{{ __('Contests') }}</x-grid-pattern-title >
+          <livewire:contests.view :site='$site' />
           <x-grid-pattern-title >{{ __('Topo') }}</x-grid-pattern-title >
           <x-site.areas :site='$site' />
         </x-grid-pattern-layout >
