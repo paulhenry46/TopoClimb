@@ -97,6 +97,11 @@ class Route extends Model
         return $this->hasMany(Log::class);
     }
 
+    public function contests()
+    {
+        return $this->belongsToMany(Contest::class);
+    }
+
     public function colorToHex()
 {
     $colors = config('climb.colors');
