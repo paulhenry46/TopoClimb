@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sector extends Model
 {
+    protected $fillable = [
+        'name',
+        'slug',
+        'local_id',
+        'area_id'
+    ];
+
     public function area()
     {
         return $this->belongsTo(Area::class);
