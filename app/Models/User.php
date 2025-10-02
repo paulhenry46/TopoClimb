@@ -98,4 +98,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Route::class, 'registered_routes_users');
    }
 
+    public function contestStaff()
+    {
+        return $this->belongsToMany(Contest::class, 'contest_user');
+    }
+
+    public function verifiedLogs()
+    {
+        return $this->hasMany(Log::class, 'verified_by');
+    }
+
 }

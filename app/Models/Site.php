@@ -64,6 +64,11 @@ class Site extends Model
 
     }
 
+    public function contests()
+    {
+        return $this->hasMany(Contest::class);
+    }
+
     protected $casts = [
         'custom_cotation' => 'array',
     ];

@@ -43,7 +43,7 @@ class Route extends Model
         return $this->belongsToMany(Tag::class);
     }
 
-    public $fillable=['created_at'];
+    public $fillable=['created_at', 'name', 'slug', 'line_id', 'local_id', 'grade', 'color', 'comment'];
 
     public function defaultGradeFormated(){
         $grades = config('climb.default_cotation_reverse');
@@ -95,6 +95,11 @@ class Route extends Model
     public function logs()
     {
         return $this->hasMany(Log::class);
+    }
+
+    public function contests()
+    {
+        return $this->belongsToMany(Contest::class);
     }
 
     public function colorToHex()
