@@ -207,6 +207,7 @@ test('dynamic points calculation divides base points by climbers count', functio
         'start_date' => now()->subDay(),
         'end_date' => now()->addDays(7),
         'mode' => 'official',
+        'use_dynamic_points' => true,
         'site_id' => $site->id,
     ]);
 
@@ -293,6 +294,7 @@ test('dynamic points calculation returns base points when no climbers', function
         'start_date' => now()->subDay(),
         'end_date' => now()->addDays(7),
         'mode' => 'official',
+        'use_dynamic_points' => true,
         'site_id' => $site->id,
     ]);
 
@@ -325,4 +327,227 @@ test('dynamic points calculation returns base points when no climbers', function
 
     // No climbers, should return base points
     expect($contest->getRoutePoints($route->id))->toBe(200.0);
+});
+
+test('dynamic points disabled returns base points regardless of climbers', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now()->subDay(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'official',
+        'use_dynamic_points' => false,
+        'site_id' => $site->id,
+    ]);
+
+    $area = $site->areas()->create([
+        'name' => 'Test Area',
+        'slug' => 'test-area',
+        'type' => 'bouldering',
+    ]);
+
+    $sector = $area->sectors()->create([
+        'name' => 'Test Sector',
+        'slug' => 'test-sector',
+        'local_id' => 1,
+    ]);
+
+    $line = $sector->lines()->create([
+        'local_id' => 1,
+    ]);
+
+    $route = $line->routes()->create([
+        'name' => 'Test Route',
+        'slug' => 'test-route',
+        'local_id' => 1,
+        'grade' => 500,
+        'color' => 'blue',
+    ]);
+
+    // Attach route with 300 points
+    $contest->routes()->attach($route->id, ['points' => 300]);
+
+    // Add climbers
+    $staff = User::factory()->create();
+    $user1 = User::factory()->create();
+    $user2 = User::factory()->create();
+
+    Log::create([
+        'route_id' => $route->id,
+        'user_id' => $user1->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => $staff->id,
+        'created_at' => now(),
+    ]);
+
+    Log::create([
+        'route_id' => $route->id,
+        'user_id' => $user2->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => $staff->id,
+        'created_at' => now(),
+    ]);
+
+    // Even with climbers, should return base points because dynamic is disabled
+    expect($contest->getRoutePoints($route->id))->toBe(300.0);
+});
+
+test('free mode counts all logs for dynamic points', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now()->subDay(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'free',
+        'use_dynamic_points' => true,
+        'site_id' => $site->id,
+    ]);
+
+    $area = $site->areas()->create([
+        'name' => 'Test Area',
+        'slug' => 'test-area',
+        'type' => 'bouldering',
+    ]);
+
+    $sector = $area->sectors()->create([
+        'name' => 'Test Sector',
+        'slug' => 'test-sector',
+        'local_id' => 1,
+    ]);
+
+    $line = $sector->lines()->create([
+        'local_id' => 1,
+    ]);
+
+    $route = $line->routes()->create([
+        'name' => 'Test Route',
+        'slug' => 'test-route',
+        'local_id' => 1,
+        'grade' => 500,
+        'color' => 'blue',
+    ]);
+
+    // Attach route with 300 points
+    $contest->routes()->attach($route->id, ['points' => 300]);
+
+    // Add 2 climbers - one with verified log, one without
+    $user1 = User::factory()->create();
+    $user2 = User::factory()->create();
+    $staff = User::factory()->create();
+
+    // Verified log
+    Log::create([
+        'route_id' => $route->id,
+        'user_id' => $user1->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => $staff->id,
+        'created_at' => now(),
+    ]);
+
+    // Unverified log - should also count in free mode
+    Log::create([
+        'route_id' => $route->id,
+        'user_id' => $user2->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => null,
+        'created_at' => now(),
+    ]);
+
+    // 300 points / 2 climbers (both verified and unverified) = 150 points
+    expect($contest->getRoutePoints($route->id))->toBe(150.0);
+});
+
+test('official mode counts only verified logs for dynamic points', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now()->subDay(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'official',
+        'use_dynamic_points' => true,
+        'site_id' => $site->id,
+    ]);
+
+    $area = $site->areas()->create([
+        'name' => 'Test Area',
+        'slug' => 'test-area',
+        'type' => 'bouldering',
+    ]);
+
+    $sector = $area->sectors()->create([
+        'name' => 'Test Sector',
+        'slug' => 'test-sector',
+        'local_id' => 1,
+    ]);
+
+    $line = $sector->lines()->create([
+        'local_id' => 1,
+    ]);
+
+    $route = $line->routes()->create([
+        'name' => 'Test Route',
+        'slug' => 'test-route',
+        'local_id' => 1,
+        'grade' => 500,
+        'color' => 'blue',
+    ]);
+
+    // Attach route with 300 points
+    $contest->routes()->attach($route->id, ['points' => 300]);
+
+    // Add 2 climbers - one with verified log, one without
+    $user1 = User::factory()->create();
+    $user2 = User::factory()->create();
+    $staff = User::factory()->create();
+
+    // Verified log
+    Log::create([
+        'route_id' => $route->id,
+        'user_id' => $user1->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => $staff->id,
+        'created_at' => now(),
+    ]);
+
+    // Unverified log - should NOT count in official mode
+    Log::create([
+        'route_id' => $route->id,
+        'user_id' => $user2->id,
+        'grade' => $route->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'verified_by' => null,
+        'created_at' => now(),
+    ]);
+
+    // 300 points / 1 climber (only verified) = 300 points
+    expect($contest->getRoutePoints($route->id))->toBe(300.0);
 });

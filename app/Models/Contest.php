@@ -13,11 +13,13 @@ class Contest extends Model
         'end_date',
         'mode',
         'site_id',
+        'use_dynamic_points',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
+        'use_dynamic_points' => 'boolean',
     ];
 
     public function site()
@@ -74,12 +76,22 @@ class Contest extends Model
 
         $basePoints = (float) $route->pivot->points;
 
+        // Only apply dynamic calculation if enabled for this contest
+        if (! $this->use_dynamic_points) {
+            return $basePoints;
+        }
+
         // Calculate dynamic points based on number of climbers who completed it
-        $climbersCount = Log::where('route_id', $routeId)
-            ->whereNotNull('verified_by')
-            ->whereBetween('created_at', [$this->start_date, $this->end_date])
-            ->distinct('user_id')
-            ->count('user_id');
+        $query = Log::where('route_id', $routeId)
+            ->whereBetween('created_at', [$this->start_date, $this->end_date]);
+
+        // In official mode, only count verified logs
+        // In free mode, count all logs
+        if ($this->mode === 'official') {
+            $query->whereNotNull('verified_by');
+        }
+
+        $climbersCount = $query->distinct('user_id')->count('user_id');
 
         if ($climbersCount > 0) {
             return round($basePoints / $climbersCount, 2);

@@ -33,6 +33,8 @@ new class extends Component {
     #[Validate('required|in:free,official')]
     public $mode = 'free';
 
+    public $use_dynamic_points = false;
+
     public $id_editing = 0;
 
     public function save()
@@ -47,6 +49,7 @@ new class extends Component {
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'mode' => $this->mode,
+                'use_dynamic_points' => $this->use_dynamic_points,
             ]);
             $this->dispatch('action_ok', title: 'Contest updated', message: 'The contest has been updated successfully!');
         } else {
@@ -56,13 +59,14 @@ new class extends Component {
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'mode' => $this->mode,
+                'use_dynamic_points' => $this->use_dynamic_points,
                 'site_id' => $this->site->id,
             ]);
             $this->dispatch('action_ok', title: 'Contest created', message: 'The contest has been created successfully!');
         }
 
         $this->modal_open = false;
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'id_editing']);
     }
 
     public function edit($id)
@@ -75,6 +79,7 @@ new class extends Component {
         $this->start_date = $contest->start_date->format('Y-m-d\TH:i');
         $this->end_date = $contest->end_date->format('Y-m-d\TH:i');
         $this->mode = $contest->mode;
+        $this->use_dynamic_points = $contest->use_dynamic_points;
         
         $this->modal_title = __('Edit contest');
         $this->modal_subtitle = __('Update the contest information below.');
@@ -100,7 +105,7 @@ new class extends Component {
 
     public function open_modal()
     {
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'id_editing']);
         $this->modal_subtitle = __('Get started by filling in the information below to create a new contest.');
         $this->modal_title = __('New contest');
         $this->modal_submit_message = __('Create');
@@ -289,6 +294,20 @@ new class extends Component {
     </fieldset>
     <x-input-error for="mode" class="mt-2" />
 </div>
+
+        <div class="mt-4">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="use_dynamic_points" type="checkbox" wire:model="use_dynamic_points" 
+                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="use_dynamic_points" class="font-medium text-gray-700">{{ __('Use Dynamic Points Calculation') }}</label>
+                    <p class="text-gray-500">{{ __('Points are divided by the number of climbers who completed the route.') }}</p>
+                </div>
+            </div>
+            <x-input-error for="use_dynamic_points" class="mt-2" />
+        </div>
 
     </div>
     <x-slot name="footer">
