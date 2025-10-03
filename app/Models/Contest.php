@@ -38,6 +38,7 @@ class Contest extends Model
     public function isActive()
     {
         $now = now();
+
         return $this->start_date <= $now && $this->end_date >= $now;
     }
 
@@ -67,23 +68,23 @@ class Contest extends Model
     public function getRoutePoints($routeId)
     {
         $route = $this->routes()->where('route_id', $routeId)->first();
-        if (!$route) {
+        if (! $route) {
             return 0.0;
         }
 
-        $basePoints = (float)$route->pivot->points;
-        
+        $basePoints = (float) $route->pivot->points;
+
         // Calculate dynamic points based on number of climbers who completed it
         $climbersCount = Log::where('route_id', $routeId)
             ->whereNotNull('verified_by')
             ->whereBetween('created_at', [$this->start_date, $this->end_date])
             ->distinct('user_id')
             ->count('user_id');
-        
+
         if ($climbersCount > 0) {
             return round($basePoints / $climbersCount, 2);
         }
-        
+
         return $basePoints;
     }
 }

@@ -27,6 +27,7 @@ class ContestStep extends Model
     public function isActive()
     {
         $now = now();
+
         return $this->start_time <= $now && $this->end_time >= $now;
     }
 

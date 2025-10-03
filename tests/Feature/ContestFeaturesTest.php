@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
-use App\Models\Site;
 use App\Models\Contest;
 use App\Models\ContestStep;
-use App\Models\Route;
 use App\Models\Log;
+use App\Models\Route;
+use App\Models\Site;
+use App\Models\User;
 
 test('contest route can have points in pivot table', function () {
     $site = Site::create([
