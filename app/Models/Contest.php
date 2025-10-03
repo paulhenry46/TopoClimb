@@ -99,4 +99,62 @@ class Contest extends Model
 
         return $basePoints;
     }
+
+    public function getRankingForStep($stepId = null)
+    {
+        $routeIds = $this->routes->pluck('id');
+        
+        // Get the query based on step or contest dates
+        if ($stepId) {
+            $step = $this->steps()->find($stepId);
+            if (!$step) {
+                return collect();
+            }
+            $startDate = $step->start_time;
+            $endDate = $step->end_time;
+        } else {
+            $startDate = $this->start_date;
+            $endDate = $this->end_date;
+        }
+
+        // Build base query
+        $logsQuery = Log::whereIn('route_id', $routeIds)
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        // Filter by mode
+        if ($this->mode === 'official') {
+            $logsQuery->whereNotNull('verified_by');
+        }
+
+        $logs = $logsQuery->get();
+
+        // Group by user and calculate points
+        $rankings = $logs->groupBy('user_id')->map(function ($userLogs, $userId) {
+            $uniqueRoutes = $userLogs->pluck('route_id')->unique();
+            $totalPoints = $uniqueRoutes->sum(function ($routeId) {
+                return $this->getRoutePoints($routeId);
+            });
+
+            return [
+                'user_id' => $userId,
+                'user' => $userLogs->first()->user,
+                'routes_count' => $uniqueRoutes->count(),
+                'total_points' => $totalPoints,
+            ];
+        })->sortByDesc('total_points')->values();
+
+        // Add ranking position
+        $rankings = $rankings->map(function ($item, $index) {
+            $item['rank'] = $index + 1;
+            return $item;
+        });
+
+        return $rankings;
+    }
+
+    public function getUserRankingForStep($userId, $stepId = null)
+    {
+        $rankings = $this->getRankingForStep($stepId);
+        return $rankings->firstWhere('user_id', $userId);
+    }
 }

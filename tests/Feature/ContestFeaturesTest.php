@@ -551,3 +551,102 @@ test('official mode counts only verified logs for dynamic points', function () {
     // 300 points / 1 climber (only verified) = 300 points
     expect($contest->getRoutePoints($route->id))->toBe(300.0);
 });
+
+test('contest can generate rankings', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now()->subDay(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'free',
+        'use_dynamic_points' => false,
+        'site_id' => $site->id,
+    ]);
+
+    $area = $site->areas()->create([
+        'name' => 'Test Area',
+        'slug' => 'test-area',
+        'type' => 'bouldering',
+    ]);
+
+    $sector = $area->sectors()->create([
+        'name' => 'Test Sector',
+        'slug' => 'test-sector',
+        'local_id' => 1,
+    ]);
+
+    $line = $sector->lines()->create([
+        'local_id' => 1,
+    ]);
+
+    $route1 = $line->routes()->create([
+        'name' => 'Route 1',
+        'slug' => 'route-1',
+        'local_id' => 1,
+        'grade' => 500,
+        'color' => 'blue',
+    ]);
+
+    $route2 = $line->routes()->create([
+        'name' => 'Route 2',
+        'slug' => 'route-2',
+        'local_id' => 2,
+        'grade' => 600,
+        'color' => 'red',
+    ]);
+
+    // Attach routes
+    $contest->routes()->attach($route1->id, ['points' => 100]);
+    $contest->routes()->attach($route2->id, ['points' => 200]);
+
+    // Create users
+    $user1 = User::factory()->create(['name' => 'User 1']);
+    $user2 = User::factory()->create(['name' => 'User 2']);
+
+    // User 1 climbs both routes (300 points total)
+    Log::create([
+        'route_id' => $route1->id,
+        'user_id' => $user1->id,
+        'grade' => $route1->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    Log::create([
+        'route_id' => $route2->id,
+        'user_id' => $user1->id,
+        'grade' => $route2->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    // User 2 climbs only route 1 (100 points total)
+    Log::create([
+        'route_id' => $route1->id,
+        'user_id' => $user2->id,
+        'grade' => $route1->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    $rankings = $contest->getRankingForStep();
+
+    expect($rankings)->toHaveCount(2);
+    expect($rankings[0]['user_id'])->toBe($user1->id);
+    expect($rankings[0]['rank'])->toBe(1);
+    expect($rankings[0]['total_points'])->toBe(300.0);
+    expect($rankings[0]['routes_count'])->toBe(2);
+    expect($rankings[1]['user_id'])->toBe($user2->id);
+    expect($rankings[1]['rank'])->toBe(2);
+    expect($rankings[1]['total_points'])->toBe(100.0);
+    expect($rankings[1]['routes_count'])->toBe(1);
+});

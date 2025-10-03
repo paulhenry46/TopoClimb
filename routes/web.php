@@ -183,6 +183,15 @@ Route::prefix('/sites/{site:slug}')->group(function () {
         return view('sites.view', compact('site'));
     })->name('site.view');
 
+    // Public contest routes
+    Route::get('/contests/{contest}', function (Site $site, Contest $contest) {
+        return view('contests.public', compact('site', 'contest'));
+    })->name('contest.public');
+
+    Route::get('/contests/{contest}/live', function (Site $site, Contest $contest) {
+        return view('contests.live', compact('site', 'contest'));
+    })->name('contest.live');
+
     Route::prefix('/{area:slug}')->scopeBindings()->group(function () {
 
         Route::get('/', function (Site $site, Area $area) {
