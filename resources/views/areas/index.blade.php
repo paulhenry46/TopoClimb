@@ -47,16 +47,6 @@
             
                @endcan
                <x-grid-pattern-title >
-                {{ __('Contests') }}
-              </x-grid-pattern-title>
-              <x-grid-pattern-item >
-                <div class="px-4 py-4">
-                  <a href="{{ route('admin.contests.manage', ['site' => $site->id]) }}" class="text-blue-600 hover:text-blue-900">
-                    {{ __('Manage Contests') }} →
-                  </a>
-                </div>
-              </x-grid-pattern-item>
-               <x-grid-pattern-title >
                 {{ __('Areas') }}
               </x-grid-pattern-title>
               <x-grid-pattern-item >

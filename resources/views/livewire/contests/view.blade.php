@@ -86,7 +86,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="bg-white rounded-md mt-3 py-2 h-full">
+<div class="bg-white rounded-md mt-3 py-2">
     <div class="py-5 ml-5 font-semibold text-xl text-gray-700">{{ __('Contests') }}</div>
     
     @if($this->activeContests->count() > 0 || $this->upcomingContests->count() > 0 || $this->pastContests->count() > 0)

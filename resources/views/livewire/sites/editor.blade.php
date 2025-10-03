@@ -105,6 +105,7 @@ new class extends Component {
         <x-button href="{{ route('admin.site.stats', ['site'=> $site]) }}" wire:navigate><x-icons.icon-graph/>  <p class='ml-2'>{{ __('Stats ') }}</p></x-button>
         <x-button wire:navigate href="{{ route('site.view', $this->site->slug) }}" ><x-icons.icon-see class='mr-2'/> <p class='ml-2'>{{__('Site page')}}</p> </x-button>
         <livewire:sites.grade :site="$this->site" />
+        <livewire:contests.button-indicator :site="$this->site" />
       </div>
     </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
