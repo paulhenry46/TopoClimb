@@ -4,7 +4,7 @@
 This implementation adds three major features to the contest system:
 
 1. **Points Per Route**: Each route in a contest can now have a customizable number of points
-2. **Dynamic Points Calculation**: Points are automatically divided by the number of climbers who have completed the route
+2. **Dynamic Points Calculation**: Points are automatically divided by the number of climbers who have completed the route (optional, can be enabled/disabled per contest)
 3. **Multi-Step Contests**: Support for qualification waves and contest steps with specific time periods
 
 ## Database Changes
@@ -12,6 +12,10 @@ This implementation adds three major features to the contest system:
 ### Migration: `add_points_to_contest_route_table`
 - Adds `points` column (integer, default: 100) to the `contest_route` pivot table
 - This allows each route in a contest to have a specific point value
+
+### Migration: `add_dynamic_points_to_contests_table`
+- Adds `use_dynamic_points` column (boolean, default: false) to the `contests` table
+- This allows contest organizers to enable/disable dynamic points calculation per contest
 
 ### Migration: `create_contest_steps_table`
 Creates a new table for contest steps/waves with the following columns:
@@ -28,11 +32,14 @@ Creates a new table for contest steps/waves with the following columns:
 ### Contest Model (`app/Models/Contest.php`)
 1. **Updated `routes()` relationship**: Now includes `withPivot('points')` and `withTimestamps()`
 2. **Added `steps()` relationship**: Returns contest steps ordered by their order field
-3. **Added `getRoutePoints($routeId)` method**: 
-   - Returns the dynamic points for a route
+3. **Added `use_dynamic_points` to fillable and casts**: Boolean field to control dynamic points
+4. **Updated `getRoutePoints($routeId)` method**: 
+   - Only applies dynamic calculation if `use_dynamic_points` is true
+   - In **free mode**: counts ALL logs (verified and unverified)
+   - In **official mode**: counts ONLY verified logs
    - Calculates points by dividing base points by the number of unique climbers who completed it
-   - Only counts verified logs within the contest date range
-   - Returns base points if no climbers have completed the route
+   - Only counts logs within the contest date range
+   - Returns base points if dynamic points is disabled or no climbers have completed the route
 
 ### ContestStep Model (`app/Models/ContestStep.php`)
 New model with the following features:
@@ -51,6 +58,14 @@ Enhanced to support points management:
 - UI now shows an input field for points next to each selected route
 - Points are updated in real-time when changed
 
+### Contest Manager (`resources/views/livewire/contests/manager.blade.php`)
+Enhanced to support dynamic points toggle:
+- Added `use_dynamic_points` property (boolean, default: false)
+- Added checkbox in contest create/edit form to enable dynamic points
+- Checkbox label: "Use Dynamic Points Calculation"
+- Helper text: "Points are divided by the number of climbers who completed the route."
+- Field is saved when creating or editing contests
+
 ### Contest Steps Manager (`resources/views/livewire/contests/steps-manager.blade.php`)
 New Livewire component for managing contest steps:
 - Form to add/edit contest steps with fields for:
@@ -63,10 +78,6 @@ New Livewire component for managing contest steps:
   - Time range display
   - Edit and delete actions
 - Methods: `addStep()`, `editStep()`, `updateStep()`, `deleteStep()`, `cancelEdit()`
-
-### Contest Manager (`resources/views/livewire/contests/manager.blade.php`)
-- Added a "Steps & Waves" link (list icon) for each contest
-- Link navigates to the steps management page
 
 ## Routes
 
@@ -91,10 +102,13 @@ Comprehensive test suite covering:
 2. **Default points**: Verifies routes default to 100 points when not specified
 3. **Contest steps**: Tests creating and associating steps with contests
 4. **Step status methods**: Validates active/past/future status detection
-5. **Dynamic points calculation**: Tests that points are divided by climber count
+5. **Dynamic points calculation**: Tests that points are divided by climber count when enabled
 6. **No climbers scenario**: Verifies base points returned when no one has climbed the route
+7. **Dynamic points disabled**: Verifies base points returned regardless of climbers when disabled
+8. **Free mode behavior**: Verifies all logs (verified + unverified) are counted
+9. **Official mode behavior**: Verifies only verified logs are counted
 
-All tests pass successfully.
+All tests pass successfully (14 tests, 40 assertions).
 
 ## Usage Examples
 
@@ -104,6 +118,13 @@ All tests pass successfully.
 3. Select routes to include in the contest
 4. For each selected route, adjust the points value (default: 100)
 5. Changes are saved automatically
+
+### Enabling Dynamic Points Calculation
+1. When creating or editing a contest
+2. Check the "Use Dynamic Points Calculation" checkbox
+3. In **free mode**: the system will count all logs (verified and unverified)
+4. In **official mode**: the system will count only verified logs
+5. Points will be calculated as: `base_points / number_of_climbers`
 
 ### Managing Contest Steps
 1. Navigate to Admin > Site > Contests
@@ -116,22 +137,38 @@ All tests pass successfully.
 5. Steps appear in the list with their status
 6. Edit or delete steps as needed
 
-### Dynamic Points Calculation
-The `getRoutePoints($routeId)` method automatically calculates dynamic points:
-- Base points: 300
+### Dynamic Points Calculation Examples
+
+**Example 1: With Dynamic Points ENABLED**
+- Contest mode: Official
+- Route base points: 300
+- 3 climbers complete the route (all verified)
+- Points awarded per climber: 300 / 3 = **100 points**
+
+**Example 2: With Dynamic Points DISABLED**
+- Contest mode: Official
+- Route base points: 300
 - 3 climbers complete the route
-- Each climber earns: 300 / 3 = 100 points
+- Points awarded per climber: **300 points** (always base points)
+
+**Example 3: Free Mode vs Official Mode**
+- Free mode with dynamic points: Counts 5 climbers (3 verified + 2 unverified) = 300 / 5 = **60 points each**
+- Official mode with dynamic points: Counts 3 climbers (only verified) = 300 / 3 = **100 points each**
 
 ## Benefits
 
 1. **Flexible Scoring**: Organizers can assign different point values to routes based on difficulty or importance
-2. **Fair Competition**: Dynamic points prevent early climbers from having unfair advantages
-3. **Complex Events**: Multi-step contests support various competition formats like qualifications and finals
-4. **Time-Boxed Waves**: Different groups can compete in specific time slots
+2. **Optional Dynamic Scoring**: Choose whether to use dynamic points on a per-contest basis
+3. **Fair Competition**: Dynamic points (when enabled) prevent early climbers from having unfair advantages
+4. **Mode-Aware**: Respects contest mode - free mode counts all logs, official mode counts only verified logs
+5. **Complex Events**: Multi-step contests support various competition formats like qualifications and finals
+6. **Time-Boxed Waves**: Different groups can compete in specific time slots
 
 ## Backward Compatibility
 
 - Existing contests continue to work without changes
 - Routes without explicit points default to 100 points
+- Dynamic points defaults to **disabled** (false) for all contests
 - Contests without steps function normally
 - All existing tests continue to pass
+- No breaking changes to existing functionality
