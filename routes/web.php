@@ -200,6 +200,15 @@ Route::prefix('/sites/{site:slug}')->group(function () {
     });
 });
 
+// User QR code route for identification
+Route::get('/user/qr/{user}', function (App\Models\User $user) {
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+    ]);
+})->name('user.qr');
+
 Route::get('/empty/photo/{color}.svg', function (string $color) {
     $colors = config('climb.colors');
 
