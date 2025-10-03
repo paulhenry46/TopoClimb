@@ -98,38 +98,26 @@ new class extends Component {
                     <div class="space-y-3">
                         @foreach($this->activeContests as $contest)
                             <div class="border-2 border-green-500 rounded-md p-4">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <h4 class="font-semibold text-gray-900">{{ $contest->name }}</h4>
-                                        @if($contest->description)
-                                            <p class="text-sm text-gray-600 mt-1">{{ $contest->description }}</p>
-                                        @endif
-                                        <div class="mt-2 text-xs text-gray-500">
-                                            {{ __('Ends') }}: {{ $contest->end_date->format('Y-m-d H:i') }}
-                                        </div>
-                                        <div class="mt-1">
-                                            @if($contest->mode === 'free')
-                                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{__('Free Climb')}}</span>
-                                            @else
-                                                <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">{{__('Official')}}</span>
-                                            @endif
-                                        </div>
-                                        @auth
-                                            @php
-                                                $progress = $this->getUserProgress($contest->id);
-                                            @endphp
-                                            @if($progress['total'] > 0)
-                                                <div class="mt-2">
-                                                    <div class="flex items-center">
-                                                        <div class="flex-1 bg-gray-200 rounded-full h-2 mr-2">
-                                                            <div class="bg-green-600 h-2 rounded-full" style="width: {{ ($progress['completed'] / $progress['total']) * 100 }}%"></div>
-                                                        </div>
-                                                        <span class="text-xs text-gray-600">{{ $progress['completed'] }}/{{ $progress['total'] }}</span>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endauth
-                                    </div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-base font-semibold text-gray-900">{{ $contest->name }}</h4>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        {{ __('Active') }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">
+                                    {{ __('Ends') }}: {{ $contest->end_date->format('M d, Y H:i') }}
+                                </p>
+                                <div class="flex gap-2">
+                                    <a href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" 
+                                        class="flex-1 text-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+                                        {{ __('View Rankings') }}
+                                    </a>
+                                    @if($contest->isActive())
+                                        <a href="{{ route('contest.live', ['site' => $site->slug, 'contest' => $contest->id]) }}" 
+                                            class="flex-1 text-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
+                                            {{ __('Live') }} 🔴
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -144,24 +132,19 @@ new class extends Component {
                     <div class="space-y-3">
                         @foreach($this->upcomingContests as $contest)
                             <div class="border-2 border-yellow-400 rounded-md p-4">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <h4 class="font-semibold text-gray-900">{{ $contest->name }}</h4>
-                                        @if($contest->description)
-                                            <p class="text-sm text-gray-600 mt-1">{{ $contest->description }}</p>
-                                        @endif
-                                        <div class="mt-2 text-xs text-gray-500">
-                                            {{ __('Starts') }}: {{ $contest->start_date->format('Y-m-d H:i') }}
-                                        </div>
-                                        <div class="mt-1">
-                                            @if($contest->mode === 'free')
-                                                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{__('Free Climb')}}</span>
-                                            @else
-                                                <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">{{__('Official')}}</span>
-                                            @endif
-                                        </div>
-                                    </div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-base font-semibold text-gray-900">{{ $contest->name }}</h4>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        {{ __('Upcoming') }}
+                                    </span>
                                 </div>
+                                <p class="text-sm text-gray-600 mb-3">
+                                    {{ __('Starts') }}: {{ $contest->start_date->format('M d, Y H:i') }}
+                                </p>
+                                <a href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" 
+                                    class="block text-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors">
+                                    {{ __('View Details') }}
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -175,32 +158,19 @@ new class extends Component {
                     <div class="space-y-3">
                         @foreach($this->pastContests as $contest)
                             <div class="border border-gray-300 rounded-md p-4">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex-1">
-                                        <h4 class="font-semibold text-gray-900">{{ $contest->name }}</h4>
-                                        @if($contest->description)
-                                            <p class="text-sm text-gray-600 mt-1">{{ $contest->description }}</p>
-                                        @endif
-                                        <div class="mt-2 text-xs text-gray-500">
-                                            {{ __('Ended') }}: {{ $contest->end_date->format('Y-m-d H:i') }}
-                                        </div>
-                                        @auth
-                                            @php
-                                                $progress = $this->getUserProgress($contest->id);
-                                            @endphp
-                                            @if($progress['total'] > 0)
-                                                <div class="mt-2">
-                                                    <div class="flex items-center">
-                                                        <div class="flex-1 bg-gray-200 rounded-full h-2 mr-2">
-                                                            <div class="bg-gray-600 h-2 rounded-full" style="width: {{ ($progress['completed'] / $progress['total']) * 100 }}%"></div>
-                                                        </div>
-                                                        <span class="text-xs text-gray-600">{{ $progress['completed'] }}/{{ $progress['total'] }}</span>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @endauth
-                                    </div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-base font-semibold text-gray-900">{{ $contest->name }}</h4>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ __('Ended') }}
+                                    </span>
                                 </div>
+                                <p class="text-sm text-gray-600 mb-3">
+                                    {{ __('Ended') }}: {{ $contest->end_date->format('M d, Y') }}
+                                </p>
+                                <a href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" 
+                                    class="block text-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition-colors">
+                                    {{ __('View Results') }}
+                                </a>
                             </div>
                         @endforeach
                     </div>

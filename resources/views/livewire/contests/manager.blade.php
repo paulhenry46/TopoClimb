@@ -33,6 +33,8 @@ new class extends Component {
     #[Validate('required|in:free,official')]
     public $mode = 'free';
 
+    public $use_dynamic_points = false;
+
     public $id_editing = 0;
 
     public function save()
@@ -47,6 +49,7 @@ new class extends Component {
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'mode' => $this->mode,
+                'use_dynamic_points' => $this->use_dynamic_points,
             ]);
             $this->dispatch('action_ok', title: 'Contest updated', message: 'The contest has been updated successfully!');
         } else {
@@ -56,13 +59,14 @@ new class extends Component {
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 'mode' => $this->mode,
+                'use_dynamic_points' => $this->use_dynamic_points,
                 'site_id' => $this->site->id,
             ]);
             $this->dispatch('action_ok', title: 'Contest created', message: 'The contest has been created successfully!');
         }
 
         $this->modal_open = false;
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'id_editing']);
     }
 
     public function edit($id)
@@ -75,6 +79,7 @@ new class extends Component {
         $this->start_date = $contest->start_date->format('Y-m-d\TH:i');
         $this->end_date = $contest->end_date->format('Y-m-d\TH:i');
         $this->mode = $contest->mode;
+        $this->use_dynamic_points = $contest->use_dynamic_points;
         
         $this->modal_title = __('Edit contest');
         $this->modal_subtitle = __('Update the contest information below.');
@@ -100,7 +105,7 @@ new class extends Component {
 
     public function open_modal()
     {
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'id_editing']);
         $this->modal_subtitle = __('Get started by filling in the information below to create a new contest.');
         $this->modal_title = __('New contest');
         $this->modal_submit_message = __('Create');
@@ -192,6 +197,9 @@ new class extends Component {
               <div class="flex gap-2 justify-end">
                 <a href="{{ route('admin.contests.routes', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Routes')}}">
                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M760-120q-39 0-70-22.5T647-200H440q-66 0-113-47t-47-113q0-66 47-113t113-47h80q33 0 56.5-23.5T600-600q0-33-23.5-56.5T520-680H313q-13 35-43.5 57.5T200-600q-50 0-85-35t-35-85q0-50 35-85t85-35q39 0 69.5 22.5T313-760h207q66 0 113 47t47 113q0 66-47 113t-113 47h-80q-33 0-56.5 23.5T360-360q0 33 23.5 56.5T440-280h207q13-35 43.5-57.5T760-360q50 0 85 35t35 85q0 50-35 85t-85 35ZM200-680q17 0 28.5-11.5T240-720q0-17-11.5-28.5T200-760q-17 0-28.5 11.5T160-720q0 17 11.5 28.5T200-680Z"/></svg>
+                </a>
+                <a href="{{ route('admin.contests.steps', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Steps & Waves')}}">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-200v-80h640v80H160Zm0-240v-80h640v80H160Zm0-240v-80h640v80H160Z"/></svg>
                 </a>
                 @if($contest->mode === 'official')
                   <a href="{{ route('admin.contests.staff', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Staff')}}">
@@ -286,6 +294,20 @@ new class extends Component {
     </fieldset>
     <x-input-error for="mode" class="mt-2" />
 </div>
+
+        <div class="mt-4">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="use_dynamic_points" type="checkbox" wire:model="use_dynamic_points" 
+                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="use_dynamic_points" class="font-medium text-gray-700">{{ __('Use Dynamic Points Calculation') }}</label>
+                    <p class="text-gray-500">{{ __('Points are divided by the number of climbers who completed the route.') }}</p>
+                </div>
+            </div>
+            <x-input-error for="use_dynamic_points" class="mt-2" />
+        </div>
 
     </div>
     <x-slot name="footer">
