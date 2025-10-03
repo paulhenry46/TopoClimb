@@ -184,7 +184,7 @@ new class extends Component {
                   <x-icons.icon-check class="w-4 h-4 mr-1 text-green-500"/> {{__('Active')}}
                 </span>
               @elseif($contest->isFuture())
-                <span class="gap-1 inline-flex items-center rounded bg-yellow-50 px-2 py-1 text-xs font-medium text-gray-700">
+                <span class="gap-1 inline-flex items-center rounded bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700">
                   <x-icons.icon-calendar class="w-4 h-4 mr-1 text-gray-400"/> {{__('Upcoming')}}
                 </span>
               @else

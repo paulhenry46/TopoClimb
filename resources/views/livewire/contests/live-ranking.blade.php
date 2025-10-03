@@ -39,10 +39,10 @@ new class extends Component {
     }
 }; ?>
 
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-8" wire:poll.5s>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-8" wire:poll.30s>
     <!-- Contest Header -->
     <div class="text-center mb-12">
-        <h1 class="text-6xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+        <h1 class="text-6xl font-bold mb-4 text-white bg-clip-text text-transparent">
             {{ $contest->name }}
         </h1>
         <p class="text-2xl text-gray-300">{{ __('Live Rankings') }}</p>
@@ -73,8 +73,8 @@ new class extends Component {
             <div class="flex flex-wrap gap-3 justify-center">
                 <button 
                     wire:click="selectContest"
-                    class="px-6 py-3 rounded-lg text-lg font-medium transition-all transform hover:scale-105
-                        @if($selectedStepId === null) bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/50
+                    class="px-6 py-3 rounded-lg text-lg font-medium
+                        @if($selectedStepId === null) bg-gray-600 
                         @else bg-gray-700/50 border border-gray-600 hover:bg-gray-700
                         @endif">
                     {{ __('Overall') }}
@@ -82,17 +82,12 @@ new class extends Component {
                 @foreach($contest->steps as $step)
                     <button 
                         wire:click="selectStep({{ $step->id }})"
-                        class="px-6 py-3 rounded-lg text-lg font-medium transition-all transform hover:scale-105
-                            @if($selectedStepId === $step->id) bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/50
+                        class="px-6 py-3 rounded-lg text-lg font-medium
+                            @if($selectedStepId === $step->id) bg-gray-600 
                             @else bg-gray-700/50 border border-gray-600 hover:bg-gray-700
                             @endif">
                         {{ $step->name }}
-                        @if($step->isActive())
-                            <span class="ml-2 relative flex h-2 w-2 inline-block">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            </span>
-                        @endif
+                        
                     </button>
                 @endforeach
             </div>
@@ -104,10 +99,9 @@ new class extends Component {
         @if($this->rankings->count() > 0)
             <!-- Top 3 Podium -->
             @if($this->rankings->count() >= 3)
-                <div class="grid grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
+                <div class="grid grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto pt-5">
                     <!-- 2nd Place -->
                     <div class="flex flex-col items-center justify-end">
-                        <div class="text-6xl mb-2">🥈</div>
                         <div class="bg-gray-700/50 backdrop-blur-sm rounded-lg p-6 w-full border-2 border-gray-500 text-center">
                             <div class="text-3xl font-bold text-gray-300 mb-1">2nd</div>
                             <div class="text-xl font-semibold mb-2">{{ $this->rankings[1]['user']->name }}</div>
@@ -118,8 +112,7 @@ new class extends Component {
 
                     <!-- 1st Place -->
                     <div class="flex flex-col items-center justify-end -mt-8">
-                        <div class="text-8xl mb-2 animate-bounce">🥇</div>
-                        <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-sm rounded-lg p-8 w-full border-2 border-yellow-500 shadow-2xl shadow-yellow-500/50 text-center">
+                        <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-sm rounded-lg p-8 w-full border-2 border-yellow-500 shadow-2xl text-center">
                             <div class="text-4xl font-bold text-yellow-400 mb-1">1st</div>
                             <div class="text-2xl font-bold mb-3">{{ $this->rankings[0]['user']->name }}</div>
                             <div class="text-4xl font-bold text-yellow-400">{{ number_format($this->rankings[0]['total_points'], 0) }}</div>
@@ -129,7 +122,6 @@ new class extends Component {
 
                     <!-- 3rd Place -->
                     <div class="flex flex-col items-center justify-end">
-                        <div class="text-6xl mb-2">🥉</div>
                         <div class="bg-gray-700/50 backdrop-blur-sm rounded-lg p-6 w-full border-2 border-orange-700 text-center">
                             <div class="text-3xl font-bold text-gray-300 mb-1">3rd</div>
                             <div class="text-xl font-semibold mb-2">{{ $this->rankings[2]['user']->name }}</div>
@@ -156,7 +148,7 @@ new class extends Component {
                                         <div class="text-sm text-gray-400">{{ $ranking['routes_count'] }} / {{ $this->totalRoutes }} routes</div>
                                     </div>
                                 </div>
-                                <div class="text-3xl font-bold text-indigo-400">{{ number_format($ranking['total_points'], 0) }}</div>
+                                <div class="text-3xl font-bold text-white">{{ number_format($ranking['total_points'], 0) }}</div>
                             </div>
                         @endforeach
                     </div>
@@ -176,6 +168,6 @@ new class extends Component {
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
         </span>
-        <span class="text-sm text-gray-300">{{ __('Auto-refresh: 5s') }}</span>
+        <span class="text-sm text-gray-300">{{ __('Auto-refresh: 30s') }}</span>
     </div>
 </div>
