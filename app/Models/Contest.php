@@ -27,7 +27,7 @@ class Contest extends Model
 
     public function routes()
     {
-        return $this->belongsToMany(Route::class);
+        return $this->belongsToMany(Route::class)->withPivot('points')->withTimestamps();
     }
 
     public function staffMembers()
@@ -57,5 +57,33 @@ class Contest extends Model
             ->whereNotNull('verified_by')
             ->whereBetween('created_at', [$this->start_date, $this->end_date])
             ->get();
+    }
+
+    public function steps()
+    {
+        return $this->hasMany(ContestStep::class)->orderBy('order');
+    }
+
+    public function getRoutePoints($routeId)
+    {
+        $route = $this->routes()->where('route_id', $routeId)->first();
+        if (!$route) {
+            return 0.0;
+        }
+
+        $basePoints = (float)$route->pivot->points;
+        
+        // Calculate dynamic points based on number of climbers who completed it
+        $climbersCount = Log::where('route_id', $routeId)
+            ->whereNotNull('verified_by')
+            ->whereBetween('created_at', [$this->start_date, $this->end_date])
+            ->distinct('user_id')
+            ->count('user_id');
+        
+        if ($climbersCount > 0) {
+            return round($basePoints / $climbersCount, 2);
+        }
+        
+        return $basePoints;
     }
 }

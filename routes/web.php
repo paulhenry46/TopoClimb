@@ -64,6 +64,10 @@ Route::middleware([
             Route::get('/contests/{contest}/staff', function (Site $site, Contest $contest) {
                 return view('contests.staff', compact('site', 'contest'));
             })->middleware('can:edit_areas,site')->name('contests.staff');
+
+            Route::get('/contests/{contest}/steps', function (Site $site, Contest $contest) {
+                return view('contests.steps', compact('site', 'contest'));
+            })->middleware('can:edit_areas,site')->name('contests.steps');
             
             Route::prefix('/areas/{area}')->group(function () {
                 Route::get('/', function (Site $site, Area $area) {
