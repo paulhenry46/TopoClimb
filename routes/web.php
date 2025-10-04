@@ -67,6 +67,14 @@ Route::middleware([
                 return view('contests.steps', compact('site', 'contest'));
             })->middleware('can:edit_areas,site')->name('contests.steps');
 
+            Route::get('/contests/{contest}/teams', function (Site $site, Contest $contest) {
+                return view('contests.teams', compact('site', 'contest'));
+            })->middleware('can:edit_areas,site')->name('contests.teams');
+
+            Route::get('/contests/{contest}/categories', function (Site $site, Contest $contest) {
+                return view('contests.categories', compact('site', 'contest'));
+            })->middleware('can:edit_areas,site')->name('contests.categories');
+
             Route::prefix('/areas/{area}')->group(function () {
                 Route::get('/', function (Site $site, Area $area) {
                     return view('sectors.index', compact('site', 'area'));

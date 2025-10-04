@@ -108,4 +108,14 @@ class User extends Authenticatable
         return $this->hasMany(Log::class, 'verified_by');
     }
 
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class)->withTimestamps();
+    }
+
+    public function contestCategories()
+    {
+        return $this->belongsToMany(ContestCategory::class, 'contest_category_user')->withTimestamps();
+    }
+
 }

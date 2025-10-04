@@ -14,12 +14,15 @@ class Contest extends Model
         'mode',
         'site_id',
         'use_dynamic_points',
+        'team_mode',
+        'team_points_mode',
     ];
 
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'use_dynamic_points' => 'boolean',
+        'team_mode' => 'boolean',
     ];
 
     public function site()
@@ -67,6 +70,16 @@ class Contest extends Model
         return $this->hasMany(ContestStep::class)->orderBy('order');
     }
 
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(ContestCategory::class);
+    }
+
     public function getRoutePoints($routeId)
     {
         $route = $this->routes()->where('route_id', $routeId)->first();
@@ -102,17 +115,22 @@ class Contest extends Model
 
     public function getRankingForStep($stepId = null)
     {
-        $routeIds = $this->routes->pluck('id');
-        
-        // Get the query based on step or contest dates
+        // Get routes - either from step or from contest
         if ($stepId) {
             $step = $this->steps()->find($stepId);
             if (!$step) {
                 return collect();
             }
+            
+            // If step has specific routes assigned, use those. Otherwise use all contest routes
+            $routeIds = $step->routes->count() > 0 
+                ? $step->routes->pluck('id') 
+                : $this->routes->pluck('id');
+            
             $startDate = $step->start_time;
             $endDate = $step->end_time;
         } else {
+            $routeIds = $this->routes->pluck('id');
             $startDate = $this->start_date;
             $endDate = $this->end_date;
         }
@@ -156,5 +174,69 @@ class Contest extends Model
     {
         $rankings = $this->getRankingForStep($stepId);
         return $rankings->firstWhere('user_id', $userId);
+    }
+
+    public function getTeamRankingForStep($stepId = null)
+    {
+        if (!$this->team_mode) {
+            return collect();
+        }
+
+        $teams = $this->teams()->with('users')->get();
+        
+        $rankings = $teams->map(function ($team) {
+            $totalPoints = $team->getTotalPoints();
+            $routeIds = $this->routes->pluck('id');
+            
+            // Get unique routes climbed by team
+            $logs = Log::whereIn('route_id', $routeIds)
+                ->whereIn('user_id', $team->users->pluck('id'))
+                ->whereBetween('created_at', [$this->start_date, $this->end_date]);
+
+            if ($this->mode === 'official') {
+                $logs->whereNotNull('verified_by');
+            }
+
+            $uniqueRoutes = $logs->get()->pluck('route_id')->unique()->count();
+
+            return [
+                'team_id' => $team->id,
+                'team' => $team,
+                'routes_count' => $uniqueRoutes,
+                'total_points' => $totalPoints,
+            ];
+        })->sortByDesc('total_points')->values();
+
+        // Add ranking position
+        $rankings = $rankings->map(function ($item, $index) {
+            $item['rank'] = $index + 1;
+            return $item;
+        });
+
+        return $rankings;
+    }
+
+    public function getCategoryRankings($categoryId, $stepId = null)
+    {
+        $category = $this->categories()->find($categoryId);
+        if (!$category) {
+            return collect();
+        }
+
+        $userIds = $category->users->pluck('id');
+        $rankings = $this->getRankingForStep($stepId);
+        
+        // Filter rankings to only include users in this category
+        $categoryRankings = $rankings->filter(function ($ranking) use ($userIds) {
+            return $userIds->contains($ranking['user_id']);
+        })->values();
+
+        // Re-rank within category
+        $categoryRankings = $categoryRankings->map(function ($item, $index) {
+            $item['rank'] = $index + 1;
+            return $item;
+        });
+
+        return $categoryRankings;
     }
 }

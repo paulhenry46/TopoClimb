@@ -3,7 +3,9 @@
 use Livewire\Volt\Component;
 use App\Models\Contest;
 use App\Models\ContestStep;
+use App\Models\Area;
 use Livewire\Attributes\Validate;
+use Livewire\Attributes\Computed;
 
 new class extends Component {
     public Contest $contest;
@@ -21,6 +23,8 @@ new class extends Component {
     public $end_time = '';
     
     public $editingStep = null;
+    public $managingRoutesForStep = null;
+    public $selectedRoutes = [];
 
     public function mount()
     {
@@ -88,6 +92,46 @@ new class extends Component {
     public function cancelEdit()
     {
         $this->resetForm();
+    }
+
+    public function manageRoutes($stepId)
+    {
+        $step = ContestStep::findOrFail($stepId);
+        $this->managingRoutesForStep = $stepId;
+        $this->selectedRoutes = $step->routes->pluck('id')->toArray();
+    }
+
+    public function toggleRoute($routeId)
+    {
+        if (!$this->managingRoutesForStep) {
+            return;
+        }
+
+        $step = ContestStep::findOrFail($this->managingRoutesForStep);
+        
+        if (in_array($routeId, $this->selectedRoutes)) {
+            $this->selectedRoutes = array_diff($this->selectedRoutes, [$routeId]);
+            $step->routes()->detach($routeId);
+        } else {
+            $this->selectedRoutes[] = $routeId;
+            $step->routes()->attach($routeId);
+        }
+        
+        $this->dispatch('action_ok', title: 'Routes updated', message: 'Step routes have been updated successfully!');
+    }
+
+    public function closeRouteManager()
+    {
+        $this->managingRoutesForStep = null;
+        $this->selectedRoutes = [];
+    }
+
+    #[Computed]
+    public function areas()
+    {
+        return Area::where('site_id', $this->contest->site_id)
+            ->with(['sectors.lines.routes'])
+            ->get();
     }
 }; ?>
 
@@ -189,8 +233,15 @@ new class extends Component {
                                 <p class="mt-1 text-sm text-gray-500">
                                     {{ $step->start_time->format('M d, Y H:i') }} - {{ $step->end_time->format('M d, Y H:i') }}
                                 </p>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    {{ $step->routes->count() }} {{__('routes assigned')}}
+                                </p>
                             </div>
                             <div class="flex gap-2">
+                                <button wire:click="manageRoutes({{ $step->id }})" type="button"
+                                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    {{__('Manage Routes')}}
+                                </button>
                                 <button wire:click="editStep({{ $step->id }})" type="button"
                                     class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     {{__('Edit')}}
@@ -211,4 +262,60 @@ new class extends Component {
             @endif
         </div>
     </div>
+
+    <!-- Route Management Modal -->
+    @if($managingRoutesForStep)
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50" wire:click="closeRouteManager">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden" wire:click.stop>
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">{{__('Manage Routes for Step')}}</h3>
+                        <button wire:click="closeRouteManager" class="text-gray-400 hover:text-gray-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="px-6 py-4 overflow-y-auto max-h-[calc(90vh-8rem)]">
+                    @foreach($this->areas as $area)
+                        <div class="mb-6">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3">{{ $area->name }}</h4>
+                            
+                            @foreach($area->sectors as $sector)
+                                <div class="ml-4 mb-4">
+                                    <h5 class="text-sm font-semibold text-gray-700 mb-2">{{ $sector->name }}</h5>
+                                    
+                                    @foreach($sector->lines as $line)
+                                        <div class="ml-4 mb-3">
+                                            <h6 class="text-xs font-semibold text-gray-600 mb-1">{{ $line->name }}</h6>
+                                            
+                                            <div class="ml-4 space-y-1">
+                                                @foreach($line->routes as $route)
+                                                    <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                                        <input type="checkbox" 
+                                                            wire:click="toggleRoute({{ $route->id }})"
+                                                            @if(in_array($route->id, $selectedRoutes)) checked @endif
+                                                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                                        <span class="ml-2 text-sm text-gray-700">{{ $route->name }}</span>
+                                                        <span class="ml-2 text-xs text-gray-500">({{ $route->color }})</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <button wire:click="closeRouteManager" type="button"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {{__('Close')}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
