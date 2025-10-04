@@ -325,6 +325,7 @@ new class extends Component {
             scanning: false,
             html5QrCode: null,
             error: '',
+            Html5Qrcode: null,
             init() {
                 this.$watch('open', value => {
                     if (value) {
@@ -339,8 +340,14 @@ new class extends Component {
                 this.scanning = true;
                 
                 try {
+                    // Lazy load the html5-qrcode library
+                    if (!this.Html5Qrcode) {
+                        const module = await import('html5-qrcode');
+                        this.Html5Qrcode = module.Html5Qrcode;
+                    }
+                    
                     const qrCodeRegionId = 'qr-reader';
-                    this.html5QrCode = new Html5Qrcode(qrCodeRegionId);
+                    this.html5QrCode = new this.Html5Qrcode(qrCodeRegionId);
                     
                     await this.html5QrCode.start(
                         { facingMode: 'environment' },
