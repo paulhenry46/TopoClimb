@@ -349,8 +349,24 @@ new class extends Component {
                     const qrCodeRegionId = 'qr-reader';
                     this.html5QrCode = new this.Html5Qrcode(qrCodeRegionId);
                     
+                    // Get available cameras to trigger permission request
+                    const cameras = await this.Html5Qrcode.getCameras();
+                    if (!cameras || cameras.length === 0) {
+                        throw new Error('No cameras found');
+                    }
+                    
+                    // Use the first available camera (usually back camera on mobile)
+                    // Prefer environment-facing camera if available
+                    let cameraId = cameras[0].id;
+                    const environmentCamera = cameras.find(camera => 
+                        camera.label && camera.label.toLowerCase().includes('back')
+                    );
+                    if (environmentCamera) {
+                        cameraId = environmentCamera.id;
+                    }
+                    
                     await this.html5QrCode.start(
-                        { facingMode: 'environment' },
+                        cameraId,
                         {
                             fps: 10,
                             qrbox: { width: 250, height: 250 }
@@ -383,7 +399,7 @@ new class extends Component {
                     // Provide specific error messages based on error type
                     if (err.name === 'NotAllowedError') {
                         this.error = '{{ __('Camera access denied. Please allow camera access in your browser settings and try again.') }}';
-                    } else if (err.name === 'NotFoundError') {
+                    } else if (err.name === 'NotFoundError' || err.message === 'No cameras found') {
                         this.error = '{{ __('No camera found. Please ensure your device has a camera connected.') }}';
                     } else if (err.name === 'NotReadableError') {
                         this.error = '{{ __('Camera is already in use by another application. Please close other apps using the camera and try again.') }}';
