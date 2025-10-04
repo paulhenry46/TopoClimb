@@ -497,5 +497,10 @@
     "you can comment this route and show the felt grade" : "Vous pouvez commenter la voie et indiquer votre cotation ressentie",
     "No users with this name were found." : "Aucun utilisateur trouvé.",
     "Choosen tags :" : "Tags choisis :",
-    "You can choose how the tracks will be classified: by line or by sector. You can also print the diagram of a sector with the tracks named as a supplement." : "Vous pouvez choisir la façon dont les voies seront classées : par ligne ou par secteur. Vous pouvez également imprimer le schéma d'un secteur avec les voies nommées en complément."
+    "You can choose how the tracks will be classified: by line or by sector. You can also print the diagram of a sector with the tracks named as a supplement." : "Vous pouvez choisir la façon dont les voies seront classées : par ligne ou par secteur. Vous pouvez également imprimer le schéma d'un secteur avec les voies nommées en complément.",
+    "Camera access denied. Please allow camera access in your browser settings and try again." : "Accès à la caméra refusé. Veuillez autoriser l'accès à la caméra dans les paramètres de votre navigateur et réessayer.",
+    "No camera found. Please ensure your device has a camera connected." : "Aucune caméra trouvée. Veuillez vous assurer que votre appareil dispose d'une caméra connectée.",
+    "Camera is already in use by another application. Please close other apps using the camera and try again." : "La caméra est déjà utilisée par une autre application. Veuillez fermer les autres applications utilisant la caméra et réessayer.",
+    "Camera does not support the required settings. Please try a different camera." : "La caméra ne prend pas en charge les paramètres requis. Veuillez essayer une autre caméra.",
+    "Unable to access camera. Please ensure camera permissions are granted in your browser settings." : "Impossible d'accéder à la caméra. Veuillez vous assurer que les autorisations de caméra sont accordées dans les paramètres de votre navigateur."
 }

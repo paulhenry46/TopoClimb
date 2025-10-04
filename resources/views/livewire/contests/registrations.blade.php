@@ -377,8 +377,21 @@ new class extends Component {
                         }
                     );
                 } catch (err) {
-                    this.error = '{{ __('Unable to access camera. Please allow camera access.') }}';
+                    console.error('QR Scanner error:', err);
                     this.scanning = false;
+                    
+                    // Provide specific error messages based on error type
+                    if (err.name === 'NotAllowedError') {
+                        this.error = '{{ __('Camera access denied. Please allow camera access in your browser settings and try again.') }}';
+                    } else if (err.name === 'NotFoundError') {
+                        this.error = '{{ __('No camera found. Please ensure your device has a camera connected.') }}';
+                    } else if (err.name === 'NotReadableError') {
+                        this.error = '{{ __('Camera is already in use by another application. Please close other apps using the camera and try again.') }}';
+                    } else if (err.name === 'OverconstrainedError') {
+                        this.error = '{{ __('Camera does not support the required settings. Please try a different camera.') }}';
+                    } else {
+                        this.error = '{{ __('Unable to access camera. Please ensure camera permissions are granted in your browser settings.') }}';
+                    }
                 }
             },
             async stopScanner() {
