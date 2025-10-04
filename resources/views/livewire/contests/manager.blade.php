@@ -34,6 +34,7 @@ new class extends Component {
     public $mode = 'free';
 
     public $use_dynamic_points = false;
+    public $team_mode = false;
 
     public $id_editing = 0;
 
@@ -50,6 +51,7 @@ new class extends Component {
                 'end_date' => $this->end_date,
                 'mode' => $this->mode,
                 'use_dynamic_points' => $this->use_dynamic_points,
+                'team_mode' => $this->team_mode,
             ]);
             $this->dispatch('action_ok', title: 'Contest updated', message: 'The contest has been updated successfully!');
         } else {
@@ -60,13 +62,14 @@ new class extends Component {
                 'end_date' => $this->end_date,
                 'mode' => $this->mode,
                 'use_dynamic_points' => $this->use_dynamic_points,
+                'team_mode' => $this->team_mode,
                 'site_id' => $this->site->id,
             ]);
             $this->dispatch('action_ok', title: 'Contest created', message: 'The contest has been created successfully!');
         }
 
         $this->modal_open = false;
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'id_editing']);
     }
 
     public function edit($id)
@@ -80,6 +83,7 @@ new class extends Component {
         $this->end_date = $contest->end_date->format('Y-m-d\TH:i');
         $this->mode = $contest->mode;
         $this->use_dynamic_points = $contest->use_dynamic_points;
+        $this->team_mode = $contest->team_mode;
         
         $this->modal_title = __('Edit contest');
         $this->modal_subtitle = __('Update the contest information below.');
@@ -105,7 +109,7 @@ new class extends Component {
 
     public function open_modal()
     {
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'id_editing']);
         $this->modal_subtitle = __('Get started by filling in the information below to create a new contest.');
         $this->modal_title = __('New contest');
         $this->modal_submit_message = __('Create');
@@ -200,6 +204,14 @@ new class extends Component {
                 </a>
                 <a href="{{ route('admin.contests.steps', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Steps & Waves')}}">
                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-200v-80h640v80H160Zm0-240v-80h640v80H160Zm0-240v-80h640v80H160Z"/></svg>
+                </a>
+                @if($contest->team_mode)
+                  <a href="{{ route('admin.contests.teams', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Teams')}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm720 0v-120q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v120H760ZM360-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm400-160q0 66-47 113t-113 47q-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113Z"/></svg>
+                  </a>
+                @endif
+                <a href="{{ route('admin.contests.categories', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Categories')}}">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Z"/></svg>
                 </a>
                 @if($contest->mode === 'official')
                   <a href="{{ route('admin.contests.staff', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Staff')}}">
@@ -307,6 +319,20 @@ new class extends Component {
                 </div>
             </div>
             <x-input-error for="use_dynamic_points" class="mt-2" />
+        </div>
+
+        <div class="mt-4">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="team_mode" type="checkbox" wire:model="team_mode" 
+                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="team_mode" class="font-medium text-gray-700">{{ __('Enable Team Mode') }}</label>
+                    <p class="text-gray-500">{{ __('Users can create and join teams, and rankings are calculated by team.') }}</p>
+                </div>
+            </div>
+            <x-input-error for="team_mode" class="mt-2" />
         </div>
 
     </div>
