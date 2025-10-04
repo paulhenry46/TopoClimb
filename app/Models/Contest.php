@@ -15,6 +15,7 @@ class Contest extends Model
         'site_id',
         'use_dynamic_points',
         'team_mode',
+        'team_points_mode',
     ];
 
     protected $casts = [

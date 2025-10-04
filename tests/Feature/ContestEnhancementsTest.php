@@ -211,7 +211,7 @@ test('contest steps can have specific routes', function () {
     expect($step->routes)->toHaveCount(2);
 });
 
-test('team ranking calculates points correctly', function () {
+test('team ranking calculates points correctly in unique mode', function () {
     $site = Site::create([
         'name' => 'Test Site',
         'slug' => 'test-site',
@@ -225,6 +225,7 @@ test('team ranking calculates points correctly', function () {
         'end_date' => now()->addDays(7),
         'mode' => 'free',
         'team_mode' => true,
+        'team_points_mode' => 'unique',
         'site_id' => $site->id,
     ]);
 
@@ -295,6 +296,122 @@ test('team ranking calculates points correctly', function () {
 
     $teamPoints = $team->getTotalPoints();
     expect($teamPoints)->toBe(300.0); // 100 + 200
+});
+
+test('team ranking calculates points correctly in all mode with duplicates', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now()->subDay(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'free',
+        'team_mode' => true,
+        'team_points_mode' => 'all',
+        'site_id' => $site->id,
+    ]);
+
+    $area = $site->areas()->create([
+        'name' => 'Test Area',
+        'slug' => 'test-area',
+        'type' => 'bouldering',
+    ]);
+
+    $sector = $area->sectors()->create([
+        'name' => 'Test Sector',
+        'slug' => 'test-sector',
+        'local_id' => 1,
+    ]);
+
+    $line = $sector->lines()->create([
+        'local_id' => 1,
+    ]);
+
+    $route1 = $line->routes()->create([
+        'name' => 'Route 1',
+        'slug' => 'route-1',
+        'local_id' => 1,
+        'grade' => 500,
+        'color' => 'blue',
+    ]);
+
+    $route2 = $line->routes()->create([
+        'name' => 'Route 2',
+        'slug' => 'route-2',
+        'local_id' => 2,
+        'grade' => 600,
+        'color' => 'red',
+    ]);
+
+    $contest->routes()->attach($route1->id, ['points' => 100]);
+    $contest->routes()->attach($route2->id, ['points' => 200]);
+
+    $team = Team::create([
+        'name' => 'Team Beta',
+        'contest_id' => $contest->id,
+    ]);
+
+    $user1 = User::factory()->create();
+    $user2 = User::factory()->create();
+    $user3 = User::factory()->create();
+    
+    $team->users()->attach([$user1->id, $user2->id, $user3->id]);
+
+    // All 3 users climb route 1 (100 points each)
+    Log::create([
+        'route_id' => $route1->id,
+        'user_id' => $user1->id,
+        'grade' => $route1->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    Log::create([
+        'route_id' => $route1->id,
+        'user_id' => $user2->id,
+        'grade' => $route1->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    Log::create([
+        'route_id' => $route1->id,
+        'user_id' => $user3->id,
+        'grade' => $route1->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    // 2 users climb route 2 (200 points each)
+    Log::create([
+        'route_id' => $route2->id,
+        'user_id' => $user1->id,
+        'grade' => $route2->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    Log::create([
+        'route_id' => $route2->id,
+        'user_id' => $user2->id,
+        'grade' => $route2->grade,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'created_at' => now(),
+    ]);
+
+    $teamPoints = $team->getTotalPoints();
+    // In 'all' mode: (3 × 100) + (2 × 200) = 300 + 400 = 700
+    expect($teamPoints)->toBe(700.0);
 });
 
 test('category ranking filters users correctly', function () {

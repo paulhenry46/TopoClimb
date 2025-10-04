@@ -37,11 +37,19 @@ class Team extends Model
 
         $logs = $logs->get();
 
-        // Get unique routes climbed by any team member
-        $uniqueRoutes = $logs->pluck('route_id')->unique();
-        
-        return $uniqueRoutes->sum(function ($routeId) use ($contest) {
-            return $contest->getRoutePoints($routeId);
-        });
+        // Check team points mode
+        if ($contest->team_points_mode === 'all') {
+            // Sum all climbs (including duplicates)
+            return $logs->sum(function ($log) use ($contest) {
+                return $contest->getRoutePoints($log->route_id);
+            });
+        } else {
+            // Default: unique routes only
+            $uniqueRoutes = $logs->pluck('route_id')->unique();
+            
+            return $uniqueRoutes->sum(function ($routeId) use ($contest) {
+                return $contest->getRoutePoints($routeId);
+            });
+        }
     }
 }

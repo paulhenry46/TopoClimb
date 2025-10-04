@@ -35,6 +35,7 @@ new class extends Component {
 
     public $use_dynamic_points = false;
     public $team_mode = false;
+    public $team_points_mode = 'unique';
 
     public $id_editing = 0;
 
@@ -52,6 +53,7 @@ new class extends Component {
                 'mode' => $this->mode,
                 'use_dynamic_points' => $this->use_dynamic_points,
                 'team_mode' => $this->team_mode,
+                'team_points_mode' => $this->team_points_mode,
             ]);
             $this->dispatch('action_ok', title: 'Contest updated', message: 'The contest has been updated successfully!');
         } else {
@@ -63,13 +65,14 @@ new class extends Component {
                 'mode' => $this->mode,
                 'use_dynamic_points' => $this->use_dynamic_points,
                 'team_mode' => $this->team_mode,
+                'team_points_mode' => $this->team_points_mode,
                 'site_id' => $this->site->id,
             ]);
             $this->dispatch('action_ok', title: 'Contest created', message: 'The contest has been created successfully!');
         }
 
         $this->modal_open = false;
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'team_points_mode', 'id_editing']);
     }
 
     public function edit($id)
@@ -84,6 +87,7 @@ new class extends Component {
         $this->mode = $contest->mode;
         $this->use_dynamic_points = $contest->use_dynamic_points;
         $this->team_mode = $contest->team_mode;
+        $this->team_points_mode = $contest->team_points_mode ?? 'unique';
         
         $this->modal_title = __('Edit contest');
         $this->modal_subtitle = __('Update the contest information below.');
@@ -109,7 +113,7 @@ new class extends Component {
 
     public function open_modal()
     {
-        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'id_editing']);
+        $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'team_points_mode', 'id_editing']);
         $this->modal_subtitle = __('Get started by filling in the information below to create a new contest.');
         $this->modal_title = __('New contest');
         $this->modal_submit_message = __('Create');
@@ -333,6 +337,38 @@ new class extends Component {
                 </div>
             </div>
             <x-input-error for="team_mode" class="mt-2" />
+        </div>
+
+        <div class="mt-4" x-data="{ teamMode: $wire.entangle('team_mode') }" x-show="teamMode">
+            <x-label for="team_points_mode" value="{{ __('Team Points Calculation') }}" />
+            <fieldset>
+                <legend class="sr-only">{{__('Team Points Mode')}}</legend>
+                <div class="-space-y-px bg-white">
+                    <label :class="$wire.team_points_mode == 'unique' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="rounded-t-md relative flex cursor-pointer border p-4 focus:outline-none">
+                        <input wire:model="team_points_mode" type="radio" name="team-points-mode" value="unique"
+                            class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0 active:ring-gray-600"
+                            aria-labelledby="team-points-mode-unique-label" aria-describedby="team-points-mode-unique-description"/>
+                        <span class="ml-3 flex flex-col">
+                            <span :class="$wire.team_points_mode == 'unique' ? 'text-gray-900' : 'text-gray-900'" id="team-points-mode-unique-label" class="block text-sm font-medium">{{__('Unique Routes Only')}}</span>
+                            <span :class="$wire.team_points_mode == 'unique' ? 'text-gray-700' : 'text-gray-500'" id="team-points-mode-unique-description" class="block text-sm">
+                                {{__('Each route counts once, even if multiple team members climb it.')}}
+                            </span>
+                        </span>
+                    </label>
+                    <label :class="$wire.team_points_mode == 'all' ? 'z-10 border-gray-200 bg-gray-50' : 'border-gray-200'" class="rounded-b-md relative flex cursor-pointer border p-4 focus:outline-none">
+                        <input wire:model="team_points_mode" type="radio" name="team-points-mode" value="all"
+                            class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer text-gray-600 border-gray-300 focus:ring-0 focus:ring-offset-0 active:ring-0 active:ring-gray-600"
+                            aria-labelledby="team-points-mode-all-label" aria-describedby="team-points-mode-all-description"/>
+                        <span class="ml-3 flex flex-col">
+                            <span :class="$wire.team_points_mode == 'all' ? 'text-gray-900' : 'text-gray-900'" id="team-points-mode-all-label" class="block text-sm font-medium">{{__('All Climbs')}}</span>
+                            <span :class="$wire.team_points_mode == 'all' ? 'text-gray-700' : 'text-gray-500'" id="team-points-mode-all-description" class="block text-sm">
+                                {{__('Count all climbs by team members (route climbed by 3 members = 3x points).')}}
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </fieldset>
+            <x-input-error for="team_points_mode" class="mt-2" />
         </div>
 
     </div>

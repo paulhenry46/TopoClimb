@@ -15,7 +15,9 @@ The contest system has been enhanced with the following features:
 - Enable team mode for any contest
 - Create and manage multiple teams per contest
 - Users can join/leave teams
-- Team rankings calculated based on unique routes climbed by any team member
+- Two team scoring modes:
+  - **Unique Routes**: Each route counts once, even if multiple team members climb it
+  - **All Climbs**: Count all climbs by team members (route climbed by 3 members = 3x points)
 - Users can only be in one team per contest
 
 ### Admin Usage
@@ -24,7 +26,13 @@ The contest system has been enhanced with the following features:
    - When creating or editing a contest, check "Enable Team Mode"
    - This activates team features for the contest
 
-2. **Manage Teams**
+2. **Choose Team Points Calculation**
+   - When team mode is enabled, select the scoring mode:
+     - **Unique Routes Only**: Each route counts once for the team (default)
+     - **All Climbs**: Each team member's climb counts separately
+   - Example with "All Climbs": Route 1 climbed by 3 members = 3× points, Route 2 climbed by 2 members = 2× points
+
+3. **Manage Teams**
    - Navigate to Admin > Site > Contests
    - Click the team icon (👥) for a contest with team mode enabled
    - Create teams by clicking "Create Team"
@@ -42,8 +50,11 @@ The contest system has been enhanced with the following features:
 
 2. **Viewing Team Rankings**
    - Team rankings show all teams sorted by total points
-   - Points are calculated from unique routes climbed by any team member
-   - If two team members climb the same route, points are only counted once
+   - Points calculation depends on the contest's team points mode:
+     - **Unique mode**: Points from unique routes climbed by any team member
+     - **All mode**: Sum of points from all climbs by all team members
+   - In unique mode, if two team members climb the same route, points are only counted once
+   - In all mode, each member's climb contributes to the team total
 
 ### Database Schema
 
@@ -57,6 +68,10 @@ The contest system has been enhanced with the following features:
 - `team_id` - Foreign key to teams
 - `user_id` - Foreign key to users
 - Unique constraint on (team_id, user_id)
+
+**contests table (team-related fields):**
+- `team_mode` - Boolean, enables team features
+- `team_points_mode` - String ('unique' or 'all'), determines scoring method
 
 ## 2. Categories
 
@@ -205,14 +220,18 @@ The contest system has been enhanced with the following features:
 - Sorted by total points descending
 
 **Team Rankings:**
-- Sum of points from unique routes climbed by any team member
-- If multiple team members climb the same route, points counted once
+- **Unique mode (default)**: Sum of points from unique routes climbed by any team member
+  - If multiple team members climb the same route, points counted once
+- **All mode**: Sum of points from all routes climbed by all team members
+  - Each team member's climb counted separately
+  - Route climbed by N members = N × route points
 - Filtered by contest time period and mode
 - Sorted by total points descending
 
 **Category Rankings:**
 - Individual rankings filtered to only include category members
 - Re-ranked within the category
+- Same point calculation as individual rankings
 - Same point calculation as individual rankings
 
 ### Step-Specific Routes
@@ -231,7 +250,8 @@ $routeIds = $step->routes->count() > 0
 - `getRankingForStep($stepId = null)` - Enhanced to use step-specific routes
 
 ### Team Model
-- `getTotalPoints()` - Calculate team's total points
+- `getTotalPoints()` - Calculate team's total points based on contest's team_points_mode
+  - Returns sum of unique routes (default) or all climbs (when team_points_mode = 'all')
 
 ### Public View Component
 - `setViewMode($mode)` - Switch between 'individual', 'team', 'category'
@@ -245,6 +265,9 @@ $routeIds = $step->routes->count() > 0
 Comprehensive test suite included in `tests/Feature/ContestEnhancementsTest.php`:
 - Team mode functionality
 - Team creation and user membership
+- Team ranking calculations (unique mode)
+- Team ranking calculations (all mode with duplicates)
+- Category creation and user membership
 - Category creation and user membership
 - Route assignment to steps
 - Team ranking calculations
