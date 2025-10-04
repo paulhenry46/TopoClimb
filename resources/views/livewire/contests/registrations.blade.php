@@ -27,6 +27,8 @@ new class extends Component {
     public $comment = '';
 
     public $search_user = '';
+    
+    public $keep_route = false;
 
     public function registerClimb()
     {
@@ -47,7 +49,14 @@ new class extends Component {
         ]);
 
         $this->dispatch('action_ok', title: 'Climb registered', message: 'The climb has been registered successfully!');
-        $this->reset(['user_id', 'route_id', 'search_user', 'comment', 'type', 'way']);
+        
+        // Keep route if checkbox is checked, otherwise reset it
+        if ($this->keep_route) {
+            $this->reset(['user_id', 'search_user', 'comment', 'type', 'way']);
+        } else {
+            $this->reset(['user_id', 'route_id', 'search_user', 'comment', 'type', 'way']);
+        }
+        
         $this->type = 'flash';
         $this->way = 'bouldering';
     }
@@ -126,7 +135,23 @@ new class extends Component {
                 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <label for="search_user" class="block text-sm font-medium leading-6 text-gray-900">{{__('Climber')}}</label>
+                        <div class="flex items-center justify-between mb-2">
+                            <label for="search_user" class="block text-sm font-medium leading-6 text-gray-900">{{__('Climber')}}</label>
+                            
+                            <!-- QR Scanner Button - Only visible on mobile -->
+                            <button 
+                                type="button"
+                                @click="$dispatch('open-qr-scanner')"
+                                class="md:hidden inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            >
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
+                                </svg>
+                                {{__('Scan QR')}}
+                            </button>
+                        </div>
+                        
                         <input 
                             type="text" 
                             id="search_user"
@@ -209,6 +234,21 @@ new class extends Component {
                             class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         ></textarea>
                     </div>
+                    
+                    <div class="sm:col-span-2">
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="keep_route"
+                                wire:model="keep_route"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                            />
+                            <label for="keep_route" class="ml-2 block text-sm text-gray-900">
+                                {{__('Keep the selected route for next registration')}}
+                            </label>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">{{__('Useful when validating climbs for a specific route repeatedly')}}</p>
+                    </div>
                 </div>
 
                 <div class="mt-4">
@@ -277,4 +317,163 @@ new class extends Component {
             </div>
         </div>
     @endif
+    
+    <!-- QR Scanner Modal -->
+    <div 
+        x-data="{
+            open: false,
+            scanning: false,
+            html5QrCode: null,
+            error: '',
+            Html5Qrcode: null,
+            init() {
+                this.$watch('open', value => {
+                    if (value) {
+                        this.startScanner();
+                    } else {
+                        this.stopScanner();
+                    }
+                });
+            },
+            async startScanner() {
+                this.error = '';
+                this.scanning = true;
+                
+                try {
+                    // Lazy load the html5-qrcode library
+                    if (!this.Html5Qrcode) {
+                        const module = await import('html5-qrcode');
+                        this.Html5Qrcode = module.Html5Qrcode;
+                    }
+                    
+                    const qrCodeRegionId = 'qr-reader';
+                    this.html5QrCode = new this.Html5Qrcode(qrCodeRegionId);
+                    
+                    await this.html5QrCode.start(
+                        { facingMode: 'environment' },
+                        {
+                            fps: 10,
+                            qrbox: { width: 250, height: 250 }
+                        },
+                        async (decodedText, decodedResult) => {
+                            try {
+                                // Fetch user data from the scanned URL
+                                const response = await fetch(decodedText);
+                                if (response.ok) {
+                                    const userData = await response.json();
+                                    // Call Livewire method to select user
+                                    @this.selectUser(userData.id);
+                                    this.stopScanner();
+                                    this.open = false;
+                                } else {
+                                    this.error = '{{ __('Invalid QR code. Please scan a valid user QR code.') }}';
+                                }
+                            } catch (error) {
+                                this.error = '{{ __('Error reading QR code. Please try again.') }}';
+                            }
+                        },
+                        (errorMessage) => {
+                            // Scanner is working but no QR code detected yet
+                        }
+                    );
+                } catch (err) {
+                    this.error = '{{ __('Unable to access camera. Please allow camera access.') }}';
+                    this.scanning = false;
+                }
+            },
+            async stopScanner() {
+                if (this.html5QrCode && this.scanning) {
+                    try {
+                        await this.html5QrCode.stop();
+                        this.html5QrCode = null;
+                        this.scanning = false;
+                    } catch (err) {
+                        console.error('Error stopping scanner:', err);
+                    }
+                }
+            }
+        }"
+        @open-qr-scanner.window="open = true"
+        x-show="open"
+        x-cloak
+        class="relative z-50"
+        style="display: none;"
+    >
+        <!-- Backdrop -->
+        <div 
+            x-show="open"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        ></div>
+
+        <!-- Modal -->
+        <div class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div 
+                    x-show="open"
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                >
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900">{{__('Scan User QR Code')}}</h3>
+                            <button 
+                                @click="open = false"
+                                type="button"
+                                class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-hidden"
+                            >
+                                <span class="sr-only">{{__('Close')}}</span>
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500 mb-4">
+                                {{__('Point your camera at the user\'s QR code to automatically select them.')}}
+                            </p>
+                            
+                            <!-- QR Reader Container -->
+                            <div id="qr-reader" class="w-full"></div>
+                            
+                            <!-- Error Message -->
+                            <div x-show="error" class="mt-4 rounded-md bg-red-50 p-4">
+                                <div class="flex">
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-red-800" x-text="error"></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Loading State -->
+                            <div x-show="!scanning && !error" class="mt-4 text-center text-sm text-gray-500">
+                                {{__('Initializing camera...')}}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5 sm:mt-6">
+                        <button
+                            @click="open = false"
+                            type="button"
+                            class="inline-flex w-full justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+                        >
+                            {{__('Cancel')}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

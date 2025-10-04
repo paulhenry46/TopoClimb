@@ -200,6 +200,23 @@ Route::prefix('/sites/{site:slug}')->group(function () {
     });
 });
 
+// User QR code route for identification (staff only)
+Route::middleware(['auth:web'])->get('/user/qr/{user}', function (App\Models\User $user) {
+    // Verify the authenticated user is a staff member in at least one contest
+    $isStaff = \App\Models\Contest::whereHas('staffMembers', function ($query) {
+        $query->where('user_id', auth()->id());
+    })->exists();
+    
+    if (!$isStaff) {
+        abort(403, 'Unauthorized. Only contest staff members can scan QR codes.');
+    }
+    
+    return response()->json([
+        'id' => $user->id,
+        'name' => $user->name,
+    ]);
+})->name('user.qr');
+
 Route::get('/empty/photo/{color}.svg', function (string $color) {
     $colors = config('climb.colors');
 
