@@ -20,20 +20,58 @@ test('user can generate qr code', function () {
     expect(Storage::exists($qrPath))->toBeTrue();
 });
 
-test('user qr code route returns correct data', function () {
+test('user qr code route returns correct data for staff members', function () {
     $user = User::factory()->create([
         'name' => 'Test User',
         'email' => 'test@example.com',
     ]);
     
-    $response = $this->get(route('user.qr', ['user' => $user->id]));
+    $staff = User::factory()->create();
+    
+    // Create a contest and add staff member
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+    
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test',
+        'start_date' => now(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'official',
+        'site_id' => $site->id,
+    ]);
+    
+    $contest->staffMembers()->attach($staff->id);
+    
+    // Test as staff member
+    $response = $this->actingAs($staff)->get(route('user.qr', ['user' => $user->id]));
     
     $response->assertOk();
     $response->assertJson([
         'id' => $user->id,
         'name' => 'Test User',
-        'email' => 'test@example.com',
     ]);
+    $response->assertJsonMissing(['email' => 'test@example.com']);
+});
+
+test('user qr code route denies access to non-staff members', function () {
+    $user = User::factory()->create();
+    $nonStaff = User::factory()->create();
+    
+    $response = $this->actingAs($nonStaff)->get(route('user.qr', ['user' => $user->id]));
+    
+    $response->assertForbidden();
+});
+
+test('user qr code route requires authentication', function () {
+    $user = User::factory()->create();
+    
+    $response = $this->get(route('user.qr', ['user' => $user->id]));
+    
+    $response->assertRedirect(route('login'));
 });
 
 test('contest registration can keep route when checkbox is checked', function () {
