@@ -77,7 +77,7 @@ new class extends Component {
                         <button 
                             wire:click="selectContest"
                             class="px-4 py-2 rounded-md text-sm font-medium transition-colors
-                                @if($selectedStepId === null) bg-gray-600 text-white
+                                @if($selectedStepId === null) bg-gray-800 text-white
                                 @else bg-white text-gray-700 border border-gray-300 hover:bg-gray-50
                                 @endif">
                             {{ __('Overall') }}
@@ -86,7 +86,7 @@ new class extends Component {
                             <button 
                                 wire:click="selectStep({{ $step->id }})"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors
-                                    @if($selectedStepId === $step->id) bg-gray-600 text-white
+                                    @if($selectedStepId === $step->id) bg-gray-800 text-white
                                     @else bg-white text-gray-700 border border-gray-300 hover:bg-gray-50
                                     @endif">
                                 {{ $step->name }}
@@ -163,11 +163,11 @@ new class extends Component {
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 @if($ranking['rank'] === 1)
-                                                    <span class="text-2xl">🥇</span>
+                                                    <span class="-mx-3 inline-flex items-center justify-center h-8 w-8 rounded-full bg-amber-400 text-white font-bold text-lg">1</span>
                                                 @elseif($ranking['rank'] === 2)
-                                                    <span class="text-2xl">🥈</span>
+                                                    <span class="-mx-3 inline-flex items-center justify-center h-8 w-8 rounded-full bg-gray-400 text-white font-bold text-lg">2</span>
                                                 @elseif($ranking['rank'] === 3)
-                                                    <span class="text-2xl">🥉</span>
+                                                    <span class="-mx-3 inline-flex items-center justify-center h-8 w-8 rounded-full bg-orange-500 text-white font-bold text-lg">3</span>
                                                 @else
                                                     <span class="text-sm font-medium text-gray-900">{{ $ranking['rank'] }}</span>
                                                 @endif
