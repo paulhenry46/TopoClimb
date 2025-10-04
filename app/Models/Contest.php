@@ -239,4 +239,16 @@ class Contest extends Model
 
         return $categoryRankings;
     }
+
+    public function autoAssignUserToCategories(User $user)
+    {
+        $autoAssignCategories = $this->categories()->where('auto_assign', true)->get();
+        
+        foreach ($autoAssignCategories as $category) {
+            if ($category->userMatches($user)) {
+                // Sync without detaching to avoid removing existing category memberships
+                $category->users()->syncWithoutDetaching([$user->id]);
+            }
+        }
+    }
 }

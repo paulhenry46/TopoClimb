@@ -31,7 +31,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'google_id'
+        'google_id',
+        'birth_date',
+        'gender',
     ];
 
     /**
@@ -65,6 +67,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birth_date' => 'date',
         ];
     }
 
@@ -116,6 +119,14 @@ class User extends Authenticatable
     public function contestCategories()
     {
         return $this->belongsToMany(ContestCategory::class, 'contest_category_user')->withTimestamps();
+    }
+
+    public function getAge()
+    {
+        if (!$this->birth_date) {
+            return null;
+        }
+        return $this->birth_date->age;
     }
 
 }

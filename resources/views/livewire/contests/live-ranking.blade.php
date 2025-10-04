@@ -29,6 +29,9 @@ new class extends Component {
     #[Computed]
     public function rankings()
     {
+        if ($this->contest->team_mode) {
+            return $this->contest->getTeamRankingForStep($this->selectedStepId);
+        }
         return $this->contest->getRankingForStep($this->selectedStepId);
     }
 
@@ -104,7 +107,13 @@ new class extends Component {
                     <div class="flex flex-col items-center justify-end">
                         <div class="bg-gray-700/50 backdrop-blur-sm rounded-lg p-6 w-full border-2 border-gray-500 text-center">
                             <div class="text-3xl font-bold text-gray-300 mb-1">2nd</div>
-                            <div class="text-xl font-semibold mb-2">{{ $this->rankings[1]['user']->name }}</div>
+                            <div class="text-xl font-semibold mb-2">
+                                @if($contest->team_mode)
+                                    {{ $this->rankings[1]['team']->name }}
+                                @else
+                                    {{ $this->rankings[1]['user']->name }}
+                                @endif
+                            </div>
                             <div class="text-2xl font-bold text-purple-400">{{ number_format($this->rankings[1]['total_points'], 0) }}</div>
                             <div class="text-sm text-gray-400">{{ $this->rankings[1]['routes_count'] }} routes</div>
                         </div>
@@ -114,7 +123,13 @@ new class extends Component {
                     <div class="flex flex-col items-center justify-end -mt-8">
                         <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-sm rounded-lg p-8 w-full border-2 border-yellow-500 shadow-2xl text-center">
                             <div class="text-4xl font-bold text-yellow-400 mb-1">1st</div>
-                            <div class="text-2xl font-bold mb-3">{{ $this->rankings[0]['user']->name }}</div>
+                            <div class="text-2xl font-bold mb-3">
+                                @if($contest->team_mode)
+                                    {{ $this->rankings[0]['team']->name }}
+                                @else
+                                    {{ $this->rankings[0]['user']->name }}
+                                @endif
+                            </div>
                             <div class="text-4xl font-bold text-yellow-400">{{ number_format($this->rankings[0]['total_points'], 0) }}</div>
                             <div class="text-sm text-gray-300">{{ $this->rankings[0]['routes_count'] }} routes</div>
                         </div>
@@ -124,7 +139,13 @@ new class extends Component {
                     <div class="flex flex-col items-center justify-end">
                         <div class="bg-gray-700/50 backdrop-blur-sm rounded-lg p-6 w-full border-2 border-orange-700 text-center">
                             <div class="text-3xl font-bold text-gray-300 mb-1">3rd</div>
-                            <div class="text-xl font-semibold mb-2">{{ $this->rankings[2]['user']->name }}</div>
+                            <div class="text-xl font-semibold mb-2">
+                                @if($contest->team_mode)
+                                    {{ $this->rankings[2]['team']->name }}
+                                @else
+                                    {{ $this->rankings[2]['user']->name }}
+                                @endif
+                            </div>
                             <div class="text-2xl font-bold text-orange-400">{{ number_format($this->rankings[2]['total_points'], 0) }}</div>
                             <div class="text-sm text-gray-400">{{ $this->rankings[2]['routes_count'] }} routes</div>
                         </div>
@@ -144,7 +165,13 @@ new class extends Component {
                                 <div class="flex items-center gap-6 flex-1">
                                     <div class="text-2xl font-bold text-gray-400 w-12">{{ $ranking['rank'] }}</div>
                                     <div class="flex-1">
-                                        <div class="text-xl font-semibold">{{ $ranking['user']->name }}</div>
+                                        <div class="text-xl font-semibold">
+                                            @if($contest->team_mode)
+                                                {{ $ranking['team']->name }}
+                                            @else
+                                                {{ $ranking['user']->name }}
+                                            @endif
+                                        </div>
                                         <div class="text-sm text-gray-400">{{ $ranking['routes_count'] }} / {{ $this->totalRoutes }} routes</div>
                                     </div>
                                 </div>

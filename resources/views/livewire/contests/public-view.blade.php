@@ -333,24 +333,49 @@ new class extends Component {
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h3 class="font-semibold text-gray-900">{{ $category->name }}</h3>
-                                    @if($category->type)
-                                        <span class="inline-block mt-1 px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded">{{ ucfirst($category->type) }}</span>
-                                    @endif
+                                    <div class="mt-1 flex flex-wrap gap-1">
+                                        @if($category->type)
+                                            <span class="inline-block px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded">{{ ucfirst($category->type) }}</span>
+                                        @endif
+                                        @if($category->auto_assign)
+                                            <span class="inline-block px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">{{ __('Auto-assign') }}</span>
+                                        @endif
+                                    </div>
                                     @if($category->criteria)
                                         <p class="text-sm text-gray-600 mt-1">{{ $category->criteria }}</p>
                                     @endif
+                                    @if($category->min_age || $category->max_age)
+                                        <p class="text-sm text-gray-600 mt-1">
+                                            {{ __('Age') }}: 
+                                            @if($category->min_age && $category->max_age)
+                                                {{ $category->min_age }}-{{ $category->max_age }}
+                                            @elseif($category->min_age)
+                                                {{ $category->min_age }}+
+                                            @else
+                                                &lt; {{ $category->max_age }}
+                                            @endif
+                                        </p>
+                                    @endif
                                 </div>
                                 @auth
-                                    @if($category->users->contains(auth()->user()))
-                                        <button wire:click="leaveCategory({{ $category->id }})" 
-                                            class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">
-                                            {{ __('Leave') }}
-                                        </button>
-                                    @else
-                                        <button wire:click="joinCategory({{ $category->id }})" 
+                                    @if(!$category->auto_assign)
+                                        @if($category->users->contains(auth()->user()))
+                                            <button wire:click="leaveCategory({{ $category->id }})" 
+                                                class="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">
+                                                {{ __('Leave') }}
+                                            </button>
+                                        @else
+                                            <button wire:click="joinCategory({{ $category->id }})" 
                                             class="px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700">
                                             {{ __('Join') }}
                                         </button>
+                                        @endif
+                                    @else
+                                        @if($category->users->contains(auth()->user()))
+                                            <span class="px-2 py-1 text-xs bg-green-600 text-white rounded">
+                                                {{ __('Enrolled') }}
+                                            </span>
+                                        @endif
                                     @endif
                                 @endauth
                             </div>
