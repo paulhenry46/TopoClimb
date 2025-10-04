@@ -81,6 +81,25 @@
                 @endif
             @endif
         </div>
+
+        <!-- Birth Date -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="birth_date" value="{{ __('Birth Date') }}" />
+            <x-input id="birth_date" type="date" class="mt-1 block w-full" wire:model="state.birth_date" />
+            <x-input-error for="birth_date" class="mt-2" />
+        </div>
+
+        <!-- Gender -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="gender" value="{{ __('Gender') }}" />
+            <select id="gender" wire:model="state.gender" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full">
+                <option value="">{{ __('Select gender (optional)') }}</option>
+                <option value="male">{{ __('Male') }}</option>
+                <option value="female">{{ __('Female') }}</option>
+                <option value="other">{{ __('Other') }}</option>
+            </select>
+            <x-input-error for="gender" class="mt-2" />
+        </div>
     </x-slot>
 
     <x-slot name="actions">
