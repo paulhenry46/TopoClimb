@@ -114,17 +114,22 @@ class Contest extends Model
 
     public function getRankingForStep($stepId = null)
     {
-        $routeIds = $this->routes->pluck('id');
-        
-        // Get the query based on step or contest dates
+        // Get routes - either from step or from contest
         if ($stepId) {
             $step = $this->steps()->find($stepId);
             if (!$step) {
                 return collect();
             }
+            
+            // If step has specific routes assigned, use those. Otherwise use all contest routes
+            $routeIds = $step->routes->count() > 0 
+                ? $step->routes->pluck('id') 
+                : $this->routes->pluck('id');
+            
             $startDate = $step->start_time;
             $endDate = $step->end_time;
         } else {
+            $routeIds = $this->routes->pluck('id');
             $startDate = $this->start_date;
             $endDate = $this->end_date;
         }
