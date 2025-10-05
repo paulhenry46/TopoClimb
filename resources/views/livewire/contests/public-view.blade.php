@@ -188,7 +188,7 @@ new class extends Component {
                         <button 
                             wire:click="setViewMode('individual')"
                             class="px-4 py-2 rounded-md text-sm font-medium transition-colors
-                                @if($viewMode === 'individual') bg-indigo-600 text-white
+                                @if($viewMode === 'individual') bg-gray-800 text-white
                                 @else bg-white text-gray-700 border border-gray-300 hover:bg-gray-50
                                 @endif">
                             {{ __('Individual') }}
@@ -197,7 +197,7 @@ new class extends Component {
                             <button 
                                 wire:click="setViewMode('team')"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors
-                                    @if($viewMode === 'team') bg-indigo-600 text-white
+                                    @if($viewMode === 'team') bg-gray-800 text-white
                                     @else bg-white text-gray-700 border border-gray-300 hover:bg-gray-50
                                     @endif">
                                 {{ __('Team') }}
@@ -207,7 +207,7 @@ new class extends Component {
                             <button 
                                 wire:click="setViewMode('category')"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors
-                                    @if($viewMode === 'category') bg-indigo-600 text-white
+                                    @if($viewMode === 'category') bg-gray-800 text-white
                                     @else bg-white text-gray-700 border border-gray-300 hover:bg-gray-50
                                     @endif">
                                 {{ __('Categories') }}
@@ -307,7 +307,7 @@ new class extends Component {
                             @auth
                                 @if(!$this->userTeam)
                                     <button wire:click="joinTeam({{ $team->id }})" 
-                                        class="mt-2 w-full px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                                        class="mt-2 w-full px-3 py-1.5 text-sm bg-gray-600 text-white rounded hover:bg-gray-700">
                                         {{ __('Join Team') }}
                                     </button>
                                 @endif
@@ -366,7 +366,7 @@ new class extends Component {
                                             </button>
                                         @else
                                             <button wire:click="joinCategory({{ $category->id }})" 
-                                            class="px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                                            class="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700">
                                             {{ __('Join') }}
                                         </button>
                                         @endif
