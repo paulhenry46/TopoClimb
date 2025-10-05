@@ -19,12 +19,13 @@ new class extends Component {
         $this->validate();
 
         // Check if already a staff member
-        if ($this->contest->staffMembers()->where('user_id', $this->user_id)->exists()) {
+        if ($this->contest->isStaffMember(User::find($this->user_id))) {
             $this->dispatch('action_error', title: 'Already staff', message: 'This user is already a staff member!');
             return;
         }
 
-        $this->contest->staffMembers()->attach($this->user_id);
+        $user = User::find($this->user_id);
+        $this->contest->addStaffMember($user);
 
         $this->dispatch('action_ok', title: 'Staff added', message: 'Staff member has been added successfully!');
         $this->reset(['user_id', 'search_user']);
@@ -32,7 +33,8 @@ new class extends Component {
 
     public function removeStaff($userId)
     {
-        $this->contest->staffMembers()->detach($userId);
+        $user = User::find($userId);
+        $this->contest->removeStaffMember($user);
         
         $this->dispatch('action_ok', title: 'Staff removed', message: 'Staff member has been removed successfully!');
     }
@@ -40,7 +42,7 @@ new class extends Component {
     #[Computed]
     public function staffMembers()
     {
-        return $this->contest->staffMembers;
+        return $this->contest->staffMembers()->get();
     }
 
     #[Computed]

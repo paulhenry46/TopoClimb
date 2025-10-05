@@ -57,7 +57,7 @@ Route::middleware([
 
             Route::get('/contests/{contest}/registrations', function (Site $site, Contest $contest) {
                 return view('contests.registrations', compact('site', 'contest'));
-            })->middleware('can:edit_areas,site')->name('contests.registrations');
+            })->middleware('can:access_registrations,contest')->name('contests.registrations');
 
             Route::get('/contests/{contest}/staff', function (Site $site, Contest $contest) {
                 return view('contests.staff', compact('site', 'contest'));
@@ -211,9 +211,10 @@ Route::prefix('/sites/{site:slug}')->group(function () {
 // User QR code route for identification (staff only)
 Route::middleware(['auth:web'])->get('/user/qr/{user}', function (App\Models\User $user) {
     // Verify the authenticated user is a staff member in at least one contest
-    $isStaff = \App\Models\Contest::whereHas('staffMembers', function ($query) {
-        $query->where('user_id', auth()->id());
-    })->exists();
+    $permissionName = 'contest.';
+    $isStaff = auth()->user()->permissions()
+        ->where('name', 'like', $permissionName . '%')
+        ->exists();
     
     if (!$isStaff) {
         abort(403, 'Unauthorized. Only contest staff members can scan QR codes.');
