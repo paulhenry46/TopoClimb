@@ -31,6 +31,14 @@ new class extends Component {
     
     public $id_editing = 0;
 
+    public function updated($property)
+    {
+        // Reset form when modal is closed
+        if ($property === 'modal_open' && $this->modal_open === false && $this->id_editing > 0) {
+            $this->reset(['name', 'type', 'criteria', 'auto_assign', 'min_age', 'max_age', 'gender', 'id_editing']);
+        }
+    }
+
     public function save()
     {
         $this->validate();
@@ -79,6 +87,18 @@ new class extends Component {
         $category->delete();
         $this->dispatch('action_ok', title: 'Category deleted', message: 'Category has been deleted successfully!');
     }
+
+    public function cancel()
+    {
+        $this->modal_open = false;
+        $this->reset(['name', 'type', 'criteria', 'auto_assign', 'min_age', 'max_age', 'gender', 'id_editing']);
+    }
+
+    public function open_modal()
+    {
+        $this->reset(['name', 'type', 'criteria', 'auto_assign', 'min_age', 'max_age', 'gender', 'id_editing']);
+        $this->modal_open = true;
+    }
 }; ?>
 
 <div class="px-4 sm:px-6 lg:px-8 py-8">
@@ -88,7 +108,7 @@ new class extends Component {
             <p class="mt-2 text-sm text-gray-700">{{__('Create categories to organize contest rankings by age, gender, or custom criteria')}}</p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button wire:click="$set('modal_open', true)" type="button"
+            <button wire:click="open_modal" type="button"
                 class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 {{__('Create Category')}}
             </button>
@@ -169,7 +189,7 @@ new class extends Component {
         :title="$id_editing > 0 ? __('Edit Category') : __('Create Category')" 
         :subtitle="$id_editing > 0 ? __('Update category information') : __('Create a new category for this contest')"
         save_method_name="save">
-        <div>
+        <div x-data="{ autoAssign: $wire.entangle('auto_assign') }">
             <div class="mt-4">
                 <x-label for="name" value="{{ __('Category Name') }}" />
                 <x-input id="name" type="text" class="mt-1 block w-full" wire:model="name" 
@@ -178,34 +198,21 @@ new class extends Component {
             </div>
 
             <div class="mt-4">
-                <x-label for="type" value="{{ __('Type') }}" />
-                <select id="type" wire:model="type" 
-                    class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 block w-full">
-                    <option value="">{{ __('Select type (optional)') }}</option>
-                    <option value="age">{{ __('Age') }}</option>
-                    <option value="gender">{{ __('Gender') }}</option>
-                    <option value="custom">{{ __('Custom') }}</option>
-                </select>
-                <x-input-error for="type" class="mt-2" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="criteria" value="{{ __('Criteria (optional)') }}" />
-                <x-input id="criteria" type="text" class="mt-1 block w-full" wire:model="criteria" 
-                    placeholder="{{ __('e.g., male, female') }}" />
-                <x-input-error for="criteria" class="mt-2" />
-                <p class="mt-1 text-xs text-gray-500">{{ __('For gender type, use: male, female, or other') }}</p>
-            </div>
-
-            <div class="mt-4">
                 <label class="flex items-center">
-                    <input type="checkbox" wire:model="auto_assign" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <input type="checkbox" wire:model.live="auto_assign" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <span class="ml-2 text-sm text-gray-600">{{ __('Automatically assign users to this category') }}</span>
                 </label>
                 <p class="mt-1 text-xs text-gray-500">{{ __('Users will be automatically added to this category when they participate in the contest if they match the criteria') }}</p>
             </div>
 
-            <div class="mt-4">
+            <div class="mt-4" x-show="!autoAssign">
+                <x-label for="criteria" value="{{ __('Criteria (optional)') }}" />
+                <x-input id="criteria" type="text" class="mt-1 block w-full" wire:model="criteria" 
+                    placeholder="{{ __('e.g., Elite climbers, Beginners') }}" />
+                <x-input-error for="criteria" class="mt-2" />
+            </div>
+
+            <div class="mt-4" x-show="autoAssign">
                 <x-label for="gender" value="{{ __('Gender Filter') }}" />
                 <select id="gender" wire:model="gender" 
                     class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 block w-full">
@@ -218,7 +225,7 @@ new class extends Component {
                 <p class="mt-1 text-xs text-gray-500">{{ __('Select a specific gender or leave as "All genders" to not filter by gender') }}</p>
             </div>
 
-            <div class="mt-4 grid grid-cols-2 gap-4">
+            <div class="mt-4 grid grid-cols-2 gap-4" x-show="autoAssign">
                 <div>
                     <x-label for="min_age" value="{{ __('Minimum Age') }}" />
                     <x-input id="min_age" type="number" min="0" class="mt-1 block w-full" wire:model="min_age" 
@@ -234,7 +241,7 @@ new class extends Component {
             </div>
         </div>
         <x-slot name="footer">
-            <x-secondary-button wire:click="$set('modal_open', false)">
+            <x-secondary-button wire:click="cancel">
                 {{ __('Cancel') }}
             </x-secondary-button>
             <x-button class="ml-2">

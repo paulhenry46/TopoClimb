@@ -322,7 +322,7 @@ new class extends Component {
     @endif
 
     <!-- Category Management Section (only in category mode) -->
-    @if($viewMode === 'category' && $contest->categories->count() > 0)
+    @if($viewMode === 'category' && $contest->categories->where('auto_assign', false)->count() > 0)
         <section class="bg-white shadow sm:rounded-lg border border-gray-200">
             <div class="px-6 py-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Join Categories') }}</h2>
