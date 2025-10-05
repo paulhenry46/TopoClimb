@@ -176,4 +176,290 @@ class AutoAssignCategoryTest extends TestCase
         // User should not be in the category
         $this->assertFalse($category->users->contains($user));
     }
+
+    public function test_user_matches_category_with_gender_field_male()
+    {
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'male',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Men Category',
+            'auto_assign' => true,
+            'gender' => 'male',
+        ]);
+
+        $this->assertTrue($category->userMatches($user));
+    }
+
+    public function test_user_matches_category_with_gender_field_female()
+    {
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(30),
+            'gender' => 'female',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Women Category',
+            'auto_assign' => true,
+            'gender' => 'female',
+        ]);
+
+        $this->assertTrue($category->userMatches($user));
+    }
+
+    public function test_user_does_not_match_category_with_wrong_gender()
+    {
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'male',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Women Category',
+            'auto_assign' => true,
+            'gender' => 'female',
+        ]);
+
+        $this->assertFalse($category->userMatches($user));
+    }
+
+    public function test_user_matches_category_with_all_genders()
+    {
+        $maleUser = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'male',
+        ]);
+
+        $femaleUser = User::factory()->create([
+            'birth_date' => now()->subYears(30),
+            'gender' => 'female',
+        ]);
+
+        $otherUser = User::factory()->create([
+            'birth_date' => now()->subYears(28),
+            'gender' => 'other',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        // Category with no gender filter (empty string means all genders)
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'All Genders Category',
+            'auto_assign' => true,
+            'gender' => '',
+        ]);
+
+        $this->assertTrue($category->userMatches($maleUser));
+        $this->assertTrue($category->userMatches($femaleUser));
+        $this->assertTrue($category->userMatches($otherUser));
+    }
+
+    public function test_user_matches_category_with_gender_and_age_criteria()
+    {
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'male',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        // Category with both gender and age criteria
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Men 18-30',
+            'auto_assign' => true,
+            'gender' => 'male',
+            'min_age' => 18,
+            'max_age' => 30,
+        ]);
+
+        $this->assertTrue($category->userMatches($user));
+    }
+
+    public function test_user_does_not_match_category_with_wrong_age_but_correct_gender()
+    {
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(35), // Too old
+            'gender' => 'male',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        // Category with both gender and age criteria
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Men 18-30',
+            'auto_assign' => true,
+            'gender' => 'male',
+            'min_age' => 18,
+            'max_age' => 30,
+        ]);
+
+        $this->assertFalse($category->userMatches($user));
+    }
+
+    public function test_user_does_not_match_category_with_correct_age_but_wrong_gender()
+    {
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'female',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        // Category with both gender and age criteria
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Men 18-30',
+            'auto_assign' => true,
+            'gender' => 'male',
+            'min_age' => 18,
+            'max_age' => 30,
+        ]);
+
+        $this->assertFalse($category->userMatches($user));
+    }
+
+    public function test_category_with_only_age_criteria_accepts_all_genders()
+    {
+        $maleUser = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'male',
+        ]);
+
+        $femaleUser = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'female',
+        ]);
+
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'free',
+        ]);
+
+        // Category with only age criteria, no gender filter
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Age 18-30',
+            'auto_assign' => true,
+            'min_age' => 18,
+            'max_age' => 30,
+        ]);
+
+        $this->assertTrue($category->userMatches($maleUser));
+        $this->assertTrue($category->userMatches($femaleUser));
+    }
 }
