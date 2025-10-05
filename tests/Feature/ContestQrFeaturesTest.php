@@ -44,7 +44,7 @@ test('user qr code route returns correct data for staff members', function () {
         'site_id' => $site->id,
     ]);
     
-    $contest->staffMembers()->attach($staff->id);
+    $contest->addStaffMember($staff);
     
     // Test as staff member
     $response = $this->actingAs($staff)->get(route('user.qr', ['user' => $user->id]));
@@ -118,7 +118,7 @@ test('contest registration can keep route when checkbox is checked', function ()
     
     $user = User::factory()->create();
     $staff = User::factory()->create();
-    $contest->staffMembers()->attach($staff->id);
+    $contest->addStaffMember($staff);
     
     $this->actingAs($staff);
     

@@ -25,6 +25,32 @@ class Contest extends Model
         'team_mode' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        // When a contest is created in official mode, create the permission
+        static::created(function ($contest) {
+            if ($contest->mode === 'official') {
+                $contest->createStaffPermission();
+            }
+        });
+
+        // When a contest is updated, manage permission based on mode
+        static::updated(function ($contest) {
+            if ($contest->mode === 'official') {
+                // Ensure permission exists
+                $contest->createStaffPermission();
+            } else {
+                // Delete permission if mode changed from official to free
+                $contest->deleteStaffPermission();
+            }
+        });
+
+        // When a contest is deleted, delete the permission
+        static::deleted(function ($contest) {
+            $contest->deleteStaffPermission();
+        });
+    }
+
     public function site()
     {
         return $this->belongsTo(Site::class);
@@ -37,7 +63,75 @@ class Contest extends Model
 
     public function staffMembers()
     {
-        return $this->belongsToMany(User::class, 'contest_user');
+        // Get users with the contest.{id} permission
+        if ($this->mode !== 'official') {
+            return User::whereRaw('1=0'); // Return empty query for non-official contests
+        }
+        
+        $permissionName = 'contest.' . $this->id;
+        return User::permission($permissionName);
+    }
+    
+    public function addStaffMember(User $user)
+    {
+        if ($this->mode !== 'official') {
+            return false; // Only official contests can have staff
+        }
+        
+        $permissionName = 'contest.' . $this->id;
+        
+        // Create permission if it doesn't exist
+        $permission = \Spatie\Permission\Models\Permission::firstOrCreate([
+            'name' => $permissionName,
+            'guard_name' => 'web'
+        ]);
+        
+        // Give permission to user
+        $user->givePermissionTo($permission);
+        
+        return true;
+    }
+    
+    public function removeStaffMember(User $user)
+    {
+        $permissionName = 'contest.' . $this->id;
+        
+        if ($user->hasPermissionTo($permissionName)) {
+            $user->revokePermissionTo($permissionName);
+        }
+        
+        return true;
+    }
+    
+    public function isStaffMember(User $user)
+    {
+        if ($this->mode !== 'official') {
+            return false;
+        }
+        
+        $permissionName = 'contest.' . $this->id;
+        return $user->hasPermissionTo($permissionName);
+    }
+    
+    public function createStaffPermission()
+    {
+        if ($this->mode === 'official') {
+            $permissionName = 'contest.' . $this->id;
+            \Spatie\Permission\Models\Permission::firstOrCreate([
+                'name' => $permissionName,
+                'guard_name' => 'web'
+            ]);
+        }
+    }
+    
+    public function deleteStaffPermission()
+    {
+        $permissionName = 'contest.' . $this->id;
+        $permission = \Spatie\Permission\Models\Permission::where('name', $permissionName)->first();
+        
+        if ($permission) {
+            $permission->delete();
+        }
     }
 
     public function isActive()
