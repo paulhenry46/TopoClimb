@@ -72,26 +72,19 @@ new class extends Component {
             <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Manage Staff Members')}}</h1>
             <p class="mt-2 text-sm text-gray-700">{{__('Add or remove staff members who can register climber successes in official contests')}}</p>
         </div>
-    </div>
-
-    <!-- Add Staff Form -->
-    <div class="bg-white shadow sm:rounded-lg mb-8">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4">{{__('Add Staff Member')}}</h3>
-            
+        <div class='flex gap-1'>
             <div class="grid grid-cols-1 gap-4">
-                <div>
-                    <label for="search_user" class="block text-sm font-medium leading-6 text-gray-900">{{__('Search User')}}</label>
+                <div class='relative'>
                     <input 
                         type="text" 
                         id="search_user"
                         wire:model.live="search_user"
                         placeholder="{{__('Search by name or email...')}}"
-                        class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        class="mt-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6"
                     />
                     
                     @if($this->searchUsers->count() > 0 && $search_user && !$user_id)
-                        <div class="mt-2 border rounded-md shadow-sm max-h-48 overflow-y-auto">
+                        <div class="mt-2 border rounded-md shadow-sm max-h-48 overflow-y-auto absolute">
                             @foreach($this->searchUsers as $user)
                                 <button 
                                     type="button"
@@ -115,11 +108,8 @@ new class extends Component {
             </div>
         </div>
     </div>
-
     <!-- Current Staff Members -->
-    <div class="bg-white shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4">{{__('Current Staff Members')}}</h3>
             
             @if($this->staffMembers->count() > 0)
                 <div class="overflow-x-auto">
@@ -160,5 +150,4 @@ new class extends Component {
                 <p class="text-sm text-gray-500">{{__('No staff members assigned yet.')}}</p>
             @endif
         </div>
-    </div>
 </div>

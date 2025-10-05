@@ -108,7 +108,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="px-4 sm:px-6 lg:px-8 py-8">
+<div>
     @assets
     <script src="https://unpkg.com/html5-qrcode"></script>
     @endassets
@@ -124,13 +124,6 @@ new class extends Component {
             </div>
         </div>
     @else
-        <div class="sm:flex sm:items-center mb-6">
-            <div class="sm:flex-auto">
-                <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Register Climbs')}}</h1>
-                <p class="mt-2 text-sm text-gray-700">{{__('Register successful climbs for participants in this official contest. Logs will be marked as verified.')}}</p>
-            </div>
-        </div>
-
         <!-- Registration Form -->
         <div class="bg-white shadow sm:rounded-lg mb-8">
             <div class="px-4 py-5 sm:p-6">
@@ -139,7 +132,7 @@ new class extends Component {
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <label for="search_user" class="block text-sm font-medium leading-6 text-gray-900">{{__('Climber')}}</label>
+                            <x-label for="search_user">{{__('Climber')}}</x-label>
                             
                             <!-- QR Scanner Button - Only visible on mobile -->
                             <button 
@@ -174,7 +167,7 @@ new class extends Component {
                          </div>  
                         
                         @if($this->searchUsers->count() > 0 && $search_user && !$user_id)
-                            <div class="mt-2 border rounded-md shadow-sm max-h-48 overflow-y-auto">
+                            <div class="bg-white mt-2 border rounded-md shadow-xl max-h-48 overflow-y-auto absolute ">
                                 @foreach($this->searchUsers as $user)
                                     <button 
                                         type="button"
@@ -191,7 +184,7 @@ new class extends Component {
                     </div>
 
                     <div>
-                        <label for="route_id" class="block text-sm font-medium leading-6 text-gray-900">{{__('Route')}}</label>
+                        <x-label for="route_id" >{{__('Route')}}</x-label>
                         <select 
                             id="route_id"
                             wire:model="route_id"
@@ -208,7 +201,7 @@ new class extends Component {
                     </div>
 
                     <div>
-                        <label for="type" class="block text-sm font-medium leading-6 text-gray-900">{{__('Type')}}</label>
+                        <x-label for="type" >{{__('Type')}}</x-label>
                         <select 
                             id="type"
                             wire:model="type"
@@ -221,7 +214,7 @@ new class extends Component {
                     </div>
 
                     <div>
-                        <label for="way" class="block text-sm font-medium leading-6 text-gray-900">{{__('Way')}}</label>
+                        <x-label for="way" >{{__('Way')}}</x-label>
                         <select 
                             id="way"
                             wire:model="way"
@@ -234,7 +227,7 @@ new class extends Component {
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label for="comment" class="block text-sm font-medium leading-6 text-gray-900">{{__('Comment (optional)')}}</label>
+                        <x-label for="comment">{{__('Comment (optional)')}}</x-label>
                         <textarea 
                             id="comment"
                             wire:model="comment"
