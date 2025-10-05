@@ -26,6 +26,9 @@ new class extends Component {
     #[Validate('nullable|integer|min:0')]
     public $max_age = null;
     
+    #[Validate('nullable|string')]
+    public $gender = '';
+    
     public $id_editing = 0;
 
     public function save()
@@ -39,6 +42,7 @@ new class extends Component {
             'auto_assign' => $this->auto_assign,
             'min_age' => $this->min_age,
             'max_age' => $this->max_age,
+            'gender' => $this->gender,
         ];
 
         if ($this->id_editing > 0) {
@@ -52,7 +56,7 @@ new class extends Component {
         }
 
         $this->modal_open = false;
-        $this->reset(['name', 'type', 'criteria', 'auto_assign', 'min_age', 'max_age', 'id_editing']);
+        $this->reset(['name', 'type', 'criteria', 'auto_assign', 'min_age', 'max_age', 'gender', 'id_editing']);
     }
 
     public function edit($id)
@@ -65,6 +69,7 @@ new class extends Component {
         $this->auto_assign = $category->auto_assign;
         $this->min_age = $category->min_age;
         $this->max_age = $category->max_age;
+        $this->gender = $category->gender;
         $this->modal_open = true;
     }
 
@@ -124,6 +129,11 @@ new class extends Component {
                                         @else
                                             &lt; {{ $category->max_age }}
                                         @endif
+                                    </p>
+                                @endif
+                                @if($category->gender)
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        {{ __('Gender') }}: {{ ucfirst($category->gender) }}
                                     </p>
                                 @endif
                                 <p class="text-xs text-gray-500 mt-1">{{ $category->users->count() }} {{__('participants')}}</p>
@@ -193,6 +203,19 @@ new class extends Component {
                     <span class="ml-2 text-sm text-gray-600">{{ __('Automatically assign users to this category') }}</span>
                 </label>
                 <p class="mt-1 text-xs text-gray-500">{{ __('Users will be automatically added to this category when they participate in the contest if they match the criteria') }}</p>
+            </div>
+
+            <div class="mt-4">
+                <x-label for="gender" value="{{ __('Gender Filter') }}" />
+                <select id="gender" wire:model="gender" 
+                    class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-1 block w-full">
+                    <option value="">{{ __('All genders (no filter)') }}</option>
+                    <option value="male">{{ __('Male') }}</option>
+                    <option value="female">{{ __('Female') }}</option>
+                    <option value="other">{{ __('Other') }}</option>
+                </select>
+                <x-input-error for="gender" class="mt-2" />
+                <p class="mt-1 text-xs text-gray-500">{{ __('Select a specific gender or leave as "All genders" to not filter by gender') }}</p>
             </div>
 
             <div class="mt-4 grid grid-cols-2 gap-4">

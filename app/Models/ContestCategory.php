@@ -14,6 +14,7 @@ class ContestCategory extends Model
         'auto_assign',
         'min_age',
         'max_age',
+        'gender',
     ];
 
     protected $casts = [
@@ -36,8 +37,15 @@ class ContestCategory extends Model
             return false;
         }
 
-        // Check gender if type is gender
-        if ($this->type === 'gender' && $this->criteria) {
+        // Check gender field (new approach - takes precedence over type/criteria)
+        if ($this->gender && $this->gender !== 'all') {
+            if (!$user->gender || strtolower($user->gender) !== strtolower($this->gender)) {
+                return false;
+            }
+        }
+
+        // Backward compatibility: Check gender if type is gender (old approach)
+        if (!$this->gender && $this->type === 'gender' && $this->criteria) {
             if (!$user->gender || strtolower($user->gender) !== strtolower($this->criteria)) {
                 return false;
             }
