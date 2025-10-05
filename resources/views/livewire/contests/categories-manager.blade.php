@@ -18,32 +18,41 @@ new class extends Component {
     #[Validate('nullable|string')]
     public $criteria = '';
     
+    public $auto_assign = false;
+    
+    #[Validate('nullable|integer|min:0')]
+    public $min_age = null;
+    
+    #[Validate('nullable|integer|min:0')]
+    public $max_age = null;
+    
     public $id_editing = 0;
 
     public function save()
     {
         $this->validate();
 
+        $data = [
+            'name' => $this->name,
+            'type' => $this->type,
+            'criteria' => $this->criteria,
+            'auto_assign' => $this->auto_assign,
+            'min_age' => $this->min_age,
+            'max_age' => $this->max_age,
+        ];
+
         if ($this->id_editing > 0) {
             $category = ContestCategory::findOrFail($this->id_editing);
-            $category->update([
-                'name' => $this->name,
-                'type' => $this->type,
-                'criteria' => $this->criteria,
-            ]);
+            $category->update($data);
             $this->dispatch('action_ok', title: 'Category updated', message: 'Category has been updated successfully!');
         } else {
-            ContestCategory::create([
-                'name' => $this->name,
-                'type' => $this->type,
-                'criteria' => $this->criteria,
-                'contest_id' => $this->contest->id,
-            ]);
+            $data['contest_id'] = $this->contest->id;
+            ContestCategory::create($data);
             $this->dispatch('action_ok', title: 'Category created', message: 'Category has been created successfully!');
         }
 
         $this->modal_open = false;
-        $this->reset(['name', 'type', 'criteria', 'id_editing']);
+        $this->reset(['name', 'type', 'criteria', 'auto_assign', 'min_age', 'max_age', 'id_editing']);
     }
 
     public function edit($id)
@@ -53,6 +62,9 @@ new class extends Component {
         $this->name = $category->name;
         $this->type = $category->type;
         $this->criteria = $category->criteria;
+        $this->auto_assign = $category->auto_assign;
+        $this->min_age = $category->min_age;
+        $this->max_age = $category->max_age;
         $this->modal_open = true;
     }
 
@@ -93,9 +105,26 @@ new class extends Component {
                                             {{ ucfirst($category->type) }}
                                         </span>
                                     @endif
+                                    @if($category->auto_assign)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                            {{ __('Auto-assign') }}
+                                        </span>
+                                    @endif
                                 </div>
                                 @if($category->criteria)
                                     <p class="text-sm text-gray-600 mt-1">{{ $category->criteria }}</p>
+                                @endif
+                                @if($category->min_age || $category->max_age)
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        {{ __('Age') }}: 
+                                        @if($category->min_age && $category->max_age)
+                                            {{ $category->min_age }}-{{ $category->max_age }}
+                                        @elseif($category->min_age)
+                                            {{ $category->min_age }}+
+                                        @else
+                                            &lt; {{ $category->max_age }}
+                                        @endif
+                                    </p>
                                 @endif
                                 <p class="text-xs text-gray-500 mt-1">{{ $category->users->count() }} {{__('participants')}}</p>
                             </div>
@@ -153,9 +182,32 @@ new class extends Component {
             <div class="mt-4">
                 <x-label for="criteria" value="{{ __('Criteria (optional)') }}" />
                 <x-input id="criteria" type="text" class="mt-1 block w-full" wire:model="criteria" 
-                    placeholder="{{ __('e.g., 18-25, Male, Female, etc.') }}" />
+                    placeholder="{{ __('e.g., male, female') }}" />
                 <x-input-error for="criteria" class="mt-2" />
-                <p class="mt-1 text-xs text-gray-500">{{ __('Additional information about this category') }}</p>
+                <p class="mt-1 text-xs text-gray-500">{{ __('For gender type, use: male, female, or other') }}</p>
+            </div>
+
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <input type="checkbox" wire:model="auto_assign" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <span class="ml-2 text-sm text-gray-600">{{ __('Automatically assign users to this category') }}</span>
+                </label>
+                <p class="mt-1 text-xs text-gray-500">{{ __('Users will be automatically added to this category when they participate in the contest if they match the criteria') }}</p>
+            </div>
+
+            <div class="mt-4 grid grid-cols-2 gap-4">
+                <div>
+                    <x-label for="min_age" value="{{ __('Minimum Age') }}" />
+                    <x-input id="min_age" type="number" min="0" class="mt-1 block w-full" wire:model="min_age" 
+                        placeholder="{{ __('e.g., 18') }}" />
+                    <x-input-error for="min_age" class="mt-2" />
+                </div>
+                <div>
+                    <x-label for="max_age" value="{{ __('Maximum Age') }}" />
+                    <x-input id="max_age" type="number" min="0" class="mt-1 block w-full" wire:model="max_age" 
+                        placeholder="{{ __('e.g., 25') }}" />
+                    <x-input-error for="max_age" class="mt-2" />
+                </div>
             </div>
         </div>
         <x-slot name="footer">

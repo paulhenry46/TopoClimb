@@ -78,9 +78,10 @@ The contest system has been enhanced with the following features:
 ### Features
 - Create unlimited categories per contest
 - Categories can be based on age, gender, or custom criteria
-- Users can join multiple categories
+- **Automatic assignment**: Users can be automatically assigned to categories based on their profile data (age, gender)
+- Users can manually join multiple categories (for non-auto-assign categories)
 - Separate rankings for each category
-- Category membership is optional
+- Category membership is optional for manually-joined categories
 
 ### Admin Usage
 
@@ -91,23 +92,43 @@ The contest system has been enhanced with the following features:
    - Fill in:
      - **Name**: e.g., "Men 18-25", "Women Elite", "Youth"
      - **Type**: Age, Gender, or Custom (optional)
-     - **Criteria**: Additional information (optional)
+     - **Criteria**: For gender type, use: 'male', 'female', or 'other'
+     - **Auto-assign**: Check this to automatically assign users who match the criteria
+     - **Minimum Age**: Optional age minimum for automatic assignment
+     - **Maximum Age**: Optional age maximum for automatic assignment
 
 2. **Manage Categories**
    - View category participants
    - Edit category details
    - Delete categories
+   - See "Auto-assign" badge for categories with automatic assignment enabled
 
 ### User Experience
 
-1. **Joining Categories**
+1. **Profile Setup** (Required for auto-assign categories)
+   - Users can set their birth date and gender in their profile
+   - Navigate to Profile > Profile Information
+   - Fill in:
+     - **Birth Date**: Used to calculate age for category assignment
+     - **Gender**: Male, Female, or Other
+
+2. **Automatic Category Assignment**
+   - When a user logs a route in a contest with auto-assign categories
+   - The system automatically adds them to matching categories based on:
+     - Age range (if specified)
+     - Gender (if specified)
+   - Users see "Enrolled" badge on auto-assigned categories
+   - Auto-assigned categories cannot be manually left
+
+3. **Manual Category Joining**
    - Visit the contest public page
    - Switch to "Categories" view mode
    - Browse available categories
-   - Click "Join" on categories you want to participate in
+   - Click "Join" on non-auto-assign categories
    - You can join multiple categories
+   - Click "Leave" to exit manually-joined categories
 
-2. **Viewing Category Rankings**
+4. **Viewing Category Rankings**
    - Select a category from the tabs
    - Rankings show only participants in that category
    - Rankings are re-calculated specifically for category members
@@ -119,13 +140,20 @@ The contest system has been enhanced with the following features:
 - `contest_id` - Foreign key to contests
 - `name` - Category name
 - `type` - Type: 'age', 'gender', or 'custom'
-- `criteria` - Additional criteria description
+- `criteria` - Additional criteria description (e.g., 'male', 'female')
+- `auto_assign` - Boolean: whether to automatically assign users
+- `min_age` - Integer: minimum age for automatic assignment (nullable)
+- `max_age` - Integer: maximum age for automatic assignment (nullable)
 - `timestamps`
 
 **contest_category_user pivot table:**
 - `contest_category_id` - Foreign key to contest_categories
 - `user_id` - Foreign key to users
 - Unique constraint on (contest_category_id, user_id)
+
+**users table (new fields):**
+- `birth_date` - Date: user's birth date for age calculation (nullable)
+- `gender` - String: 'male', 'female', or 'other' (nullable)
 
 ## 3. Route Selection per Contest Step
 
@@ -232,7 +260,12 @@ The contest system has been enhanced with the following features:
 - Individual rankings filtered to only include category members
 - Re-ranked within the category
 - Same point calculation as individual rankings
-- Same point calculation as individual rankings
+
+**Live View Rankings:**
+- The live ranking view automatically adapts based on contest configuration
+- If team mode is enabled, displays team rankings by default
+- If team mode is disabled, displays individual rankings
+- Auto-refreshes every 30 seconds to show current standings
 
 ### Step-Specific Routes
 The ranking logic checks if a step has routes assigned:
@@ -248,6 +281,13 @@ $routeIds = $step->routes->count() > 0
 - `getTeamRankingForStep($stepId = null)` - Get team rankings
 - `getCategoryRankings($categoryId, $stepId = null)` - Get category-specific rankings
 - `getRankingForStep($stepId = null)` - Enhanced to use step-specific routes
+- `autoAssignUserToCategories($user)` - Automatically assign user to eligible auto-assign categories
+
+### ContestCategory Model
+- `userMatches($user)` - Check if a user matches category criteria for auto-assignment
+
+### User Model
+- `getAge()` - Calculate user's current age from birth_date
 
 ### Team Model
 - `getTotalPoints()` - Calculate team's total points based on contest's team_points_mode
