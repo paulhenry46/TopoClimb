@@ -187,10 +187,7 @@ new class extends Component {
                                 @endforeach
                             </div>
                         @endif
-                        
-                        @error('user_id')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <x-input-error for='user_id'/>
                     </div>
 
                     <div>
@@ -207,9 +204,7 @@ new class extends Component {
                                 </option>
                             @endforeach
                         </select>
-                        @error('route_id')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <x-input-error for='route_id'/>
                     </div>
 
                     <div>

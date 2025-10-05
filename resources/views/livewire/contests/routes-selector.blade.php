@@ -112,7 +112,7 @@ new class extends Component {
                         <span class="text-xs text-gray-500">pts</span>
                     @else
                         <input disabled 
-                            class="bg-gray-50 w-16 rounded-md border-gray-300 shadow-sm text-sm"
+                            class="bg-gray-100 w-16 rounded-md border-gray-300 shadow-sm text-sm"
                             placeholder="Points"
                         >
                         <span class="text-xs text-gray-500">pts</span>
