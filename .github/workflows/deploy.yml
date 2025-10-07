@@ -93,6 +93,6 @@ jobs:
           php artisan migrate --force
           php artisan config:cache
           php artisan route:cache
-          chmod -R ug+rw storage bootstrap/cache
-          chown -R www-data:www-data storage bootstrap/cache
+          sudo chmod -R ug+rw storage bootstrap/cache
+          sudo chown -R www-data:www-data storage bootstrap/cache
         EOF
