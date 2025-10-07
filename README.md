@@ -61,6 +61,34 @@ An user with the hightest permissions is created, so you can log in with : Mail 
 </VirtualHost>
 ```
 - You can active https with certbot.
+
+## Deployment
+
+### GitHub Actions Deployment Workflow
+
+This repository includes a GitHub Actions workflow for automated deployment to your server. To use it, you need to configure the following secrets in your GitHub repository settings:
+
+**Required Secrets:**
+1. `SSH_PRIVATE_KEY` - Your SSH private key for authentication (ed25519 format recommended)
+2. `SERVER_IP` - The IP address or hostname of your deployment server
+3. `SSH_USER` - The SSH username for connecting to the server
+4. `PROJECT_PATH` - The absolute path on the server where the project should be deployed
+
+**How to set up secrets:**
+1. Go to your repository on GitHub
+2. Navigate to Settings → Secrets and variables → Actions
+3. Click "New repository secret" for each required secret
+4. Add the secret name and value
+
+**The workflow will:**
+- Install PHP 8.2 and Node.js 18 dependencies
+- Build frontend assets with npm
+- Create a deployment package (excluding .git, node_modules, tests, etc.)
+- Deploy to your server via rsync over SSH
+- Run Laravel migrations and cache configuration/routes
+
+**Note:** The workflow triggers automatically on push to the `main` branch. Make sure all secrets are configured before pushing, or the workflow will fail with clear error messages indicating which secrets are missing.
+
 ## Contributing
 
 - Clone the app and move it to where you want
