@@ -78,7 +78,7 @@ jobs:
 
     - name: Upload files to server
       run: |
-        rsync -avz \
+        rsync -avz --no-times \
           --exclude='.env' \
           --exclude='storage' \
           -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SERVER_PORT }}" \
@@ -88,6 +88,7 @@ jobs:
       run: |
         ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SERVER_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           set -e
+          sudo chown -R www-data:www-data ${{ secrets.PROJECT_PATH }}
           cd ${{ secrets.PROJECT_PATH }}
           php artisan migrate --force
           php artisan config:cache
