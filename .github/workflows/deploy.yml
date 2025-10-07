@@ -78,7 +78,7 @@ jobs:
 
     - name: Upload files to server
       run: |
-        rsync -avz --no-times \
+        rsync -avz --no-times --no-perms \
           --exclude='.env' \
           --exclude='storage' \
           -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SERVER_PORT }}" \
