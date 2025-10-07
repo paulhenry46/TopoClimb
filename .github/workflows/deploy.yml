@@ -74,19 +74,19 @@ jobs:
       
     - name: Setup SSH 3/2
       run: |
-        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+        ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
     - name: Upload files to server
       run: |
         rsync -avz \
           --exclude='.env' \
           --exclude='storage' \
-          -e "ssh -i ~/.ssh/id_ed25519" \
+          -e "ssh -i ~/.ssh/id_ed25519" -p ${{ secrets.SERVER_PORT }}" \
           ./deploy/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.PROJECT_PATH }}
 
     - name: Run Laravel commands remotely
       run: |
-        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+        ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SERVER_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           set -e
           cd ${{ secrets.PROJECT_PATH }}
           php artisan migrate --force
