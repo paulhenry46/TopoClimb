@@ -43,10 +43,33 @@ jobs:
           --exclude='storage' \
           ./ ./deploy
 
-    - name: Setup SSH
+    - name: Validate required secrets
+      run: |
+        if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+          echo "Error: SSH_PRIVATE_KEY secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.SERVER_IP }}" ]; then
+          echo "Error: SERVER_IP secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.SSH_USER }}" ]; then
+          echo "Error: SSH_USER secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.PROJECT_PATH }}" ]; then
+          echo "Error: PROJECT_PATH secret is not set"
+          exit 1
+        fi
+        echo "All required secrets are configured"
+
+    - name: Setup SSH 1/2
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+
+    - name: Setup SSH 2/2
+      run: |
         chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
