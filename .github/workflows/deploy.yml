@@ -1,0 +1,71 @@
+name: Build and Deploy TopoClimb App to Test Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, bcmath, curl, dom, fileinfo, openssl, pdo, tokenizer, xml
+
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Install NPM dependencies and build assets
+      run: |
+        npm install
+        npm run build
+
+    - name: Prepare deployment package
+      run: |
+        mkdir deploy
+        rsync -av \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='tests' \
+          --exclude='.env' \
+          --exclude='storage' \
+          ./ ./deploy
+
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+    - name: Upload files to server
+      run: |
+        rsync -avz \
+          --exclude='.env' \
+          --exclude='storage' \
+          -e "ssh -i ~/.ssh/id_ed25519" \
+          ./deploy/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.PROJECT_PATH }}
+
+    - name: Run Laravel commands remotely
+      run: |
+        ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          set -e
+          cd ${{ secrets.PROJECT_PATH }}
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan route:cache
+          chmod -R ug+rw storage bootstrap/cache
+          chown -R www-data:www-data storage bootstrap/cache
+        EOF
