@@ -81,7 +81,7 @@ jobs:
         rsync -avz \
           --exclude='.env' \
           --exclude='storage' \
-          -e "ssh -i ~/.ssh/id_ed25519" -p ${{ secrets.SERVER_PORT }}" \
+          -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SERVER_PORT }}" \
           ./deploy/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.PROJECT_PATH }}
 
     - name: Run Laravel commands remotely
