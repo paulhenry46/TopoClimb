@@ -47,8 +47,13 @@ new class extends Component {
           $this->t_h = $item->getAttribute('height'); 
       }
       $xpath = new DOMXPath($dom);
-      $item = $xpath->query("//*[@id='g1']")->item(0);
-      $transform = $item->getAttribute("transform");
+      $nodes = $xpath->query('//*[@transform]');
+      if ($nodes->length > 0) {
+        $item = $nodes->item(0);
+        $transform = $item->getAttribute('transform');
+      } else {
+        $transform = '';
+      }
 
       $matches = [];
     if (preg_match('/translate\(([^,]+),\s*([^)]+)\)/', $transform, $matches)) {

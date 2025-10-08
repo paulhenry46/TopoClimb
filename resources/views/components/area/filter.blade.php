@@ -32,15 +32,23 @@
                 <div class="space-y-2 px-4">
                   <div class="w-full">
                     <x-label for="name" value="{{ __('Cotation') }}" />
-                    <div class="mt-2 flex items-center gap-2">
+                    <div class="mt-2 sm:flex sm:items-center sm:gap-2">
+                      <div class='flex gap-2 items-center'>
+                        <span class=''>
                       {{ __('From') }}
-                      <select wire:model.live='cotation_from' id="location" name="location" class=" block w-24 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
+                        </span>
+                      <select wire:model.live='cotation_from' id="location" name="location" class=" block w-full sm:w-24 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
                         <option value="0">0</option> @foreach ($this->cotations as $key => $value) <option value="{{ $value }}">{{ $key }}</option> @endforeach
                       </select>
+                    </div>
+                    <div class='flex gap-2 items-center mt-1 sm:mt-0'>
+                      <span class=''>
                       {{ __('to') }}
-                      <select wire:model.live='cotation_to' id="location" name="location" class=" block w-24 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
+                      </span>
+                      <select wire:model.live='cotation_to' id="location" name="location" class=" block w-full sm:w-24 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6">
                         <option value="0">+ ∞</option> @foreach ($this->cotations as $key => $value) <option value="{{ $value }}">{{ $key }}</option> @endforeach
                       </select>
+                    </div>
                       <x-input-error for="name" class="mt-2" />
                     </div>
                   </div>

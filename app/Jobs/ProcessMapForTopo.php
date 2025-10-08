@@ -58,7 +58,7 @@ class ProcessMapForTopo implements ShouldQueue
                     $item->setAttribute("viewBox", "0 0 $width $height");
                 }
                 foreach ($items as $item) {
-            $item->setAttribute("class", "h-96"); // We set the height of the svg to better scale it with css
+            $item->setAttribute("class", "max-h-96"); // We set the height of the svg to better scale it with css
           }
         }
 

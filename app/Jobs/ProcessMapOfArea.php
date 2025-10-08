@@ -58,7 +58,7 @@ class ProcessMapOfArea implements ShouldQueue
           $item->removeAttribute('width');
           $item->removeAttribute('height');
           $item->setAttribute("viewBox", "0 0 $width $height");
-          $item->setAttribute("class", "h-96");//Specific to the div in which it will be displayed
+          $item->setAttribute("class", "max-h-96");//Specific to the div in which it will be displayed
       }
       $original_dom = clone $dom;
       //-------------------------------ADMIN MAP----------------------------------

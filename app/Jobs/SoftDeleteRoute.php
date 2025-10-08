@@ -63,6 +63,10 @@ class SoftDeleteRoute implements ShouldQueue
             if ($pathElement) {
                 $pathElement->remove();
             }
+             $pathElement = (new DOMXPath($dom_common))->query('//*[@id=\'path_'.$this->route->id.'_overlay\']')->item(0);
+            if ($pathElement) {
+                $pathElement->remove();
+            }
             Storage::put($CommonPath, $dom_common->saveXML());
           }
         }

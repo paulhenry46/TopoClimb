@@ -113,7 +113,7 @@ class ProcessPathOfRoute implements ShouldQueue
           foreach ($dom_common->getElementsByTagName('svg') as $item) {
             $item->setAttribute("xmlns:x-bind", "https://alpinejs.dev");
             $item->setAttribute("xmlns:x-on", "https://alpinejs.dev");
-            $item->setAttribute("class", "h-96"); // We set the height of the svg to better scale it with css
+            $item->setAttribute("class", "max-h-96"); // We set the height of the svg to better scale it with css
           }
   
           Storage::put($filePaths[1], $dom_common->saveXML());
