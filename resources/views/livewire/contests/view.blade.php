@@ -96,8 +96,10 @@ new class extends Component {
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">{{ __('Active Contests') }}</h3>
                     <div class="space-y-3">
+
                         @foreach($this->activeContests as $contest)
-                            <div class="w-full border-gray-900 rounded-md border-2 mb-4 flex justify-between">
+                        <div class='border-gray-900 rounded-md border-2 mb-4 w-full'>
+                            <div class="w-full  flex justify-between">
     <div class="ml-4 mt-4 mb-4 flex items-center gap-x-3">
         {{ $contest->name }}
         @if($contest->mode == 'free')
@@ -115,19 +117,12 @@ new class extends Component {
                 {{ __('Official') }}
             </span>
         @endif
-        
     </div>
     <div class="flex items-center">
         <div class="text-sm text-gray-500 mr-4">
-            @if($contest->isActive())
                 {{ __('Ends') }}: {{ $contest->end_date->format('M d, Y H:i') }}
-            @elseif($contest->start_date > now())
-                {{ __('Starts') }}: {{ $contest->start_date->format('M d, Y H:i') }}
-            @else
-                {{ __('Ended') }}: {{ $contest->end_date->format('M d, Y') }}
-            @endif
         </div>
-        <a wire:navigate href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" class="cursor-pointer w-32 bg-gray-900 text-white hover:bg-gray-700">
+        <a wire:navigate href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" class="hidden sm:block cursor-pointer w-32 bg-gray-900 text-white hover:bg-gray-700">
             <p class="flex ml-4 mt-4 mb-4 font-semibold items-center justify-center">
                 {{ __('See') }}
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3" class="ml-2">
@@ -135,8 +130,18 @@ new class extends Component {
                 </svg>
             </p>
         </a>
-        
     </div>
+</div>
+
+<a wire:navigate
+             href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}"
+             class=" sm:hidden mt-3 sm:mt-0 sm:ml-4 w-full sm:w-auto flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-700">
+            <span class="font-semibold">{{ __('See') }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+              <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+            </svg>
+          </a>
+
 </div>
                         @endforeach
                     </div>
@@ -149,7 +154,8 @@ new class extends Component {
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">{{ __('Upcoming Contests') }}</h3>
                     <div class="space-y-3">
                         @foreach($this->upcomingContests as $contest)
-                            <div class="w-full border-gray-900 rounded-md border-2 mb-4 flex justify-between">
+                            <div class='border-gray-900 rounded-md border-2 mb-4 w-full'>
+                            <div class="w-full  flex justify-between">
     <div class="ml-4 mt-4 mb-4 flex items-center gap-x-3">
         {{ $contest->name }}
         @if($contest->mode == 'free')
@@ -167,19 +173,12 @@ new class extends Component {
                 {{ __('Official') }}
             </span>
         @endif
-        
     </div>
     <div class="flex items-center">
         <div class="text-sm text-gray-500 mr-4">
-            @if($contest->isActive())
-                {{ __('Ends') }}: {{ $contest->end_date->format('M d, Y H:i') }}
-            @elseif($contest->start_date > now())
-                {{ __('Starts') }}: {{ $contest->start_date->format('M d, Y H:i') }}
-            @else
-                {{ __('Ended') }}: {{ $contest->end_date->format('M d, Y') }}
-            @endif
+               {{ __('Starts') }}: {{ $contest->start_date->format('M d, Y H:i') }}
         </div>
-        <a wire:navigate href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" class="cursor-pointer w-32 bg-gray-900 text-white hover:bg-gray-700">
+        <a wire:navigate href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" class="hidden sm:block cursor-pointer w-32 bg-gray-900 text-white hover:bg-gray-700">
             <p class="flex ml-4 mt-4 mb-4 font-semibold items-center justify-center">
                 {{ __('See') }}
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3" class="ml-2">
@@ -187,8 +186,18 @@ new class extends Component {
                 </svg>
             </p>
         </a>
-        
     </div>
+</div>
+
+<a wire:navigate
+             href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}"
+             class=" sm:hidden mt-3 sm:mt-0 sm:ml-4 w-full sm:w-auto flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-700">
+            <span class="font-semibold">{{ __('See') }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+              <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+            </svg>
+          </a>
+
 </div>
                         @endforeach
                     </div>
@@ -201,37 +210,31 @@ new class extends Component {
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">{{ __('Past Contests') }}</h3>
                     <div class="space-y-3">
                         @foreach($this->pastContests as $contest)
-                          <div class="w-full border-gray-900 rounded-md border-2 mb-4 flex justify-between">
+                          <div class='border-gray-900 rounded-md border-2 mb-4 w-full'>
+                            <div class="w-full  flex justify-between">
     <div class="ml-4 mt-4 mb-4 flex items-center gap-x-3">
         {{ $contest->name }}
         @if($contest->mode == 'free')
-            <span class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+            <span class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-pink-100 px-2 py-1 text-xs font-medium text-pink-700">
+                <svg class="h-1.5 w-1.5 fill-pink-500" viewBox="0 0 6 6" aria-hidden="true">
                     <circle cx="3" cy="3" r="3"></circle>
                 </svg>
                 {{ __('Free Climb') }}
             </span>
         @elseif($contest->mode == 'official')
-            <span class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+            <span class="mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
+                <svg class="h-1.5 w-1.5 fill-blue-500" viewBox="0 0 6 6" aria-hidden="true">
                     <circle cx="3" cy="3" r="3"></circle>
                 </svg>
                 {{ __('Official') }}
             </span>
         @endif
-        
     </div>
     <div class="flex items-center">
         <div class="text-sm text-gray-500 mr-4">
-            @if($contest->isActive())
-                {{ __('Ends') }}: {{ $contest->end_date->format('M d, Y H:i') }}
-            @elseif($contest->start_date > now())
-                {{ __('Starts') }}: {{ $contest->start_date->format('M d, Y H:i') }}
-            @else
-                {{ __('Ended') }}: {{ $contest->end_date->format('M d, Y') }}
-            @endif
+               {{ __('Ended') }}: {{ $contest->end_date->format('M d, Y') }}
         </div>
-        <a wire:navigate href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" class="cursor-pointer w-32 bg-gray-900 text-white hover:bg-gray-700">
+        <a wire:navigate href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}" class="hidden sm:block cursor-pointer w-32 bg-gray-900 text-white hover:bg-gray-700">
             <p class="flex ml-4 mt-4 mb-4 font-semibold items-center justify-center">
                 {{ __('See') }}
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3" class="ml-2">
@@ -239,8 +242,18 @@ new class extends Component {
                 </svg>
             </p>
         </a>
-        
     </div>
+</div>
+
+<a wire:navigate
+             href="{{ route('contest.public', ['site' => $site->slug, 'contest' => $contest->id]) }}"
+             class=" sm:hidden mt-3 sm:mt-0 sm:ml-4 w-full sm:w-auto flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-700">
+            <span class="font-semibold">{{ __('See') }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
+              <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+            </svg>
+          </a>
+
 </div>
                         @endforeach
                     </div>

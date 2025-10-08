@@ -60,7 +60,7 @@ class ProcessMapOfArea implements ShouldQueue
           $item->setAttribute("viewBox", "0 0 $width $height");
           $item->setAttribute("class", "h-96");//Specific to the div in which it will be displayed
       }
-      $original_dom = $dom;
+      $original_dom = clone $dom;
       //-------------------------------ADMIN MAP----------------------------------
       foreach ($this->sectors as $sector) {
         $xpath = new DOMXPath($dom);
@@ -84,7 +84,7 @@ class ProcessMapOfArea implements ShouldQueue
         $xpath = new DOMXPath($dom);
         $item = $xpath->query("//*[@id='sector_$sector->local_id']")->item(0);
         $item->setAttribute("x-on:click", "selectSector($sector->id)");
-        $item->setAttribute("x-bind:style", "(selectedSector == $sector->id ? || hightlightedSector == $sector->id) ? 'stroke-width: 8;' : ''");
+        $item->setAttribute("x-bind:style", "(selectedSector == $sector->id  || hightlightedSector == $sector->id) ? 'stroke-width: 8;' : ''");
         $item->setAttribute("x-on:mouseover", "hightlightSector($sector->id)");
       }
       if($this->area->type == 'trad'){

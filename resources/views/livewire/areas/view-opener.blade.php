@@ -41,7 +41,7 @@ new class extends Component {
       $this->site = $this->area->site;
       if($area->type == 'bouldering'){
         foreach ($area->sectors as $sector) {
-            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/user.svg'));
+            array_push($this->schema_data, Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/users.svg'));
         }
       }else{
         $sectors_id = [];
@@ -131,7 +131,7 @@ new class extends Component {
         })
         ->when($this->own, function($query) {
             $query->whereHas('users', function($q) {
-                $q->where('id', Auth::id());
+                $q->where('users.id', Auth::id());
             });
         })
         ->when($this->search, function($query, $search) {
@@ -180,14 +180,18 @@ new class extends Component {
 
     public function selectSector($id){
       $this->selected_sector = $id;
+      $this->updateRoutesQuery();
     }
     public function selectLine($id){
       $this->selected_line = $id;
+      $this->updateRoutesQuery();
     }
 }; ?>
   <div class="col-span-3 md:col-span-2 flex flex-col" 
     @if($this->area->type == 'bouldering') 
-      x-data="{ selectedRoute: 0, 
+      x-data="{ hightlightedRoute: 0,
+                hightlightRoute(id){ this.hightlightedRoute = id; }, 
+                selectedRoute: 0, 
                 selectRoute(id){ this.selectedRoute = id; $dispatch('route-changed', { id: id}) }, 
                 hightlightedSector: 0, 
                 selectedSector: 0, 

@@ -88,8 +88,8 @@ new class extends Component {
               <div x-data="{message: ''}" @svg_sent.window="$wire.svg = $event.detail.message"
               @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
-        <script type="text/javascript" src="http://127.0.0.1:8000/dist/paper-full.js"></script>
-        <script src='http://127.0.0.1:8000/dist/acorn.js'></script>
+               <script type="text/javascript" src="{{ asset('dist/paper-full.js') }}"></script>
+        <script src="{{ asset('dist/acorn.js') }}"></script>
         
         <script type="text/paperscript" canvas="myCanvas">
             console.log(project.activeLayer.importSVG('{{ $this->url }}'));
