@@ -135,6 +135,21 @@ class ProcessPathOfRoute implements ShouldQueue
           $item->setAttribute("x-show", "filtered_routes.includes($route_id)");
           $item->setAttribute("x-bind:style", "(selectedRoute == $route_id || hightlightedRoute == $route_id) ? 'stroke-width :8;' : ''");
   
+          // Create transparent overlay path for easier clicking
+          $transparentPath = $dom_common->createElement('path');
+          $transparentPath->setAttribute('id', 'path_' . $route_id . '_overlay');
+          $transparentPath->setAttribute('d', $item->getAttribute('d'));
+          $transparentPath->setAttribute('stroke', 'transparent');
+          $transparentPath->setAttribute('stroke-width', '20');
+          $transparentPath->setAttribute('fill', 'none');
+          $transparentPath->setAttribute('pointer-events', 'all');
+          $transparentPath->setAttribute("x-on:mouseover", "hightlightRoute($route_id)");
+          $transparentPath->setAttribute("x-on:click", "selectRoute($route_id)");
+          $transparentPath->setAttribute("x-show", "filtered_routes.includes($route_id)");
+  
+          // Insert transparent path after the original path
+          $item->parentNode->insertBefore($transparentPath, $item->nextSibling);
+  
         Storage::put('paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/common_paths.svg', $dom_common->saveXML());
     }
 }
