@@ -1,50 +1,58 @@
 <?php
 
-use Livewire\Volt\Component;
-use App\Models\Area;
-use App\Models\Site;
-use App\Models\Sector;
-use App\Models\Line;
-use App\Models\Route as ModelRoute;
-use Livewire\Attributes\Validate; 
-use Illuminate\Support\Str;
-use Livewire\WithFileUploads;
+use App\Jobs\CompressPhoto;
 use App\Jobs\ImageFilter;
-new class extends Component {
-  use WithFileUploads;
+use App\Models\Area;
+use App\Models\Route as ModelRoute;
+use App\Models\Site;
+use Livewire\Attributes\Validate;
+use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
+
+new class extends Component
+{
+    use WithFileUploads;
 
     public Area $area;
+
     public Site $site;
+
     public ModelRoute $route;
+
     public $edit;
 
     #[Validate('image|required')]
     public $photo;
 
-    public function mount(Site $site, Area $area, ModelRoute $route, $edit = false){
-      if (!$route->users()->where('user_id', auth()->id())->exists() && !auth()->user()->can('lines-sectors' . $site->id)) {
-        abort(403, 'You are not authorized to access this route.');
+    public function mount(Site $site, Area $area, ModelRoute $route, $edit = false)
+    {
+        if (! $route->users()->where('user_id', auth()->id())->exists() && ! auth()->user()->can('lines-sectors'.$site->id)) {
+            abort(403, 'You are not authorized to access this route.');
+        }
+        $this->site = $site;
+        $this->area = $area;
+        $this->route = $route;
+        if ($this->route->id == session('route_creating')) {
+            $this->edit = false;
+        } else {
+            $this->edit = true;
+        }
     }
-      $this->site = $site;
-      $this->area = $area;
-      $this->route = $route;
-      if($this->route->id == session('route_creating')){
-        $this->edit = false;
-      }else{
-        $this->edit = true;
-      }
-    }
 
-    public function save(){
-     
-      $this->validateOnly('photo');
-      $name = 'route-'.$this->route->id.'';
-      $path = $this->photo->storeAs(path: 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
-      $filtered_path = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-filtered-'.$this->route->id;
-      ImageFilter::dispatch($this->route->color, $path, $filtered_path);
+    public function save()
+    {
 
+        $this->validateOnly('photo');
+        $name = 'route-'.$this->route->id.'';
+        $path = $this->photo->storeAs(path: 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
+        $filtered_path = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-filtered-'.$this->route->id;
 
-      $this->redirectRoute('admin.routes.circle', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
+        // Chain jobs: first compress the photo, then apply the color filter
+        CompressPhoto::dispatch($path)->chain([
+            new ImageFilter($this->route->color, $path, $filtered_path),
+        ]);
+
+        $this->redirectRoute('admin.routes.circle', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
 }; ?>
 
