@@ -1,4 +1,3 @@
-
 <div class="bg-white overflow-hidden sm:rounded-lg mt-2">
     <div class="px-4 sm:px-6 lg:px-8 py-8">
       <div class="sm:flex sm:items-center">
@@ -12,7 +11,7 @@
               <button @click="expanded = ! expanded" type="button" class="cursor-pointer inline-flex items-center px-2 py-2 border border-transparent rounded-md font-semibold text-sm tracking-widest hover:bg-gray-200 focus:bg-gray-200 active:bg-gray-200 focus:outline-hidden transition ease-in-out duration-150">
                 <svg xmlns="http://www.w3.org/2000/svg" x-show="!expanded" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-361q-8 0-15-2.5t-13-8.5L268-556q-11-11-11-28t11-28q11-11 28-11t28 11l156 156 156-156q11-11 28-11t28 11q11 11 11 28t-11 28L508-372q-6 6-13 8.5t-15 2.5Z"/>
                 </svg>
-                <svg x-show="expanded" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/>
+                <svg x-show="expanded" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="http://www.w3.org/2000/svg" width="24px" fill="currentColor"><path d="m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z"/>
                 </svg>
               </button>
             </div>
@@ -73,16 +72,24 @@
                       }
                   }">
                 <div class="space-y-2 px-4">
-                  <div class="flex mt-3">
-                    <x-label class="mr-1" for="creators" value="{{ __('Tags') }} : " />
-                    <template x-for="tag in SelectedTags">
-                      <span x-text="tag['name']" class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                        <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
-                          <circle cx="3" cy="3" r="3"></circle>
-                        </svg>
-                      </span>
-                    </template>
-                  </div>
+                  <div class="flex flex-wrap mt-3 items-center gap-2">
+  <x-label class="mr-1 flex-shrink-0" for="creators" value="{{ __('Tags') }} : " />
+  <div class="flex flex-wrap items-center gap-2 min-w-0">
+    <template x-for="(tag, index) in SelectedTags" :key="index">
+      <button
+        type="button"
+        @click="toogle(tag['id'])"
+        @keydown.enter.prevent="toogle(tag['id'])"
+        class="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 whitespace-nowrap cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-300"
+      >
+        <span x-text="tag['name']"></span>
+        <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+          <circle cx="3" cy="3" r="3"></circle>
+        </svg>
+      </button>
+    </template>
+  </div>
+</div>
                   <div @click.outside="showListe = false" class="sm:col-span-2">
                     <div>
                       <div class="relative mt-2 ">

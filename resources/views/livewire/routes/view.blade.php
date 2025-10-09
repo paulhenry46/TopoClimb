@@ -51,7 +51,14 @@ new class extends Component {
     <x-area.card-route :logs=$logs key='card-md' :key_button="'button-md'"/>
   </div>
 
-<div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden">
+<div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden" >
+    <div
+    x-cloak
+    x-show="open"
+    x-transition.opacity
+    class="fixed inset-0 z-30 bg-gray-200/50"
+    aria-hidden="true"
+  ></div>
   <!-- Drawer -->
   <div x-cloak
       x-show="open" 
@@ -61,7 +68,7 @@ new class extends Component {
       x-transition:leave="transition ease-in duration-300" 
       x-transition:leave-start="translate-y-0" 
       x-transition:leave-end="translate-y-full" 
-      class="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg rounded-t-lg overflow-hidden">
+      class="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg rounded-t-lg overflow-hidden" x-trap.noscroll="open">
       
       <!-- Drawer Header -->
       <div class="flex justify-between items-center p-4 border-b border-gray-200">
