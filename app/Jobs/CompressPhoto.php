@@ -6,6 +6,17 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Compress large route photos to reduce file size and improve loading times.
+ *
+ * This job is automatically triggered when a route photo is uploaded.
+ * It compresses photos larger than 2MB by reducing JPEG quality until
+ * the file size is approximately 2MB or less. The original photo is
+ * deleted and replaced with the compressed version.
+ *
+ * Quality reduction starts at 85% and decreases in 5% increments
+ * down to a minimum of 50% to ensure acceptable image quality.
+ */
 class CompressPhoto implements ShouldQueue
 {
     use Queueable;
