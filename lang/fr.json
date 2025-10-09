@@ -517,8 +517,6 @@
     "Font size": "Taille de police",
     "Routes Insights": "Analyses des voies",
     "Order by": "Trier par",
-    "Removeal Score": "Score de retrait",
-    "Logs by mounths": "Logs par mois",
     "Manage Contest Routes": "Gérer les voies du concours",
     "Select which routes are part of this contest": "Sélectionnez les voies qui font partie de ce concours",
     "No routes available. Please add some routes to this site first.": "Aucune voie disponible. Veuillez d'abord ajouter des voies à ce site.",
@@ -660,5 +658,7 @@
     "Only my routes": "Seulement mes voies",
     "Set the route dismantling date": "Définir la date de démontage de la voie",
     "Success": "Succès",
-    "This route will be removed the": "Cette voie sera retirée le"
+    "This route will be removed the": "Cette voie sera retirée le",
+    "Removal Score": "Score de retrait",
+    "Logs by months": "Logs par mois"
 }
