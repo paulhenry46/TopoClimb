@@ -72,7 +72,7 @@ new class extends Component {
             <h3 class="text-sm font-medium text-gray-800"> {{__('First, edit the schema')}}</h3>
             <div class="mt-2 text-sm text-gray-700">
               <ul role="list" class="list-disc space-y-1 pl-5">
-                <li>{{__('The shift is the distance between the begining of the line and the begining of the text')}}</li>
+                <li>{{__('The shift is the distance between the beginning of the line and the beginning of the text')}}</li>
               </ul>
             </div>
           </div>
