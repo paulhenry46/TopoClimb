@@ -48,9 +48,9 @@ new class extends Component
         $filtered_path = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-filtered-'.$this->route->id;
 
         // Chain jobs: first compress the photo, then apply the color filter
-        CompressPhoto::dispatch($path)->chain([
-            new ImageFilter($this->route->color, $path, $filtered_path),
-        ]);
+        // Using dispatchSync to ensure jobs complete before redirecting
+        CompressPhoto::dispatchSync($path);
+        ImageFilter::dispatchSync($this->route->color, $path, $filtered_path);
 
         $this->redirectRoute('admin.routes.circle', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
