@@ -58,9 +58,6 @@ class CompressPhoto implements ShouldQueue
             return;
         }
 
-        $width = imagesx($image);
-        $height = imagesy($image);
-
         // Start with quality 85 and reduce until file size is acceptable
         $quality = 85;
         $tempPath = $fullPath.'.tmp';
