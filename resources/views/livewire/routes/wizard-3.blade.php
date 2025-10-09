@@ -45,9 +45,12 @@ new class extends Component
         $this->validateOnly('photo');
         $name = 'route-'.$this->route->id.'';
         $path = $this->photo->storeAs(path: 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'', name: $name);
-        CompressPhoto::dispatch($path);
         $filtered_path = 'photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-filtered-'.$this->route->id;
-        ImageFilter::dispatch($this->route->color, $path, $filtered_path);
+
+        // Chain jobs: first compress the photo, then apply the color filter
+        CompressPhoto::dispatch($path)->chain([
+            new ImageFilter($this->route->color, $path, $filtered_path),
+        ]);
 
         $this->redirectRoute('admin.routes.circle', ['site' => $this->site->id, 'area' => $this->area->id, 'route' => $this->route->id], navigate: true);
     }
