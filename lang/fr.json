@@ -652,5 +652,13 @@
     "members": "membres",
     "participants": "participants",
     "routes assigned": "voies assignées",
-    "sectors according to your file. Now, you can attach the number of your sector to the part of the plan.": "secteurs selon votre fichier. Maintenant, vous pouvez attacher le numéro de votre secteur à la partie du plan."
+    "sectors according to your file. Now, you can attach the number of your sector to the part of the plan.": "secteurs selon votre fichier. Maintenant, vous pouvez attacher le numéro de votre secteur à la partie du plan.",
+    "By": "Par",
+    "Level": "Niveau",
+    "Not climbed": "Non grimpé",
+    "Only deleted Routes": "Seulement les voies supprimées",
+    "Only my routes": "Seulement mes voies",
+    "Set the route dismantling date": "Définir la date de démontage de la voie",
+    "Success": "Succès",
+    "This route will be removed the": "Cette voie sera retirée le"
 }
