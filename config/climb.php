@@ -115,34 +115,35 @@ return [
     /*
     |--------------------------------------------------------------------------
     | Interval of HSV colors used to filter picture. Created from HSV value of 
-    | color with a tolerance of 15% for H, 25% for S and 25% for V. 
-    | Notes : Green : H = 25
+    | color with improved tolerance for varying lighting conditions.
+    | Lower V values allow detection in darker environments.
+    | Lower S values allow detection in brighter/washed-out environments.
     |--------------------------------------------------------------------------
     */
 
     'colorsInterval' => [
-    'red' => [[[0, 47, 69], [15, 97, 100]], [[345, 55, 25], [365, 100, 100]]], //testOK
-    'blue' => [[190, 51, 25], [232, 100, 100]], //0.0: 202->190 0.2 : 71->50 testOK
-    'green' => [[105, 40, 25], [167, 100, 100]], // Adjusted with larger tolerance testOK
-    'yellow' => [[35, 40, 25], [65, 100, 100]], //testOK
-    'purple' => [[254, 4, 75], [284, 54, 100]],
-    'pink' => [[312, 8, 73], [342, 58, 100]],
-    'gray' => [[205, 0, 25], [235, 41, 75]],
-    'black' => [[0, 0, 0], [360, 25, 25]],
-    'white' => [[0, 0, 75], [360, 25, 100]],
-    'emerald' => [[141, 27, 66], [171, 77, 100]],//=green
-    'orange' => [[16, 29, 74], [46, 79, 100]],
-    'amber' => [[28, 61, 73], [58, 100, 100]],//=orange
-    'teal' => [[159, 75, 48], [189, 100, 98]],//=green
-    'lime' => [[69, 75, 56], [99, 100, 100]],//=green
-    'cyan' => [[175, 75, 61], [205, 100, 100]],//=blue
-    'sky' => [[184, 75, 71], [214, 100, 100]],//=blue
-    'indigo' => [[226, 38, 75], [256, 88, 100]],//=purple
-    'violet' => [[246, 43, 75], [276, 93, 100]],//=purple
-    'fuchsia' => [[277, 46, 69], [307, 96, 100]],//=pink
-    'rose' => [[335, 49, 71], [360, 99, 100]],//=pink
-    'slate' => [[200, 3, 30], [230, 53, 80]],//=gray
-    'zinc' => [[225, 0, 23], [255, 32, 73]],//=gray
+    'red' => [[[0, 30, 20], [20, 100, 100]], [[340, 30, 20], [365, 100, 100]]], // Improved for varying light
+    'blue' => [[185, 30, 20], [235, 100, 100]], // Widened H, lower S and V for better detection
+    'green' => [[100, 25, 20], [170, 100, 100]], // Widened range for better tolerance
+    'yellow' => [[30, 25, 20], [70, 100, 100]], // Lower S and V for varying conditions
+    'purple' => [[250, 10, 20], [290, 70, 100]], // Improved range
+    'pink' => [[305, 10, 20], [345, 70, 100]], // Wider range
+    'gray' => [[0, 0, 15], [360, 30, 85]], // Full hue range with low saturation
+    'black' => [[0, 0, 0], [360, 100, 30]], // Low value for black
+    'white' => [[0, 0, 70], [360, 20, 100]], // High value, low saturation for white
+    'emerald' => [[135, 20, 20], [175, 100, 100]], // Green-based, improved
+    'orange' => [[10, 25, 20], [50, 100, 100]], // Between red and yellow
+    'amber' => [[25, 40, 20], [60, 100, 100]], // Yellow-orange, improved
+    'teal' => [[155, 40, 20], [195, 100, 100]], // Blue-green, improved
+    'lime' => [[65, 40, 20], [105, 100, 100]], // Yellow-green, improved
+    'cyan' => [[170, 40, 20], [210, 100, 100]], // Blue variant, improved
+    'sky' => [[180, 40, 20], [220, 100, 100]], // Light blue, improved
+    'indigo' => [[220, 25, 20], [260, 100, 100]], // Deep blue-purple, improved
+    'violet' => [[240, 30, 20], [280, 100, 100]], // Purple variant, improved
+    'fuchsia' => [[270, 30, 20], [310, 100, 100]], // Magenta-purple, improved
+    'rose' => [[330, 30, 20], [360, 100, 100]], // Pink-red, improved
+    'slate' => [[195, 5, 20], [235, 40, 85]], // Gray-blue, improved
+    'zinc' => [[220, 0, 15], [260, 25, 80]], // Neutral gray, improved
 ]
 
 /* 'colorsInterval' => [
