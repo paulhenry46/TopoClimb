@@ -3,11 +3,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite",
-        "openapi:validate": "swagger-cli validate openapi.yaml"
+        "dev": "vite"
     },
     "devDependencies": {
-        "@apidevtools/swagger-cli": "^4.0.4",
         "@tailwindcss/forms": "^0.5.7",
         "@tailwindcss/postcss": "^4.1.4",
         "@tailwindcss/typography": "^0.5.10",

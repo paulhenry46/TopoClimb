@@ -23,16 +23,6 @@ TopoClimb now includes a RESTful API that allows you to integrate climbing site 
 
 For detailed API documentation, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
 
-### OpenAPI Specification
-
-The API is documented using OpenAPI 3.0 specification. The spec file is available at [openapi.yaml](openapi.yaml).
-
-You can:
-- **View the spec** in tools like [Swagger Editor](https://editor.swagger.io/)
-- **Generate client SDKs** using [OpenAPI Generator](https://openapi-generator.tech/)
-- **Test the API** using [Swagger UI](https://swagger.io/tools/swagger-ui/) or [Postman](https://www.postman.com/)
-- **Validate the spec**: `npx swagger-cli validate openapi.yaml`
-
 ### Quick Start with API
 
 1. Create an API token from your TopoClimb account
