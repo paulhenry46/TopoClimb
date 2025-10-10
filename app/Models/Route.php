@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 /**
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Storage;
  */
 class Route extends Model
 {
+    use HasFactory;
     public function line()
     {
         return $this->belongsTo(Line::class);
@@ -108,4 +110,12 @@ class Route extends Model
 
     return $colors[$this->color] ?? '#000000'; // Default to black if color not found
 }
+
+    public function pathLine(){
+        if(Storage::exists('paths/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg')){
+            return Storage::url('paths/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg');
+        }else{
+            return null;
+        }
+    }
 }

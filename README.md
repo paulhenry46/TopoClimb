@@ -9,6 +9,32 @@ TopoClimb is a web-app to manage routes of indoor climbing sites and generate to
 - Create public page for each indoor site
 - Comment routes and propose a new cotation
 - Generate topo of the site
+- **RESTful API** for mobile app development and integrations
+
+## API Mode
+
+TopoClimb now includes a RESTful API that allows you to integrate climbing site data into mobile applications and third-party services.
+
+### API Features
+- **Public Endpoints**: Read-only access to sites, areas, sectors, lines, routes, contests, teams, and tags
+- **User Endpoints**: Authenticated users can view and update their profile
+- **No Admin Features**: The API excludes administrative operations (create, update, delete) to maintain data integrity
+- **Versioned**: All endpoints are versioned (v1) for future compatibility
+
+For detailed API documentation, see [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
+
+### Quick Start with API
+
+1. Create an API token from your TopoClimb account
+2. Use the token to authenticate API requests:
+   ```bash
+   curl -H "Authorization: Bearer YOUR_TOKEN" https://your-site.com/api/v1/user
+   ```
+3. Access public endpoints without authentication:
+   ```bash
+   curl https://your-site.com/api/v1/sites
+   ```
+
 
 ## Stack
 - Laravel 12
