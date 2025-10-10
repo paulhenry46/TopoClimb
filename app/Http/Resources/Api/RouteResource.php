@@ -23,6 +23,10 @@ class RouteResource extends JsonResource
             'grade' => $this->grade,
             'color' => $this->color,
             'comment' => $this->comment,
+            'picture' => $this->picture(),
+            'filtered_picture' => $this->filteredPicture(),
+            'circle' => $this->circle(),
+            'path_line' => $this->pathLine(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

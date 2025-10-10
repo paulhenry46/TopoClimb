@@ -28,4 +28,12 @@ class Sector extends Model
     {
         return Route::whereIn('line_id', $this->lines()->pluck('id'))->get();
     }
+
+    public function commonEditedLines(){
+        if(\Illuminate\Support\Facades\Storage::exists('paths/site-'.$this->area->site_id.'/area-'.$this->area_id.'/sector-'.$this->id.'/edited/common_paths.svg')){
+            return \Illuminate\Support\Facades\Storage::url('paths/site-'.$this->area->site_id.'/area-'.$this->area_id.'/sector-'.$this->id.'/edited/common_paths.svg');
+        }else{
+            return null;
+        }
+    }
 }

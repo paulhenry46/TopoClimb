@@ -69,11 +69,15 @@ Authorization: Bearer YOUR_API_TOKEN
     "type": "bouldering",
     "site_id": 1,
     "banner": "https://...",
+    "svg_schema": "https://.../users.svg",
+    "edited_svg_schema": "https://.../admin.svg",
     "created_at": "2025-01-01T00:00:00.000000Z",
     "updated_at": "2025-01-01T00:00:00.000000Z"
   }
 }
 ```
+
+**Note:** The `svg_schema` field contains the SVG schema for users, while `edited_svg_schema` contains the admin version with editing capabilities.
 
 #### Sectors
 
@@ -89,11 +93,14 @@ Authorization: Bearer YOUR_API_TOKEN
     "slug": "sector-a",
     "local_id": 1,
     "area_id": 1,
+    "common_edited_lines": "https://.../common_paths.svg",
     "created_at": "2025-01-01T00:00:00.000000Z",
     "updated_at": "2025-01-01T00:00:00.000000Z"
   }
 }
 ```
+
+**Note:** The `common_edited_lines` field contains the SVG with all route paths for the sector.
 
 #### Lines
 
@@ -130,11 +137,21 @@ Authorization: Bearer YOUR_API_TOKEN
     "grade": 15,
     "color": "#FF0000",
     "comment": "Great route for beginners",
+    "picture": "https://.../route-1",
+    "filtered_picture": "https://.../route-filtered-1",
+    "circle": "https://.../route-1.svg",
+    "path_line": "https://.../route-1.svg",
     "created_at": "2025-01-01T00:00:00.000000Z",
     "updated_at": "2025-01-01T00:00:00.000000Z"
   }
 }
 ```
+
+**Note:** 
+- `picture`: Photo of the route
+- `filtered_picture`: Filtered/processed photo of the route
+- `circle`: SVG circle marker for the route
+- `path_line`: SVG path line showing the route path
 
 #### Contests
 

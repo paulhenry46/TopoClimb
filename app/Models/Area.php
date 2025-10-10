@@ -42,4 +42,20 @@ class Area extends Model
             return null;
         }
     }
+
+    public function svgSchema(){
+        if(Storage::exists('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/users.svg')){
+            return Storage::url('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/users.svg');
+        }else{
+            return null;
+        }
+    }
+
+    public function editedSvgSchema(){
+        if(Storage::exists('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/admin.svg')){
+            return Storage::url('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/admin.svg');
+        }else{
+            return null;
+        }
+    }
 }

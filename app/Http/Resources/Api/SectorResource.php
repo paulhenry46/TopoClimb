@@ -20,6 +20,7 @@ class SectorResource extends JsonResource
             'slug' => $this->slug,
             'local_id' => $this->local_id,
             'area_id' => $this->area_id,
+            'common_edited_lines' => $this->commonEditedLines(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

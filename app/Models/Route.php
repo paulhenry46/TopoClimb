@@ -110,4 +110,12 @@ class Route extends Model
 
     return $colors[$this->color] ?? '#000000'; // Default to black if color not found
 }
+
+    public function pathLine(){
+        if(Storage::exists('paths/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg')){
+            return Storage::url('paths/site-'.$this->line->sector->area->site_id.'/area-'.$this->line->sector->area_id.'/route-'.$this->id.'.svg');
+        }else{
+            return null;
+        }
+    }
 }
