@@ -3,7 +3,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "openapi:validate": "swagger-cli validate openapi.yaml"
     },
     "devDependencies": {
         "@apidevtools/swagger-cli": "^4.0.4",

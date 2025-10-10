@@ -35,6 +35,10 @@ Then open http://localhost:8080 in your browser
 To validate that the OpenAPI specification is correct:
 
 ```bash
+# Using npm script (recommended)
+npm run openapi:validate
+
+# Or directly with npx
 npm install
 npx swagger-cli validate openapi.yaml
 ```
@@ -222,7 +226,7 @@ deck gateway sync kong-config.yaml
 
 1. **Always validate** the OpenAPI spec after making changes:
    ```bash
-   npx swagger-cli validate openapi.yaml
+   npm run openapi:validate
    ```
 
 2. **Keep in sync**: When adding new endpoints to the API, update the OpenAPI spec accordingly
@@ -260,7 +264,7 @@ When you add new API endpoints:
 
 2. Validate the changes:
    ```bash
-   npx swagger-cli validate openapi.yaml
+   npm run openapi:validate
    ```
 
 3. Test the new endpoints match the spec
