@@ -48,8 +48,8 @@ Route::prefix('v1')->group(function () {
 });
 
 // Authenticated endpoints (require API token)
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+/* Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     // User profile
     Route::get('/user', [UserController::class, 'show']);
     Route::put('/user', [UserController::class, 'update']);
-});
+}); */
