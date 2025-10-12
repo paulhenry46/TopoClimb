@@ -73,5 +73,6 @@ class Site extends Model
 
     protected $casts = [
         'custom_cotation' => 'array',
+        'default_cotation' => 'boolean',
     ];
 }
