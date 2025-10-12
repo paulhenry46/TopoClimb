@@ -23,6 +23,7 @@ class SiteResource extends JsonResource
             'profile_picture' => $this->profile_picture(),
             'banner' => $this->banner(),
             'default_cotation' => $this->default_cotation,
+            'grading_system' => $this->cotations(true),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

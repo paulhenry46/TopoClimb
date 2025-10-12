@@ -48,11 +48,33 @@ Authorization: Bearer YOUR_API_TOKEN
     "profile_picture": "https://...",
     "banner": "https://...",
     "default_cotation": true,
+    "grading_system": {
+      "free": false,
+      "hint": "System is Fontainebleau scale : https://fr.wikipedia.org/wiki/Cotation_en_escalade#Cotation_fran%C3%A7aise_2",
+      "points": {
+        "3a": 300,
+        "3a+": 310,
+        "3b": 320,
+        "4a": 400,
+        "5a": 500,
+        "6a": 600,
+        "7a": 700,
+        "8a": 800,
+        "9a": 900
+      }
+    },
     "created_at": "2025-01-01T00:00:00.000000Z",
     "updated_at": "2025-01-01T00:00:00.000000Z"
   }
 }
 ```
+
+**Note:** 
+- `default_cotation`: Boolean indicating if the site uses the default grading system (true) or a custom one (false)
+- `grading_system`: Object containing the grading system details:
+  - `free`: Boolean indicating if grades can be entered freely
+  - `hint`: String providing guidance on the grading system
+  - `points`: Object mapping grade labels to numerical values (300-950)
 
 #### Areas
 
