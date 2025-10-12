@@ -43,9 +43,13 @@ class Area extends Model
         }
     }
 
-    public function svgSchema(){
+    public function svgSchema($android = false){
         if(Storage::exists('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/users.svg')){
-            return Storage::url('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/users.svg');
+            if($android){
+                return Storage::url('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/android.svg');
+            }else{
+                return Storage::url('plans/site-'.$this->site->id.'/area-'.$this->id.'/edited/users.svg');
+            }
         }else{
             return null;
         }

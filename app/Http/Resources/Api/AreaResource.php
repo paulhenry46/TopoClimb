@@ -21,7 +21,7 @@ class AreaResource extends JsonResource
             'type' => $this->type,
             'site_id' => $this->site_id,
             'banner' => $this->banner(),
-            'svg_schema' => $this->svgSchema(),
+            'svg_schema' => $this->svgSchema(true),
             'edited_svg_schema' => $this->editedSvgSchema(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -42,7 +42,20 @@ class ProcessMapOfArea implements ShouldQueue
       
       $output_file_path= storage_path('app/public/plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg');
       $result = Process::run('inkscape --export-type=svg -o '.$output_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
-
+      
+      
+      ///---------------------- ANDROID MAP -----------------------
+      $android_file_path = storage_path('app/public/plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/android.svg');
+      // copy admin.svg to android.svg in the same folder
+       if (file_exists($output_file_path)) {
+        if (!@copy($output_file_path, $android_file_path)) {
+          throw new \RuntimeException("Failed to copy $output_file_path to $android_file_path");
+        }
+      }
+      ApplyTranslateToPaths::dispatchSync($android_file_path);
+      RemoveGItemsFromSVG::dispatchSync($android_file_path);
+      SimplifySVG::dispatchSync($android_file_path);
+      ///---------------- END ANDROID MAP------------------------
       
       $xml = simplexml_load_string(Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/admin.svg'));
       $dom = new DOMDocument('1.0');
