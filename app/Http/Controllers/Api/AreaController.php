@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\AreaResource;
+use App\Http\Resources\Api\RouteResource;
 use App\Models\Area;
 use App\Models\Site;
 
@@ -24,5 +25,14 @@ class AreaController extends Controller
     public function show(Area $area)
     {
         return new AreaResource($area);
+    }
+
+    /**
+     * Display a listing of routes for an area.
+     */
+    public function routes(Area $area)
+    {
+        $routes = $area->routes();
+        return RouteResource::collection($routes);
     }
 }

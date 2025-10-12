@@ -116,6 +116,28 @@ test('can list areas for a site', function () {
     ]);
 });
 
+test('can list routes for an area', function () {
+    $site = Site::factory()->create();
+    $area = Area::factory()->create(['site_id' => $site->id]);
+    $sector = Sector::factory()->create(['area_id' => $area->id]);
+    $line = Line::factory()->create(['sector_id' => $sector->id]);
+    Route::factory()->count(3)->create(['line_id' => $line->id]);
+    
+    $response = $this->getJson("/api/v1/areas/{$area->id}/routes");
+    
+    $response->assertStatus(200);
+    $response->assertJsonStructure([
+        'data' => [
+            '*' => [
+                'id',
+                'name',
+                'slug',
+            ]
+        ]
+    ]);
+    $response->assertJsonCount(3, 'data');
+});
+
 test('can get authenticated user profile', function () {
     $user = User::factory()->create();
     $token = $user->createToken('test-token')->plainTextToken;

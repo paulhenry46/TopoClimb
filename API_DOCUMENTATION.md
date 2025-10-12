@@ -80,6 +80,7 @@ Authorization: Bearer YOUR_API_TOKEN
 
 - **GET** `/api/v1/sites/{site}/areas` - List all areas for a site
 - **GET** `/api/v1/areas/{area}` - Get a specific area
+- **GET** `/api/v1/areas/{area}/routes` - List all routes for an area
 
 **Example Response:**
 ```json

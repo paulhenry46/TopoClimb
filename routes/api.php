@@ -21,6 +21,7 @@ Route::prefix('v1')->group(function () {
     // Areas
     Route::get('/sites/{site}/areas', [AreaController::class, 'index']);
     Route::get('/areas/{area}', [AreaController::class, 'show']);
+    Route::get('/areas/{area}/routes', [AreaController::class, 'routes']);
     
     // Sectors
     Route::get('/areas/{area}/sectors', [SectorController::class, 'index']);
