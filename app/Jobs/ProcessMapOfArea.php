@@ -45,13 +45,36 @@ class ProcessMapOfArea implements ShouldQueue
       
       
       ///---------------------- ANDROID MAP -----------------------
-      $android_file_path = storage_path('app/public/plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/android.svg');
-      // copy admin.svg to android.svg in the same folder
-       if (file_exists($output_file_path)) {
-        if (!@copy($output_file_path, $android_file_path)) {
-          throw new \RuntimeException("Failed to copy $output_file_path to $android_file_path");
+      $input_file_path = Storage::path('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors-simplified.svg');
+       $android_file_path = storage_path('app/public/plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/android.svg');
+      $result = Process::run('inkscape --export-type=svg -o '.$android_file_path.' --export-area-drawing --export-plain-svg '.$input_file_path.'');
+
+       $xml = simplexml_load_string(Storage::get('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/android.svg'));
+      $dom = new DOMDocument('1.0');
+      $dom->preserveWhiteSpace = false;
+      $dom->formatOutput = true;
+      $dom->loadXML($xml->asXML());
+
+      $items = $dom->getElementsByTagName('svg');
+      foreach ($items as $item) {
+          $width = $item->getAttribute('width');
+          $height = $item->getAttribute('height');
+          $item->removeAttribute('width');
+          $item->removeAttribute('height');
+          $item->setAttribute("viewBox", "0 0 $width $height");
+           }
+
+      foreach ($this->sectors as $sector) {
+        $xpath = new DOMXPath($dom);
+        // match id that contains the sector local_id (handles ids like "sector_2 1")
+        $query = "//*[contains(@id, 'sector_{$sector->local_id}')]";
+        $item = $xpath->query($query)->item(0);
+        if ($item !== null) {
+            $item->setAttribute("id", "sector_{$sector->id}");
         }
       }
+            Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/edited/android.svg', $dom->saveXML());
+
       ApplyTranslateToPaths::dispatchSync($android_file_path);
       RemoveGItemsFromSVG::dispatchSync($android_file_path);
       SimplifySVG::dispatchSync($android_file_path);

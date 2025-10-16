@@ -18,6 +18,7 @@ new class extends Component {
     public $number_sectors;
     public string $url;
     public $svg_edited;
+    public $svg_simplified;
     public $svg_with_numbers;
     #[Validate('mimes:svg|required')]
     public $photo;
@@ -52,6 +53,7 @@ new class extends Component {
 
     public function save(){
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors.svg', $this->removeClipPath($this->svg_edited));
+      Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors-simplified.svg', $this->removeClipPath($this->svg_simplified));
       Storage::put('plans/site-'.$this->site->id.'/area-'.$this->area->id.'/sectors-numbers.svg',$this->removeClipPath($this->svg_with_numbers));
       
 for ($i = 1; $i <= $this->number_sectors; $i++) {
@@ -130,6 +132,7 @@ $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' 
               </div>
               <div x-data="{message: ''}" @svg_with_numbers.window="$wire.svg_with_numbers = $event.detail.message" 
               @svg_edited.window="$wire.svg_edited = $event.detail.message"
+              @svg_simplified.window="$wire.svg_simplified = $event.detail.message"
               @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
             </div>
@@ -308,6 +311,7 @@ $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' 
 
             function exportTheProject() {
 
+                // original svg with numbers
                 var evt = new CustomEvent('svg_with_numbers', {
                     detail: {
                         message: project.activeLayer.exportSVG({
@@ -317,12 +321,14 @@ $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' 
                 });
                 window.dispatchEvent(evt);
 
+                // create edited version (remove helper circles / texts)
                 for (var item of project.activeLayer.getItems({
                         class: Path
                     })) {
-                    if (item.name.replace(/[^a-z]/g, '') == 'text' || item.name.replace(/[^a-z]/g, '') == 'circle') {
+                    var nameClean = (item.name || '').replace(/[^a-z]/g, '');
+                    // keep 'separator' here — only remove helper drawing items
+                    if (nameClean == 'text' || nameClean == 'circle') {
                         item.remove();
-
                     }
                 }
 
@@ -331,14 +337,72 @@ $this->redirectRoute('admin.sectors.manage', ['site' => $this->site->id, 'area' 
                     })) {
                     item.remove();
                 }
-                var evt = new CustomEvent('svg_edited', {
+
+                var evt2 = new CustomEvent('svg_edited', {
                     detail: {
                         message: project.activeLayer.exportSVG({
                             asString: true
                         }),
                     }
                 });
-                window.dispatchEvent(evt);
+                window.dispatchEvent(evt2);
+
+                // --- simplified variant ---
+                // clone the layer so we can modify without affecting UI
+                var cloneLayer = project.activeLayer.clone();
+                // parameters
+                var targetStroke = 25;                // 1) 25px thickness
+                var trimDistance = targetStroke / 2;  // 3) trim start/end to create gaps (half thickness)
+
+                // iterate paths on the clone
+                var paths = cloneLayer.getItems({ class: Path }).slice(); // snapshot
+                for (var p of paths) {
+                    var nameClean = (p.name || '').replace(/[^a-z]/g, '');
+                    // 2) remove separators entirely
+                    if (nameClean == 'separator') {
+                        p.remove();
+                        continue;
+                    }
+                    // remove small helper items if any
+                    if (nameClean == 'text' || nameClean == 'circle') {
+                        p.remove();
+                        continue;
+                    }
+
+                    // Trim path start/end if long enough
+                    var len = p.length || 0;
+                    if (len > trimDistance * 2) {
+                        // split at end, then split at start to keep the middle segment
+                        var right = p.splitAt(len - trimDistance);   // right tail
+                        var middle = p.splitAt(trimDistance);       // middle remains after removing left part
+                        // remove the leftmost (original p) and right tail
+                        p.remove();
+                        if (right) right.remove();
+
+                        // apply stylistic changes on the middle
+                        middle.strokeWidth = targetStroke;
+                        // keep original strokeColor if present, otherwise black
+                        middle.strokeColor = middle.strokeColor || 'black';
+                        middle.fillColor = null;
+                    } else {
+                        // path too short to trim: just set stroke and keep it
+                        p.strokeWidth = targetStroke;
+                        p.strokeColor = p.strokeColor || 'black';
+                        p.fillColor = null;
+                    }
+                }
+
+                // export simplified SVG and send to Livewire
+                var simplifiedSVG = cloneLayer.exportSVG({ asString: true });
+                var evt3 = new CustomEvent('svg_simplified', {
+                    detail: {
+                        message: simplifiedSVG
+                    }
+                });
+                window.dispatchEvent(evt3);
+
+                // remove clone to keep canvas clean
+                cloneLayer.remove();
             }
 
             function scaleAllItems() {
