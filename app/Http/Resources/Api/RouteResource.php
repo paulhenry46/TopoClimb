@@ -30,6 +30,8 @@ class RouteResource extends JsonResource
             'thumbnail' => $this->thumbnail(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'openers' => $this->whenLoaded('users', function () { return $this->users->pluck('name'); }),
+            'tags' => $this->whenLoaded('tags', function () { return $this->tags->pluck('name'); }),
         ];
     }
 }

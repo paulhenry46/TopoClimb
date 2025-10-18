@@ -34,6 +34,7 @@ Route::prefix('v1')->group(function () {
     // Routes
     Route::get('/lines/{line}/routes', [RouteController::class, 'index']);
     Route::get('/routes/{route}', [RouteController::class, 'show']);
+    Route::get('/routes/{route}/logs', [RouteController::class, 'logs']);
     
     // Contests
     Route::get('/sites/{site}/contests', [ContestController::class, 'index']);
