@@ -309,16 +309,15 @@ new class extends Component {
   </div>
 
 <div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden">
-  <!-- Drawer -->
+  <!-- Overlay -->
   <div
     x-cloak
     x-show="open"
     x-transition.opacity
     class="fixed inset-0 z-30 bg-gray-200/50"
-    
     aria-hidden="true"
-  >
-
+  ></div>
+  <!-- Drawer -->
   <div x-cloak
       x-show="open" 
       x-transition:enter="transition ease-out duration-300" 
