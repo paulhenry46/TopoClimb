@@ -68,7 +68,7 @@ new class extends Component {
       x-transition:leave="transition ease-in duration-300" 
       x-transition:leave-start="translate-y-0" 
       x-transition:leave-end="translate-y-full" 
-      class="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg rounded-t-lg overflow-hidden" x-trap.noscroll="open">
+      class="fixed bottom-0 left-0 right-0 z-40 bg-white shadow-lg rounded-t-lg overflow-hidden" >
       
       <!-- Drawer Header -->
       <div class="flex justify-between items-center p-4 border-b border-gray-200">
