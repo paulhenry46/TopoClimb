@@ -9,11 +9,13 @@ use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public endpoints (no authentication required)
 Route::prefix('v1')->group(function () {
+    Route::get('/meta', [AuthController::class, 'meta']);
     // Sites
     Route::get('/sites', [SiteController::class, 'index']);
     Route::get('/sites/{site}', [SiteController::class, 'show']);
@@ -47,6 +49,14 @@ Route::prefix('v1')->group(function () {
     // Tags
     Route::get('/tags', [TagController::class, 'index']);
     Route::get('/tags/{tag}', [TagController::class, 'show']);
+
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', [AuthController::class, 'user']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+});
 });
 
 // Authenticated endpoints (require API token)
@@ -55,3 +65,4 @@ Route::prefix('v1')->group(function () {
     Route::get('/user', [UserController::class, 'show']);
     Route::put('/user', [UserController::class, 'update']);
 }); */
+

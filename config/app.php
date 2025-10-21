@@ -14,6 +14,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'TopoClimb'),
+    'description' => env('INSTANCE_DESC', 'Instance used for tests only'),
+    'version' => env('INSTANCE_VERSION', '1.0'),
 
     /*
     |--------------------------------------------------------------------------
