@@ -58,7 +58,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         
         // Route logs
-        Route::post('/routes/{route}/logs', [RouteController::class, 'storeLog']);
+        Route::post('/routes/{route}/logs/create', [RouteController::class, 'storeLog']);
         Route::post('/user/logs', [RouteController::class, 'loggedRoutesByUser']);
 });
 });
