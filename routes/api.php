@@ -57,15 +57,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/logout', [AuthController::class, 'logout']);
         
-        // Route logs (authenticated)
+        // Route logs
         Route::post('/routes/{route}/logs', [RouteController::class, 'storeLog']);
+        Route::post('/user/logs', [RouteController::class, 'loggedRoutesByUser']);
 });
 });
-
-// Authenticated endpoints (require API token)
-/* Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    // User profile
-    Route::get('/user', [UserController::class, 'show']);
-    Route::put('/user', [UserController::class, 'update']);
-}); */
 

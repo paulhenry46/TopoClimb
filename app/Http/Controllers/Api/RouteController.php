@@ -65,4 +65,21 @@ class RouteController extends Controller
         
         return (new LogResource($log))->response()->setStatusCode(201);
     }
+
+    public function loggedRoutesByUser(Request $request)
+    {
+         $user = $request->user();
+
+    // Get all logs for this user
+    $logs = Log::where('user_id', $user->id)->get();
+
+    // Get the route IDs from these logs
+    $routeIds = $logs->pluck('route_id')->unique()->values();
+
+    // Return as JSON
+    return response()->json([
+        'data' => $routeIds,
+    ]);
+        
+    }
 }
