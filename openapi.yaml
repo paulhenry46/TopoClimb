@@ -371,6 +371,128 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /routes/{route}/logs:
+    get:
+      tags:
+        - Routes
+      summary: Get logs for a specific route
+      description: Returns all climbing logs for a specific route
+      operationId: getRouteLogs
+      parameters:
+        - name: route
+          in: path
+          required: true
+          description: Route ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Log'
+              example:
+                data:
+                  - id: 123
+                    route_id: 1
+                    comments: "Great route!"
+                    type: "flash"
+                    way: "bouldering"
+                    grade: 650
+                    created_at: "2025-01-15T14:30:00.000000Z"
+                    is_verified: false
+                    user_name: "John Doe"
+                    user_pp_url: "https://example.com/user.jpg"
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Routes
+      summary: Create a log for a route
+      description: Create a new climbing log for a specific route (requires authentication)
+      operationId: createRouteLog
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: route
+          in: path
+          required: true
+          description: Route ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - grade
+                - type
+                - way
+              properties:
+                grade:
+                  type: integer
+                  minimum: 300
+                  maximum: 950
+                  description: The difficulty grade value (must match site's grading system)
+                  example: 650
+                type:
+                  type: string
+                  enum: [work, flash, view]
+                  description: "Type of ascent: work (working on it), flash (first try success), view (just viewing/attempted)"
+                  example: "flash"
+                way:
+                  type: string
+                  enum: [top-rope, lead, bouldering]
+                  description: "Climbing style"
+                  example: "bouldering"
+                comment:
+                  type: string
+                  maxLength: 1000
+                  description: Optional comments about the climb
+                  example: "Amazing route! Really enjoyed it."
+                video_url:
+                  type: string
+                  format: uri
+                  maxLength: 255
+                  description: Optional URL to a video of the climb
+                  example: "https://example.com/my-climb.mp4"
+      responses:
+        '201':
+          description: Log created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Log'
+              example:
+                data:
+                  id: 123
+                  route_id: 1
+                  comments: "Amazing route! Really enjoyed it."
+                  type: "flash"
+                  way: "bouldering"
+                  grade: 650
+                  created_at: "2025-01-15T14:30:00.000000Z"
+                  is_verified: false
+                  user_name: "John Doe"
+                  user_pp_url: "https://example.com/user.jpg"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
   /sites/{site}/contests:
     get:
       tags:
@@ -970,6 +1092,53 @@ components:
           type: string
           format: date-time
           example: "2025-01-01T00:00:00.000000Z"
+
+    Log:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        route_id:
+          type: integer
+          example: 1
+        comments:
+          type: string
+          nullable: true
+          example: "Amazing route! Really enjoyed it."
+        type:
+          type: string
+          enum: [work, flash, view]
+          description: "Type of ascent: work (working on it), flash (first try success), view (just viewing/attempted)"
+          example: "flash"
+        way:
+          type: string
+          enum: [top-rope, lead, bouldering]
+          description: "Climbing style"
+          example: "bouldering"
+        grade:
+          type: integer
+          minimum: 300
+          maximum: 950
+          description: "The difficulty grade value"
+          example: 650
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-01-15T14:30:00.000000Z"
+        is_verified:
+          type: boolean
+          description: "Whether the log has been verified by staff"
+          example: false
+        user_name:
+          type: string
+          description: "Name of the user who created the log"
+          example: "John Doe"
+        user_pp_url:
+          type: string
+          nullable: true
+          description: "Profile picture URL of the user who created the log"
+          example: "https://example.com/user.jpg"
 
     Error:
       type: object

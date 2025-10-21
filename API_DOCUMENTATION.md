@@ -268,6 +268,65 @@ Authorization: Bearer YOUR_API_TOKEN
 }
 ```
 
+#### Route Logs
+
+- **POST** `/api/v1/routes/{route}/logs` - Create a new log for a route (authenticated)
+
+**POST Example Request:**
+```json
+{
+  "grade": 650,
+  "type": "flash",
+  "way": "bouldering",
+  "comment": "Amazing route! Really enjoyed it.",
+  "video_url": "https://example.com/my-climb.mp4"
+}
+```
+
+**Parameters:**
+- `grade` (required, integer): The difficulty grade value (300-950). Must match the site's grading system values.
+- `type` (required, string): Type of ascent. Options: `work` (working on it), `flash` (first try success), `view` (just viewing/attempted)
+- `way` (required, string): Climbing style. Options: `top-rope`, `lead`, `bouldering`
+- `comment` (optional, string): Comments about the climb (max 1000 characters)
+- `video_url` (optional, string): URL to a video of the climb (max 255 characters, must be a valid URL)
+
+**POST Example Response (201 Created):**
+```json
+{
+  "data": {
+    "id": 123,
+    "route_id": 1,
+    "comments": "Amazing route! Really enjoyed it.",
+    "type": "flash",
+    "way": "bouldering",
+    "grade": 650,
+    "created_at": "2025-01-15T14:30:00.000000Z",
+    "is_verified": false,
+    "user_name": "John Doe",
+    "user_pp_url": "https://..."
+  }
+}
+```
+
+**Error Response (422 Validation Error):**
+```json
+{
+  "message": "The grade field is required. (and 2 more errors)",
+  "errors": {
+    "grade": ["The grade field is required."],
+    "type": ["The type field is required."],
+    "way": ["The way field is required."]
+  }
+}
+```
+
+**Error Response (401 Unauthorized):**
+```json
+{
+  "message": "Unauthenticated."
+}
+```
+
 ## API Mode Features
 
 The API is designed with the following principles:
@@ -308,7 +367,6 @@ API requests are subject to rate limiting to ensure fair usage. The specific lim
 
 Planned features for future API versions:
 
-- Route climbing logs (view and create)
 - Contest participation
 - Team joining/leaving
 - Category enrollment

@@ -189,3 +189,129 @@ test('can list tags', function () {
         ]
     ]);
 });
+
+test('can get logs for a route', function () {
+    $site = Site::factory()->create();
+    $area = Area::factory()->create(['site_id' => $site->id]);
+    $sector = Sector::factory()->create(['area_id' => $area->id]);
+    $line = Line::factory()->create(['sector_id' => $sector->id]);
+    $route = Route::factory()->create(['line_id' => $line->id]);
+    
+    $user = User::factory()->create();
+    $route->logs()->create([
+        'user_id' => $user->id,
+        'grade' => 600,
+        'type' => 'flash',
+        'way' => 'bouldering',
+        'comment' => 'Great route!',
+    ]);
+    
+    $response = $this->getJson("/api/v1/routes/{$route->id}/logs");
+    
+    $response->assertStatus(200);
+    $response->assertJsonStructure([
+        'data' => [
+            '*' => [
+                'id',
+                'route_id',
+                'type',
+                'way',
+                'grade',
+            ]
+        ]
+    ]);
+    $response->assertJsonCount(1, 'data');
+});
+
+test('authenticated user can create a log for a route', function () {
+    $site = Site::factory()->create();
+    $area = Area::factory()->create(['site_id' => $site->id]);
+    $sector = Sector::factory()->create(['area_id' => $area->id]);
+    $line = Line::factory()->create(['sector_id' => $sector->id]);
+    $route = Route::factory()->create(['line_id' => $line->id]);
+    
+    $user = User::factory()->create();
+    $token = $user->createToken('test-token')->plainTextToken;
+    
+    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        ->postJson("/api/v1/routes/{$route->id}/logs", [
+            'grade' => 650,
+            'type' => 'flash',
+            'way' => 'bouldering',
+            'comment' => 'Awesome route!',
+            'video_url' => 'https://example.com/video.mp4',
+        ]);
+    
+    $response->assertStatus(201);
+    $response->assertJsonStructure([
+        'data' => [
+            'id',
+            'route_id',
+            'comments',
+            'type',
+            'way',
+            'grade',
+            'created_at',
+        ]
+    ]);
+    $response->assertJsonPath('data.route_id', $route->id);
+    $response->assertJsonPath('data.type', 'flash');
+    $response->assertJsonPath('data.way', 'bouldering');
+    $response->assertJsonPath('data.grade', 650);
+});
+
+test('cannot create log without authentication', function () {
+    $site = Site::factory()->create();
+    $area = Area::factory()->create(['site_id' => $site->id]);
+    $sector = Sector::factory()->create(['area_id' => $area->id]);
+    $line = Line::factory()->create(['sector_id' => $sector->id]);
+    $route = Route::factory()->create(['line_id' => $line->id]);
+    
+    $response = $this->postJson("/api/v1/routes/{$route->id}/logs", [
+        'grade' => 650,
+        'type' => 'flash',
+        'way' => 'bouldering',
+    ]);
+    
+    $response->assertStatus(401);
+});
+
+test('log creation validates required fields', function () {
+    $site = Site::factory()->create();
+    $area = Area::factory()->create(['site_id' => $site->id]);
+    $sector = Sector::factory()->create(['area_id' => $area->id]);
+    $line = Line::factory()->create(['sector_id' => $sector->id]);
+    $route = Route::factory()->create(['line_id' => $line->id]);
+    
+    $user = User::factory()->create();
+    $token = $user->createToken('test-token')->plainTextToken;
+    
+    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        ->postJson("/api/v1/routes/{$route->id}/logs", [
+            // Missing required fields
+        ]);
+    
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors(['grade', 'type', 'way']);
+});
+
+test('log creation validates enum values', function () {
+    $site = Site::factory()->create();
+    $area = Area::factory()->create(['site_id' => $site->id]);
+    $sector = Sector::factory()->create(['area_id' => $area->id]);
+    $line = Line::factory()->create(['sector_id' => $sector->id]);
+    $route = Route::factory()->create(['line_id' => $line->id]);
+    
+    $user = User::factory()->create();
+    $token = $user->createToken('test-token')->plainTextToken;
+    
+    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        ->postJson("/api/v1/routes/{$route->id}/logs", [
+            'grade' => 650,
+            'type' => 'invalid-type',
+            'way' => 'invalid-way',
+        ]);
+    
+    $response->assertStatus(422);
+    $response->assertJsonValidationErrors(['type', 'way']);
+});
