@@ -18,7 +18,7 @@ class RouteController extends Controller
      */
     public function index(Line $line)
     {
-        $routes = $line->routes()->with(['users', 'tags'])->get();
+        $routes = $line->routes()->with(['users', 'tags', 'logs'])->get();
         return RouteResource::collection($routes);
     }
 

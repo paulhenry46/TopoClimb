@@ -32,6 +32,14 @@ class RouteResource extends JsonResource
             'updated_at' => $this->updated_at,
             'openers' => $this->whenLoaded('users', function () { return $this->users->pluck('name'); }),
             'tags' => $this->whenLoaded('tags', function () { return $this->tags->pluck('name'); }),
+            'number_logs' => $this->whenLoaded('logs', function () { return $this->logs->count(); }),
+            'number_comments' => $this->whenLoaded('logs', function () {
+               return $this->logs->filter(function($log) {
+                       $c = $log->comment ?? '';
+                       return trim((string)$c) !== '';
+                   })
+                   ->count();
+           }),
         ];
     }
 }
