@@ -69,6 +69,10 @@ class SoftDeleteRoute implements ShouldQueue
             }
             Storage::put($CommonPath, $dom_common->saveXML());
           }
+          $input = 'paths/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/common.src.svg';
+      $output = 'paths/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/edited/android.svg';
+
+      GenerateSectorPathForAndroid::dispatch($input, $output);
         }
 
         $this->route->comment = 'softDeleted';

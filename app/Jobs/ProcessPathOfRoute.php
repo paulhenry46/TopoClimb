@@ -69,6 +69,10 @@ class ProcessPathOfRoute implements ShouldQueue
 
       $this->addPathToCommonPaths($path);
       $this->ProcessCommonPaths();
+      $input = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/common.src.svg';
+      $output = 'paths/site-'.$this->site->id.'/area-'.$this->area->id.'/sector-'.$this->sector->id.'/edited/android.svg';
+
+      GenerateSectorPathForAndroid::dispatch($input, $output);
     }
 
     /**

@@ -27,6 +27,7 @@ Route::prefix('v1')->group(function () {
     
     // Sectors
     Route::get('/areas/{area}/sectors', [SectorController::class, 'index']);
+    Route::get('/areas/{area}/schemas', [AreaController::class, 'sectorsSchema']);
     Route::get('/sectors/{sector}', [SectorController::class, 'show']);
     
     // Lines

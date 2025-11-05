@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\Line;
 use App\Models\Route;
 use App\Models\Site;
+use Illuminate\Support\Facades\Storage;
 
 class AreaController extends Controller
 {
@@ -44,4 +45,32 @@ class AreaController extends Controller
 
         return RouteResource::collection($routes);
     }
+
+    public function sectorsSchema(Area $area){
+        if($area->type !== 'bouldering'){
+            $site = $area->site;
+        $schema_data['data'] = [];
+        $schema_data['sectors'] = [];
+                foreach ($area->sectors as $sector) {
+                    if(Storage::exists('paths/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/edited/android.svg')){
+                         $data = ['id' => $sector->id,
+                    'name' => $sector->name,
+                   'paths' => Storage::url('paths/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/edited/android.svg'),
+                   'bg' => Storage::url('plans/site-'.$site->id.'/area-'.$area->id.'/sector-'.$sector->id.'/schema')
+                  ];
+                    }else{
+                         $data = ['id' => $sector->id,
+                    'name' => $sector->name,
+                   'paths' => null,
+                   'bg' => null
+                  ];
+                    }
+         
+            array_push($schema_data['data'], $data);
+          }
+          return $schema_data['data'];
+        }else{
+        return ['error' => 'Error : Bouldering Area'];
+        }
+}
 }
