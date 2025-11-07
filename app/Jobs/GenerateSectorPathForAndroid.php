@@ -45,6 +45,21 @@ class GenerateSectorPathForAndroid implements ShouldQueue
         $viewBox = '0 0 1000 1000';
       }
 
+      // capture transform on original svg (if any) to apply to output group
+      $svgTransform = null;
+      if ($svgElem && $svgElem->hasAttribute('transform')) {
+        $svgTransform = $svgElem->getAttribute('transform');
+      }
+
+      // also look for a <g> with a transform in the input (first found)
+      $gTransform = null;
+      $gNodeWithTransform = $xpath->query("//*[local-name() = 'g' and @transform]")->item(0);
+      if ($gNodeWithTransform instanceof \DOMElement) {
+        $gTransform = $gNodeWithTransform->getAttribute('transform');
+      }
+      // combine svg and g transforms if both exist (preserve order)
+      $combinedTransform = trim(($svgTransform ?? '') . ' ' . ($gTransform ?? ''));
+
       // prepare output document
       $out = new DOMDocument('1.0');
       $out->preserveWhiteSpace = false;
@@ -59,6 +74,9 @@ class GenerateSectorPathForAndroid implements ShouldQueue
       $g = $out->createElement('g');
       $g->setAttribute('stroke-width', '25');
       $g->setAttribute('fill', 'none');
+      if ($combinedTransform !== '') {
+        $g->setAttribute('transform', $combinedTransform);
+      }
       $svgOut->appendChild($g);
 
       // collect all path nodes (anywhere in original document)
