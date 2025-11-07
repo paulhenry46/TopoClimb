@@ -98,7 +98,28 @@ class ProcessPathOfRoute implements ShouldQueue
                 $pathElement->remove();
             }
   
-            (new DOMXPath($dom_common))->query("//*[@id='g1']")->item(0)->appendChild($newPath);//g1 is the group in which all paths are added
+            $xpath_common = new DOMXPath($dom_common);
+            $target = $xpath_common->query("//*[@id='g1']")->item(0);
+
+            if (!$target) {
+              $groups = $dom_common->getElementsByTagName('g');
+              $maxPaths = -1;
+              $bestGroup = null;
+              foreach ($groups as $g) {
+                $count = $g->getElementsByTagName('path')->length;
+                if ($count > $maxPaths) {
+                  $maxPaths = $count;
+                  $bestGroup = $g;
+                }
+              }
+              if ($bestGroup) {
+                $target = $bestGroup;
+              } else {
+                // fallback: append to root <svg> if no groups found
+                $target = $dom_common->getElementsByTagName('svg')->item(0);
+              }
+            }
+            $target->appendChild($newPath);
             Storage::put($CommonPath, $dom_common->saveXML());
           }
         }else{
