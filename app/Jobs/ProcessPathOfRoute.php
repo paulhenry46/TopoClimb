@@ -60,12 +60,12 @@ class ProcessPathOfRoute implements ShouldQueue
           $item->setAttribute("viewBox", "0 0 $width $height");
       }
 
-      Storage::put($filePath, $dom->saveXML());
       $path = $xpath->query('//*[@id=\'path_'.$this->route->id.'\']')->item(0);
       $path->setAttribute("stroke-width", "3");
       //The path doesn't have info about its color because this info is contained in its parent. 
       //So, we take the value of the attribute of its parent and we put it in the path
       $path->setAttribute("stroke", $xpath->query('//*[@id=\'id_'.$this->route->id.'\']')->item(0)->getAttribute('stroke'));
+      Storage::put($filePath, $dom->saveXML());
 
       $this->addPathToCommonPaths($path);
       $this->ProcessCommonPaths();

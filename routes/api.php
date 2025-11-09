@@ -61,6 +61,9 @@ Route::prefix('v1')->group(function () {
         // Route logs
         Route::post('/routes/{route}/logs/create', [RouteController::class, 'storeLog']);
         Route::get('/user/logs', [RouteController::class, 'loggedRoutesByUser']);
-});
+        Route::get('/user/stats', [UserController::class, 'stats']);
+        Route::put('/user/update', [UserController::class, 'update']);
+        
+    });
 });
 
