@@ -62,6 +62,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/routes/{route}/logs/create', [RouteController::class, 'storeLog']);
         Route::get('/user/logs', [RouteController::class, 'loggedRoutesByUser']);
         Route::get('/user/stats', [UserController::class, 'stats']);
+        Route::get('/user/qrcode', [UserController::class, 'qrcode']);
         Route::post('/user/update', [UserController::class, 'update']);
         
     });
