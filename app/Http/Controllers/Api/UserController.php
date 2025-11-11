@@ -36,7 +36,10 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function stats(User $user){
+    public function stats(Request $request){
+
+        $user = $request->user();
+
       $logs = Log::where('user_id', $user->id)->with('route.line.sector.area');
       $total = count(array_unique((clone $logs)->get()->pluck('route_id')->toArray()));
 
@@ -80,7 +83,7 @@ class UserController extends Controller
 
 
     // Group logs by route grade and count them
-    $routesByGrade = $logs->groupBy(function ($log) {
+    $routesByGrade = $logs->get()->groupBy(function ($log) {
         return $log->route->defaultGradeFormated(); // Assuming `grade` is a column in the `routes` table
     })->map(function (Collection $group) {
         return $group->count();
