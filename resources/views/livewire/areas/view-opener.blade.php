@@ -208,9 +208,9 @@ new class extends Component {
             selectLine(id){ this.selectedLine = id; $wire.selectLine(id); }, 
             hightlightLine(id){ this.hightlightedLine = id; }, 
             filtered_routes : $wire.entangle('filtered_routes'),
-            }" > 
+            }"  
     @endif 
-    
+    >
     <x-area.map /> 
 
     <x-area.filter :lines=$lines :admin='true' />
