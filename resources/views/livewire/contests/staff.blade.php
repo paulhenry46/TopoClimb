@@ -103,7 +103,7 @@ new class extends Component {
 
             <div class="mt-4">
                 <x-button wire:click="addStaff">
-                    {{__('Add Staff Member')}}
+                    {{__('Add')}}
                 </x-button>
             </div>
         </div>

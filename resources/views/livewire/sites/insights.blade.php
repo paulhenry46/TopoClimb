@@ -101,12 +101,13 @@ new class extends Component {
     
         }
         public function edit_shown_routes($type){
-            if($type = 'removal'){
+            if($type == 'removal'){
                 $this->shown_routes = $this->routesByRemovalScore;
             }elseif($type == 'logs'){
-                $this->shown_routes = $this->averageLogsPerMonth;
+                $this->shown_routes = $this->routesByLogsPerMonth;
             }else{
                 $this->shown_routes = $this->OldRoutes;
+                
             }
         }
 

@@ -45,9 +45,11 @@ new class extends Component {
 <div x-data="{ chart: null }"
 x-init=" chart = new Chart(document.getElementById('myChart').getContext('2d'), 
 { type: 'bar', data: $wire.data,
- options: {} }); ">
+ options: {responsive: true,
+               maintainAspectRatio: false,
+               scales: { y: { beginAtZero: true } }} }); " class='h-full'>
 
- <canvas id="myChart" class='h-96'></canvas>
+ <canvas id="myChart" class='h-full'></canvas>
  @assets
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  @endassets

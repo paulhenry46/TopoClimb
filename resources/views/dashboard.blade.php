@@ -29,7 +29,7 @@
                 </div>
                </div>
                <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3 min-h-32">
-                <div class='px-4 py-4'>
+                <div class='px-4 py-4 md:h-96'>
                     <h2 class="ml-4 mt-3 text-xl font-semibold text-gray-900">
                        {{ __('Distribution of climbed routes') }}
                     </h2>

@@ -16,7 +16,7 @@ new class extends Component {
       $this->favorites =$this->user->registeredRoutes()->paginate(5);
     }
 }; ?>
-<div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3" x-data="{type_show: 'history'}">
+<div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3 " x-data="{type_show: 'history'}">
                 <div class='px-4 py-4 flex justify-between items-center'>
                     <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
                        {{ __('Routes') }}
@@ -27,7 +27,7 @@ new class extends Component {
                 
             </select>
           </div>
-<div>
+<div class='mx-5 md:min-h-96 '>
 <div x-show='type_show == "history"'>
   @if(!$this->logs->isEmpty())
     <table  class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
