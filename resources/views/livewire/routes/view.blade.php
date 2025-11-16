@@ -51,7 +51,7 @@ new class extends Component {
     <x-area.card-route :logs=$logs key='card-md' :key_button="'button-md'"/>
   </div>
 
-<div x-data="{ open: $wire.mobile_first_open }" @open_modal.window="open=true" class="relative md:hidden" >
+<div x-data="{ open: $wire.mobile_first_open }" x-on:route-changed.window="open=true" class="relative md:hidden" >
     <div
     x-cloak
     x-show="open"
