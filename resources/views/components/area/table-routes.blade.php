@@ -8,10 +8,10 @@
             <tbody class="bg-white"> @foreach ($routes as $route) <tr 
               @if($this->area->type == 'bouldering')
               x-on:mouseout="hightlightSector(0)" x-on:mouseover="hightlightSector({{$route->line->sector->id}})" 
-              @click="selectRoute({{$route->id}}); $dispatch('open_modal')"
+              @click="selectRoute({{$route->id}}); $dispatch('route-changed', { id: {{$route->id}} })"
               @else
               x-on:mouseout="hightlightRoute(0)" x-on:mouseover="hightlightRoute({{$route->id}})" 
-              @click="selectRoute({{$route->id}}); $dispatch('open_modal')"
+              @click="selectRoute({{$route->id}}); $dispatch('route-changed', { id: {{$route->id}} })"
               @endif
               class="hover:bg-gray-50 cursor-pointer">
               <td class="bg-{{$route->color}}-300 border-2 border-{{$route->color}}-300 rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
