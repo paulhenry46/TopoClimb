@@ -22,9 +22,10 @@ new class extends Component {
             $this->selectedCategoryId = $this->contest->categories->first()->id;
         }
 
-        // If contest has steps, select the last one by default (final ranking)
-        if ($this->contest->steps->count() > 0) {
-            $this->selectedStepId = $this->contest->steps->last()->id;
+        // If contest has steps beyond the main step, select the last one by default (final ranking)
+        $additionalSteps = $this->contest->steps->where('order', '>', 0);
+        if ($additionalSteps->count() > 0) {
+            $this->selectedStepId = $additionalSteps->last()->id;
         }
     }
 
@@ -240,7 +241,7 @@ new class extends Component {
                 </div>
             @endif
 
-            @if($contest->steps->count() > 0)
+            @if($contest->steps->where('order', '>', 0)->count() > 0)
                 <div class="mt-6">
                     <h2 class="text-lg font-semibold text-gray-900 mb-3">{{ __('Contest Steps') }}</h2>
                     <div class="flex flex-wrap gap-2">
@@ -252,7 +253,7 @@ new class extends Component {
                                 @endif">
                             {{ __('Overall') }}
                         </button>
-                        @foreach($contest->steps as $step)
+                        @foreach($contest->steps->where('order', '>', 0) as $step)
                             <button 
                                 wire:click="selectStep({{ $step->id }})"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors

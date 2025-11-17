@@ -10,9 +10,10 @@ new class extends Component {
 
     public function mount()
     {
-        // If contest has steps, select the last one by default
-        if ($this->contest->steps->count() > 0) {
-            $this->selectedStepId = $this->contest->steps->last()->id;
+        // If contest has steps beyond the main step, select the last one by default
+        $additionalSteps = $this->contest->steps->where('order', '>', 0);
+        if ($additionalSteps->count() > 0) {
+            $this->selectedStepId = $additionalSteps->last()->id;
         }
     }
 
@@ -70,8 +71,8 @@ new class extends Component {
         </div>
     </div>
 
-    <!-- Step Selection (if contest has multiple steps) -->
-    @if($contest->steps->count() > 0)
+    <!-- Step Selection (if contest has multiple steps beyond Main) -->
+    @if($contest->steps->where('order', '>', 0)->count() > 0)
         <div class="max-w-4xl mx-auto mb-8">
             <div class="flex flex-wrap gap-3 justify-center">
                 <button 
@@ -82,7 +83,7 @@ new class extends Component {
                         @endif">
                     {{ __('Overall') }}
                 </button>
-                @foreach($contest->steps as $step)
+                @foreach($contest->steps->where('order', '>', 0) as $step)
                     <button 
                         wire:click="selectStep({{ $step->id }})"
                         class="px-6 py-3 rounded-lg text-lg font-medium
