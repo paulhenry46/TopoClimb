@@ -117,10 +117,15 @@ test('contest can have steps', function () {
         'site_id' => $site->id,
     ]);
 
+    // Contest should have a main step automatically created
+    expect($contest->steps)->toHaveCount(1);
+    expect($contest->steps->first()->name)->toBe('Main');
+    expect($contest->steps->first()->order)->toBe(0);
+
     $step1 = ContestStep::create([
         'contest_id' => $contest->id,
         'name' => 'Pre-qualification Wave 1',
-        'order' => 0,
+        'order' => 1,
         'start_time' => now(),
         'end_time' => now()->addHours(3),
     ]);
@@ -128,13 +133,15 @@ test('contest can have steps', function () {
     $step2 = ContestStep::create([
         'contest_id' => $contest->id,
         'name' => 'Final',
-        'order' => 1,
+        'order' => 2,
         'start_time' => now()->addHours(4),
         'end_time' => now()->addHours(6),
     ]);
 
-    expect($contest->steps)->toHaveCount(2);
-    expect($contest->steps->first()->name)->toBe('Pre-qualification Wave 1');
+    $contest->refresh();
+    expect($contest->steps)->toHaveCount(3);
+    expect($contest->steps->first()->name)->toBe('Main');
+    expect($contest->steps->get(1)->name)->toBe('Pre-qualification Wave 1');
     expect($contest->steps->last()->name)->toBe('Final');
 });
 
