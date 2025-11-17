@@ -135,7 +135,7 @@ public function closeDrawer()
             $step->routes()->detach($routeId);
         } else {
             $this->selectedRoutes[] = $routeId;
-            $step->routes()->attach($routeId);
+            $step->routes()->attach($routeId, ['points' => 100]);
         }
         
         $this->dispatch('action_ok', title: 'Routes updated', message: 'Step routes have been updated successfully!');
