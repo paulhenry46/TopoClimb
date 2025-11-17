@@ -33,8 +33,8 @@ new class extends Component {
       $this->url = Storage::url('photos/site-'.$route->line->sector->area->site->id.'/area-'.$route->line->sector->area->id.'/route-'.$route->id.'');
       
 
-      if(Storage::exists('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'/.svg')){
-        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/circle-'.$this->route->id.'.original.svg'));
+      if(Storage::exists('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.original.svg')){
+        $this->file_content = str_replace(array("\r", "\n"), '', Storage::get('photos/site-'.$this->site->id.'/area-'.$this->area->id.'/route-'.$this->route->id.'.svg'));
       }
       if($this->route->id == session('route_creating')){
         $this->edit = false;
@@ -98,137 +98,98 @@ new class extends Component {
               <div x-data="{message: ''}" @svg_sent.window="$wire.path = $event.detail.message"
               @sent_to_wire.window="$wire.save()">
                 <span x-text="message"></span>
+                @assets
                 <script type="text/javascript" src="{{ asset('dist/paper-full.js') }}"></script>
         <script src="{{ asset('dist/acorn.js') }}"></script>
-        
+        @endassets
 
-        @if($this->file_content)
-        <script type="text/paperscript" canvas="myCanvas">
-          const diameter = 70;
-          const num_line = {{$this->route->id}};
-          const color = '{{$this->route->colorToHex()}}';
+        @script
+<script>
+    const img = document.getElementById('photo');
+    console.log('checking');
+    if (!img) return;
 
-          var raster = new Raster('photo');
-          raster.position = view.center;
-          project.activeLayer.fitBounds(view.bounds);
-          view.bounds =  raster.internalBounds;
+    function initPaper() {
+        paper.install(window);
+        paper.setup('myCanvas');
 
-          rectangle = new Path.Rectangle(raster.bounds);
-          rectangle.name = 'area';
-          rectangle.strokeWidth = 1;
-          rectangle.strokeColor = 'black';
-          rectangle.fillColor = 'red';
-          rectangle.opacity = 0;
-          
+        const diameter = 70;
+        const num_line = {{ $this->route->id }};
+        const color = '{{ $this->route->colorToHex() }}';
+
+        var raster = new Raster(img);
+        raster.position = view.center;
+
+        raster.onLoad = function() {
+            project.activeLayer.fitBounds(view.bounds);
+            view.bounds = raster.internalBounds;
+
+            var rectangle = new Path.Rectangle(raster.bounds);
+            rectangle.name = 'area';
+            rectangle.strokeWidth = 1;
+            rectangle.strokeColor = 'black';
+            rectangle.fillColor = 'red';
+            rectangle.opacity = 0;
+
+            @if($this->file_content)
+            
           item = project.importSVG('{!! $this->file_content !!}');
           item.position = view.center;
           item.opacity = 0.5;
           item.fitBounds(view.bounds);
 
-          function createTruc(event) {
-              point_cool = event.point;
-
-              var circle = new Path.Circle({
-                  center: point_cool,
-                  radius: diameter / 2,
-                  strokeColor : color,
-                  strokeWidth : 7,
-                  opacity : 0.5
-              });
-              circle.name = 'circle_' + num_line;
-              group = new Group([circle]);
-              group.name = 'group_' + num_line;
-          }
-
-          function onMouseDown(event) {
-                  project.activeLayer.removeChildren();
-                  createTruc(event);
-          }
-
-
-          document.addEventListener('terminated', () => {
-            raster.remove();
-            var evt = new CustomEvent('svg_sent', {
-              detail: {
-                  message: project.exportSVG({
-                      asString: true
-                  }),
-              }
-          });
-          window.dispatchEvent(evt);
-          
-            var evt = new CustomEvent('sent_to_wire', {
-                detail: {
-                    message: 'ok',
-                }
-            });
-            window.dispatchEvent(evt);
-        })
-        </script>
-        @else
-        <script type="text/paperscript" canvas="myCanvas">
-          const diameter = 70;
-          const num_line = {{$this->route->id}};
-          const color = '{{$this->route->colorToHex()}}';
-
-          var raster = new Raster('photo');
-          raster.position = view.center;
-          project.activeLayer.fitBounds(view.bounds);
-          view.bounds =  raster.internalBounds;
-
-          rectangle = new Path.Rectangle(raster.bounds);
-          rectangle.name = 'area';
-          rectangle.strokeWidth = 1;
-          rectangle.strokeColor = 'black';
-          rectangle.fillColor = 'red';
-          rectangle.opacity = 0;
-
-          var group = null;
-
-
-          function createTruc(event) {
-              point_cool = event.point;
-
-              var circle = new Path.Circle({
-                  center: point_cool,
-                  radius: diameter / 2,
-                  strokeColor : color,
-                  strokeWidth : 7,
-                  opacity : 0.5
-              });
-              circle.name = 'circle_' + num_line;
-              group = new Group([circle]);
-              group.name = 'group_' + num_line;
-              return group;
-          }
-
-          function onMouseDown(event) {
-            if(group){
-                  group.remove();
-          }
-                group = createTruc(event);
-              }
-
-          document.addEventListener('terminated', () => {
-            raster.remove();
-            var evt = new CustomEvent('svg_sent', {
-              detail: {
-                  message: project.exportSVG({
-                      asString: true
-                  }),
-              }
-          });
-          window.dispatchEvent(evt);
-          
-            var evt = new CustomEvent('sent_to_wire', {
-                detail: {
-                    message: 'ok',
-                }
-            });
-            window.dispatchEvent(evt);
-        })
-        </script>
         @endif
+        };
+
+        
+
+        var group = null;
+
+        function createTruc(event) {
+            var circle = new Path.Circle({
+                center: event.point,
+                radius: diameter / 2,
+                strokeColor: color,
+                strokeWidth: 7,
+                opacity: 0.5
+            });
+            circle.name = 'circle_' + num_line;
+            group = new Group([circle]);
+            group.name = 'group_' + num_line;
+            return group;
+        }
+
+        view.onMouseDown = function(event) {
+            if (group) group.remove();
+            if (item) item.remove();
+            group = createTruc(event);
+        };
+
+        document.addEventListener('terminated', () => {
+            raster.remove();
+            var evt = new CustomEvent('svg_sent', {
+                detail: {
+                    message: project.exportSVG({ asString: true }),
+                }
+            });
+            window.dispatchEvent(evt);
+
+            var evt2 = new CustomEvent('sent_to_wire', {
+                detail: { message: 'ok' }
+            });
+            window.dispatchEvent(evt2);
+        });
+    }
+
+    // ⚡ Vérifie si l'image est déjà chargée ou pas
+    if (img.complete) {
+        initPaper();
+    } else {
+        img.addEventListener('load', initPaper);
+    }
+</script>
+@endscript
+
         <canvas id="myCanvas" class="min-h-full min-w-full"></canvas>
           <img  id="photo" class="hidden rounded-lg" src="{{$url}}">
       </div>
