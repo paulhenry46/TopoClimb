@@ -42,6 +42,9 @@ Route::prefix('v1')->group(function () {
     // Contests
     Route::get('/sites/{site}/contests', [ContestController::class, 'index']);
     Route::get('/contests/{contest}', [ContestController::class, 'show']);
+    Route::get('/contests/{contest}/rank', [ContestController::class, 'globalRank']);
+    Route::get('/contests/{contest}/steps', [ContestController::class, 'steps']);
+    Route::get('/contests/{contest}/steps/{step}/rank', [ContestController::class, 'rank']);
     
     // Teams
     Route::get('/contests/{contest}/teams', [TeamController::class, 'index']);

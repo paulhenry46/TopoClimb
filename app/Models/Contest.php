@@ -272,7 +272,7 @@ class Contest extends Model
         return $basePoints;
     }
 
-    public function getRankingForStep( $stepId)
+    public function getRankingForStep( $stepId, $restricted = false)
     {
 
         // Get routes - either from step or from contest
@@ -313,18 +313,27 @@ class Contest extends Model
         $logs = $logsQuery->get();
 
         // Group by user and calculate points
-        $rankings = $logs->groupBy('user_id')->map(function ($userLogs, $userId) use ($step) {
+        $rankings = $logs->groupBy('user_id')->map(function ($userLogs, $userId) use ($step, $restricted) {
             $uniqueRoutes = $userLogs->pluck('route_id')->unique();
             $totalPoints = $uniqueRoutes->sum(function ($routeId) use ($step) {
                 return $this->getRoutePoints($routeId, $step);
             });
-
-            return [
+            if($restricted){
+                return [
+                'user_id' => $userId,
+                'user_name' => $userLogs->first()->user->name,
+                'routes_count' => $uniqueRoutes->count(),
+                'total_points' => $totalPoints,
+            ];
+            }else{
+                return [
                 'user_id' => $userId,
                 'user' => $userLogs->first()->user,
                 'routes_count' => $uniqueRoutes->count(),
                 'total_points' => $totalPoints,
             ];
+            }
+            
         })->sortByDesc('total_points')->values();
 
         // Add ranking position
