@@ -26,7 +26,7 @@ class ContestStep extends Model
 
     public function routes()
     {
-        return $this->belongsToMany(Route::class, 'contest_step_route')->withTimestamps();
+        return $this->belongsToMany(Route::class, 'contest_step_route')->withPivot('points')->withTimestamps();
     }
 
     public function isActive()

@@ -29,8 +29,18 @@ class Contest extends Model
 
     protected static function booted()
     {
-        // When a contest is created in official mode, create the permission
+        // When a contest is created, create the main step
         static::created(function ($contest) {
+            // Create main step with contest dates
+            ContestStep::create([
+                'contest_id' => $contest->id,
+                'name' => 'Main',
+                'order' => 0,
+                'start_time' => $contest->start_date,
+                'end_time' => $contest->end_date,
+            ]);
+            
+            // If in official mode, create the permission
             if ($contest->mode === 'official') {
                 $contest->createStaffPermission();
             }
@@ -44,6 +54,17 @@ class Contest extends Model
             } else {
                 // Delete permission if mode changed from official to free
                 $contest->deleteStaffPermission();
+            }
+            
+            // Update main step dates if contest dates changed
+            if ($contest->isDirty(['start_date', 'end_date'])) {
+                $mainStep = $contest->steps()->where('order', 0)->where('name', 'Main')->first();
+                if ($mainStep) {
+                    $mainStep->update([
+                        'start_time' => $contest->start_date,
+                        'end_time' => $contest->end_date,
+                    ]);
+                }
             }
         });
 
@@ -60,7 +81,23 @@ class Contest extends Model
 
     public function routes()
     {
-        return $this->belongsToMany(Route::class)->withPivot('points')->withTimestamps();
+        // This method returns the belongsToMany relationship through the main step
+        // We need to use a subquery to filter by the main step
+        return $this->belongsToMany(
+            Route::class,
+            'contest_step_route',
+            'contest_step_id',
+            'route_id'
+        )
+        ->wherePivotIn('contest_step_id', function($query) {
+            $query->select('id')
+                  ->from('contest_steps')
+                  ->where('contest_id', $this->id)
+                  ->where('order', 0)
+                  ->where('name', 'Main');
+        })
+        ->withPivot('points')
+        ->withTimestamps();
     }
 
     public function staffMembers()
@@ -164,6 +201,11 @@ class Contest extends Model
     public function steps()
     {
         return $this->hasMany(ContestStep::class)->orderBy('order');
+    }
+
+    public function mainStep()
+    {
+        return $this->steps()->where('order', 0)->where('name', 'Main')->first();
     }
 
     public function teams()
