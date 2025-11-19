@@ -92,9 +92,7 @@ class Contest extends Model
         ->wherePivotIn('contest_step_id', function($query) {
             $query->select('id')
                   ->from('contest_steps')
-                  ->where('contest_id', $this->id)
-                  ->where('order', 0)
-                  ->where('name', 'Main');
+                  ->where('contest_id', $this->id);
         })
         ->withPivot('points')
         ->withTimestamps();
@@ -218,14 +216,38 @@ class Contest extends Model
         return $this->hasMany(ContestCategory::class);
     }
 
-    public function getRoutePoints($routeId)
+    public function getRoutePoints($routeId, $step)
     {
-        $route = $this->routes()->where('route_id', $routeId)->first();
-        if (! $route) {
+        // If a specific step was provided, prefer that step's pivot points
+        if ($step instanceof ContestStep) {
+            $route = $step->routes()->where('routes.id', $routeId)->first();
+            if (! $route) {
             return 0.0;
-        }
+            }
 
-        $basePoints = (float) $route->pivot->points;
+            $basePoints = (float) $route->pivot->points;
+        } else {
+            // No specific step passed: find all steps of this contest that include the route
+            $stepsWithRoute = $this->steps()
+            ->whereHas('routes', function ($q) use ($routeId) {
+                $q->where('routes.id', $routeId);
+            })
+            ->with(['routes' => function ($q) use ($routeId) {
+                $q->where('routes.id', $routeId);
+            }])
+            ->get();
+
+            $basePoints = 0.0;
+            foreach ($stepsWithRoute as $s) {
+            $r = $s->routes->first();
+            if ($r && isset($r->pivot->points)) {
+                $points = (float) $r->pivot->points;
+                if ($points > $basePoints) {
+                $basePoints = $points;
+                }
+            }
+            }
+        }
 
         // Only apply dynamic calculation if enabled for this contest
         if (! $this->use_dynamic_points) {
@@ -237,7 +259,6 @@ class Contest extends Model
             ->whereBetween('created_at', [$this->start_date, $this->end_date]);
 
         // In official mode, only count verified logs
-        // In free mode, count all logs
         if ($this->mode === 'official') {
             $query->whereNotNull('verified_by');
         }
@@ -251,8 +272,9 @@ class Contest extends Model
         return $basePoints;
     }
 
-    public function getRankingForStep($stepId = null)
+    public function getRankingForStep( $stepId)
     {
+
         // Get routes - either from step or from contest
         if ($stepId) {
             $step = $this->steps()->find($stepId);
@@ -268,9 +290,15 @@ class Contest extends Model
             $startDate = $step->start_time;
             $endDate = $step->end_time;
         } else {
-            $routeIds = $this->routes->pluck('id');
+            // Use routes assigned to each step (rather than contest-level routes)
+            $routeIds = $this->steps()->with('routes')->get()
+                ->flatMap(function ($s) {
+                    return $s->routes->pluck('id');
+                })->unique()->values();
+
             $startDate = $this->start_date;
             $endDate = $this->end_date;
+            $step = null;
         }
 
         // Build base query
@@ -285,10 +313,10 @@ class Contest extends Model
         $logs = $logsQuery->get();
 
         // Group by user and calculate points
-        $rankings = $logs->groupBy('user_id')->map(function ($userLogs, $userId) {
+        $rankings = $logs->groupBy('user_id')->map(function ($userLogs, $userId) use ($step) {
             $uniqueRoutes = $userLogs->pluck('route_id')->unique();
-            $totalPoints = $uniqueRoutes->sum(function ($routeId) {
-                return $this->getRoutePoints($routeId);
+            $totalPoints = $uniqueRoutes->sum(function ($routeId) use ($step) {
+                return $this->getRoutePoints($routeId, $step);
             });
 
             return [

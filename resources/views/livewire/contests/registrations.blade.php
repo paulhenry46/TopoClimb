@@ -64,13 +64,16 @@ new class extends Component {
     #[Computed]
     public function contestRoutes()
     {
-        return $this->contest->routes;
+        return $this->contest->steps
+            ->flatMap(fn($step) => $step->routes)
+            ->unique('id')
+            ->values();
     }
 
     #[Computed]
     public function recentRegistrations()
     {
-        return Log::whereIn('route_id', $this->contest->routes->pluck('id'))
+        return Log::whereIn('route_id', $this->contestRoutes()->pluck('id'))
             ->whereNotNull('verified_by')
             ->whereBetween('created_at', [$this->contest->start_date, $this->contest->end_date])
             ->with(['user', 'route', 'verifiedBy'])

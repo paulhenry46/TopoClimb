@@ -2,10 +2,12 @@
 
 use Livewire\Volt\Component;
 use App\Models\Contest;
+use App\Models\ContestStep;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
     public Contest $contest;
+    public ContestStep $step;
     public $selectedStepId = null;
 
     public function mount()
@@ -14,12 +16,17 @@ new class extends Component {
         $additionalSteps = $this->contest->steps->where('order', '>', 0);
         if ($additionalSteps->count() > 0) {
             $this->selectedStepId = $additionalSteps->last()->id;
+            $this->step = $additionalSteps->last();
+        }else{
+            $this->selectedStepId = $this->contest->steps->first()->id;
+            $this->step = $this->contest->steps->first();
         }
     }
 
     public function selectStep($stepId)
     {
         $this->selectedStepId = $stepId;
+        $this->step = ContestStep::findOrFail($stepId);
     }
 
     public function selectContest()
@@ -39,7 +46,15 @@ new class extends Component {
     #[Computed]
     public function totalRoutes()
     {
-        return $this->contest->routes->count();
+        if($this->selectedStepId !== null){
+            return $this->step->routes->count();
+        }else{
+            
+            return  $this->contest->steps()->with('routes')->get()
+                ->flatMap(function ($s) {
+                    return $s->routes->pluck('id');
+                })->unique()->values()->count();
+        }
     }
 }; ?>
 
@@ -83,7 +98,7 @@ new class extends Component {
                         @endif">
                     {{ __('Overall') }}
                 </button>
-                @foreach($contest->steps->where('order', '>', 0) as $step)
+                @foreach($contest->steps->where('order', '>=', 0) as $step)
                     <button 
                         wire:click="selectStep({{ $step->id }})"
                         class="px-6 py-3 rounded-lg text-lg font-medium

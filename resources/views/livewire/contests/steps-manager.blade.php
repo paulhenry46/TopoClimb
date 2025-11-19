@@ -23,9 +23,12 @@ new class extends Component {
     public $end_time = '';
     
     public $editingStep = null;
-    public $managingRoutesForStep = null;
+    public $routesModal = false;
     public $selectedRoutes = [];
     public $drawerOpen = false;
+    public $routePoints;
+
+    public ContestStep $step;
 
     public function mount()
     {
@@ -78,20 +81,18 @@ public function closeDrawer()
 
     public function editStep($stepId)
     {
-        $step = ContestStep::findOrFail($stepId);
+        $this->step = ContestStep::findOrFail($stepId);
         $this->editingStep = $stepId;
-        $this->name = $step->name;
-        $this->order = $step->order;
-        $this->start_time = $step->start_time->format('Y-m-d\TH:i');
-        $this->end_time = $step->end_time->format('Y-m-d\TH:i');
+        $this->name = $this->step->name;
+        $this->order = $this->step->order;
+        $this->start_time = $this->step->start_time->format('Y-m-d\TH:i');
+        $this->end_time = $this->step->end_time->format('Y-m-d\TH:i');
     }
 
     public function updateStep()
     {
         $this->validate();
-
-        $step = ContestStep::findOrFail($this->editingStep);
-        $step->update([
+        $this->step->update([
             'name' => $this->name,
             'order' => $this->order,
             'start_time' => $this->start_time,
@@ -117,25 +118,30 @@ public function closeDrawer()
 
     public function manageRoutes($stepId)
     {
-        $step = ContestStep::findOrFail($stepId);
-        $this->managingRoutesForStep = $stepId;
-        $this->selectedRoutes = $step->routes->pluck('id')->toArray();
+        $this->step = ContestStep::findOrFail($stepId);
+        $this->routesModal = true;
+        $this->selectedRoutes = $this->step->routes->pluck('id')->toArray();
+         foreach ($this->step->routes as $route) {
+            $this->routePoints[$route->id] = $route->pivot->points;
+        }
+    }
+
+    public function updatePoints($routeId, $points)
+    {
+        $points = max(1, (int)$points); // Ensure positive integer
+        $this->routePoints[$routeId] = $points;
+        $this->step->routes()->updateExistingPivot($routeId, ['points' => $points]);
     }
 
     public function toggleRoute($routeId)
     {
-        if (!$this->managingRoutesForStep) {
-            return;
-        }
-
-        $step = ContestStep::findOrFail($this->managingRoutesForStep);
         
         if (in_array($routeId, $this->selectedRoutes)) {
             $this->selectedRoutes = array_diff($this->selectedRoutes, [$routeId]);
-            $step->routes()->detach($routeId);
+            $this->step->routes()->detach($routeId);
         } else {
             $this->selectedRoutes[] = $routeId;
-            $step->routes()->attach($routeId, ['points' => 100]);
+            $this->step->routes()->attach($routeId, ['points' => 100]);
         }
         
         $this->dispatch('action_ok', title: 'Routes updated', message: 'Step routes have been updated successfully!');
@@ -143,7 +149,7 @@ public function closeDrawer()
 
     public function closeRouteManager()
     {
-        $this->managingRoutesForStep = null;
+        $this->routesModal = false;
         $this->selectedRoutes = [];
     }
 
@@ -273,7 +279,7 @@ public function closeDrawer()
     </div>
 
     <!-- Route Management Modal -->
-    @if($managingRoutesForStep)
+    @if($routesModal)
         <div class="fixed inset-0 bg-gray-500/75  flex items-center justify-center z-50" wire:click="closeRouteManager">
             <div class="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden" wire:click.stop>
                 <div class="px-6 py-4 border-b border-gray-200">

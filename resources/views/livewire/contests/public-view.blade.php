@@ -26,6 +26,8 @@ new class extends Component {
         $additionalSteps = $this->contest->steps->where('order', '>', 0);
         if ($additionalSteps->count() > 0) {
             $this->selectedStepId = $additionalSteps->last()->id;
+        }else{
+            $this->selectedStepId = $this->contest->steps->first()->id;
         }
     }
 
@@ -144,7 +146,11 @@ new class extends Component {
             $step = $this->contest->steps()->find($this->selectedStepId);
             return $step && $step->routes->count() > 0 ? $step->routes->count() : $this->contest->routes->count();
         }
-        return $this->contest->routes->count();
+        //return $this->contest->routes->count();//
+        return  $routeIds = $this->contest->steps()->with('routes')->get()
+                ->flatMap(function ($s) {
+                    return $s->routes->pluck('id');
+                })->unique()->values()->count();
     }
 
     #[Computed]
@@ -253,7 +259,7 @@ new class extends Component {
                                 @endif">
                             {{ __('Overall') }}
                         </button>
-                        @foreach($contest->steps->where('order', '>', 0) as $step)
+                        @foreach($contest->steps->where('order', '>=', 0) as $step)
                             <button 
                                 wire:click="selectStep({{ $step->id }})"
                                 class="px-4 py-2 rounded-md text-sm font-medium transition-colors
@@ -422,15 +428,14 @@ new class extends Component {
         <div class="bg-white shadow sm:rounded-lg border border-gray-200">
             <div class="px-6 py-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    @if($selectedStepId)
-                        {{ __('Rankings for') }} {{ $contest->steps->find($selectedStepId)->name }}
-                    @else
-                        @if($contest->steps->count() > 0)
+                    
+                        @if($contest->steps->count() == 1)
                             {{ __('Final Rankings') }}
+                        @elseif ($selectedStepId)
+                            {{ __('Rankings for') }} {{ $contest->steps->find($selectedStepId)->name }}
                         @else
                             {{ __('Rankings') }}
                         @endif
-                    @endif
                 </h2>
                 
                 @if($this->rankings->count() > 0)
