@@ -51,10 +51,6 @@ Route::middleware([
                 return view('contests.manage', compact('site'));
             })->middleware('can:edit_areas,site')->name('contests.manage');
 
-            Route::get('/contests/{contest}/routes', function (Site $site, Contest $contest) {
-                return view('contests.routes', compact('site', 'contest'));
-            })->middleware('can:edit_areas,site')->name('contests.routes');
-
             Route::get('/contests/{contest}/registrations', function (Site $site, Contest $contest) {
                 return view('contests.registrations', compact('site', 'contest'));
             })->middleware('can:access_registrations,contest')->name('contests.registrations');
