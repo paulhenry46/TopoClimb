@@ -114,5 +114,104 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Get the authenticated user's friends.
+     */
+    public function friends(Request $request)
+    {
+        $user = $request->user();
+        
+        // Get both friends (user_id) and friendOf (friend_id) relationships
+        $friends = $user->friends->merge($user->friendOf)->unique('id');
+        
+        return response()->json([
+            'data' => $friends->map(function ($friend) {
+                return [
+                    'id' => $friend->id,
+                    'name' => $friend->name,
+                    'profile_photo_url' => $friend->profile_photo_url,
+                ];
+            })->values()
+        ]);
+    }
+
+    /**
+     * Search users by name.
+     */
+    public function search(Request $request)
+    {
+        $validated = $request->validate([
+            'query' => 'required|string|min:2|max:255',
+        ]);
+
+        $currentUser = $request->user();
+        
+        $users = User::where('name', 'LIKE', '%' . $validated['query'] . '%')
+                    ->where('id', '!=', $currentUser->id)
+                    ->limit(10)
+                    ->get(['id', 'name', 'profile_photo_path']);
+
+        return response()->json([
+            'data' => $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'profile_photo_url' => $user->profile_photo_url,
+                ];
+            })
+        ]);
+    }
+
+    /**
+     * Add a friend.
+     */
+    public function addFriend(Request $request)
+    {
+        $validated = $request->validate([
+            'friend_id' => 'required|exists:users,id',
+        ]);
+
+        $user = $request->user();
+        $friendId = $validated['friend_id'];
+
+        // Prevent adding yourself
+        if ($user->id == $friendId) {
+            return response()->json(['error' => 'You cannot add yourself as a friend'], 400);
+        }
+
+        // Check if already friends (either direction)
+        $alreadyFriends = $user->friends()->where('friend_id', $friendId)->exists() ||
+                         $user->friendOf()->where('user_id', $friendId)->exists();
+
+        if ($alreadyFriends) {
+            return response()->json(['error' => 'Already friends'], 400);
+        }
+
+        $user->friends()->attach($friendId);
+
+        return response()->json([
+            'message' => 'Friend added successfully',
+            'data' => [
+                'id' => $friendId,
+            ]
+        ], 201);
+    }
+
+    /**
+     * Remove a friend.
+     */
+    public function removeFriend(Request $request, $friendId)
+    {
+        $user = $request->user();
+
+        // Remove from both directions
+        $user->friends()->detach($friendId);
+        $user->friendOf()->detach($friendId);
+
+        return response()->json([
+            'message' => 'Friend removed successfully'
+        ]);
+    }
+
 }
 

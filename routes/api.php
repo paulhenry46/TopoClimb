@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/lines/{line}/routes', [RouteController::class, 'index']);
     Route::get('/routes/{route}', [RouteController::class, 'show']);
     Route::get('/routes/{route}/logs', [RouteController::class, 'logs']);
+    Route::get('/routes/{route}/logs/friends', [RouteController::class, 'friendsLogs'])->middleware('auth:sanctum');
     
     // Contests
     Route::get('/sites/{site}/contests', [ContestController::class, 'index']);
@@ -64,9 +65,16 @@ Route::prefix('v1')->group(function () {
         // Route logs
         Route::post('/routes/{route}/logs/create', [RouteController::class, 'storeLog']);
         Route::get('/user/logs', [RouteController::class, 'loggedRoutesByUser']);
+        Route::get('/user/logs/friends', [RouteController::class, 'friendsRoutes']);
         Route::get('/user/stats', [UserController::class, 'stats']);
         Route::get('/user/qrcode', [UserController::class, 'qrcode']);
         Route::post('/user/update', [UserController::class, 'update']);
+        
+        // Friends
+        Route::get('/user/friends', [UserController::class, 'friends']);
+        Route::get('/users/search', [UserController::class, 'search']);
+        Route::post('/user/friends', [UserController::class, 'addFriend']);
+        Route::delete('/user/friends/{friendId}', [UserController::class, 'removeFriend']);
         
     });
 });

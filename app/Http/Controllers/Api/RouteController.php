@@ -39,6 +39,20 @@ class RouteController extends Controller
     }
 
     /**
+     * Get logs for a route filtered by friends.
+     */
+    public function friendsLogs(Request $request, Route $route)
+    {
+        $user = $request->user();
+        
+        // Get all friends (both directions)
+        $friends = $user->friends->merge($user->friendOf)->unique('id')->pluck('id');
+        
+        $logs = $route->logs()->whereIn('user_id', $friends)->with(['user'])->get();
+        return LogResource::collection($logs);
+    }
+
+    /**
      * Store a new log for a route.
      */
     public function storeLog(Request $request, Route $route)
@@ -81,5 +95,25 @@ class RouteController extends Controller
         'data' => $routeIds,
     ]);
         
+    }
+
+    /**
+     * Get routes climbed by friends.
+     */
+    public function friendsRoutes(Request $request)
+    {
+        $user = $request->user();
+        
+        // Get all friends (both directions)
+        $friends = $user->friends->merge($user->friendOf)->unique('id')->pluck('id');
+        
+        // Get logs from friends, ordered by most recent
+        $logs = Log::whereIn('user_id', $friends)
+                   ->with(['route.line.sector.area', 'user'])
+                   ->orderByDesc('created_at')
+                   ->take(10)
+                   ->get();
+        
+        return LogResource::collection($logs);
     }
 }

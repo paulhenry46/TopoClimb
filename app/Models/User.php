@@ -124,4 +124,16 @@ class User extends Authenticatable
         return $this->birth_date->age;
     }
 
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+                    ->withTimestamps();
+    }
+
+    public function friendOf()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'friend_id', 'user_id')
+                    ->withTimestamps();
+    }
+
 }
