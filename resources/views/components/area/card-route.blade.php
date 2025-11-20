@@ -1,5 +1,17 @@
-@props(['logs', 'key_button' => 'default-button'])
-<div class='relative' x-data="{filtered : false, toogle(){this.filtered = !this.filtered;}}">
+@props(['logs', 'allLogs', 'key_button' => 'default-button'])
+<div class='relative' x-data="{filtered : false, friendsOnly: false, toogle(){this.filtered = !this.filtered;}, 
+  get displayLogs() {
+    if (!this.friendsOnly) return @js($allLogs);
+    const friendIds = @js(auth()->check() ? auth()->user()->friends->merge(auth()->user()->friendOf)->unique('id')->pluck('id')->toArray() : []);
+    return @js($allLogs).filter(log => friendIds.includes(log.user.id));
+  },
+  get displayComments() {
+    return this.displayLogs.filter(log => log.comment !== null && log.comment !== '');
+  },
+  get displayVideos() {
+    return this.displayLogs.filter(log => log.video_url !== null && log.video_url !== '');
+  }
+}">
 <div x-show="!filtered" class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
 </div>
 <div x-cloak x-show="filtered" class=" bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->filteredPicture() }}'); background-position-y: 50%;">
@@ -126,49 +138,61 @@
         </div>
       </div>
       <div class="mt-12" x-data="{ activeTab:  0 }">
-        <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{__('Activity')}}</h1>
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-semibold leading-6 text-gray-900">{{__('Activity')}}</h1>
+          @auth
+          <div class="flex items-center">
+            <button x-on:click="friendsOnly = !friendsOnly" :class="friendsOnly ? 'bg-gray-600' : 'bg-gray-200'" type="button" class="bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2" role="switch" aria-checked="false">
+              <span :class="friendsOnly ? 'translate-x-5' : 'translate-x-0'" aria-hidden="true" class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+            </button>
+            <span class="ml-3 text-sm">
+              <span class="font-medium text-gray-900">{{ __('Friends only') }}</span>
+            </span>
+          </div>
+          @endauth
+        </div>
         <div class="">
           <div class="border-b border-gray-200">
             <nav class="-mb-px flex justify-between" aria-label="Tabs">
               <a @click="activeTab = 0" :class="activeTab == 0 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
                 {{ __('Comments') }}
-                <span :class="activeTab == 0 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('comment', '!=', null)->count()}}</span>
+                <span :class="activeTab == 0 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block" x-text="displayComments.length"></span>
               </a>
               <a @click="activeTab = 1" :class="activeTab == 1 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class=" flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">
                 {{ __('Ascents') }}
-                <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->count()}}</span>
+                <span :class="activeTab == 1 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class=" ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block" x-text="displayLogs.length"></span>
               </a>
               <a @click="activeTab = 2" :class="activeTab == 2 ? 'border-gray-800 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700 cursor-pointer'" class="flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium" aria-current="page">
                 {{ __('Video') }}
-                <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block">{{$logs->where('video_url', '!=', null)->count()}}</span>
+                <span :class="activeTab == 2 ? 'bg-gray-100 text-gray-600' : 'bg-gray-100 text-gray-900'" class="ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block" x-text="displayVideos.length"></span>
               </a>
             </nav>
           </div>
         </div>
         <div x-show="activeTab == 0" class='min-h-56'> 
-          @forelse ($logs->where('comment','!=', null) as $log) <div class=" mt-2 flex  items-start space-x-3">
-            <div>
-              <div class=" px-1">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
-                  <img class="rounded-md" src="{{ $log->user->profile_photo_url }}" />
+          <template x-for="log in displayComments" :key="log.id">
+            <div class=" mt-2 flex  items-start space-x-3">
+              <div>
+                <div class=" px-1">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
+                    <img class="rounded-md" :src="log.user.profile_photo_url" />
+                  </div>
+                </div>
+              </div>
+              <div class="min-w-0 flex-1 py-0">
+                <div class="text-sm leading-6 text-gray-500">
+                  <span class="">
+                    <a href="#" class="font-medium text-gray-900" x-text="log.user.name"></a>
+                    <span class="whitespace-nowrap" x-text="new Date(log.created_at).toLocaleDateString()"></span>
+                    </br>
+                  </span>
+                  <span class="" x-text="log.comment">
+                  </span>
                 </div>
               </div>
             </div>
-            <div class="min-w-0 flex-1 py-0">
-              <div class="text-sm leading-6 text-gray-500">
-                <span class="">
-                  <a href="#" class="font-medium text-gray-900">{{ $log->user->name }}</a>
-                  <span class="whitespace-nowrap">{{ $log->created_at->format('d/m/Y') }}</span>
-                  </br>
-                </span>
-                <span class="">
-                  {{ $log->comment }}
-                </span>
-              </div>
-            </div>
-          </div> 
-          @empty
-          <div class="text-center rounded-lg  mt-2">
+          </template>
+          <div x-show="displayComments.length === 0" class="text-center rounded-lg  mt-2">
   <x-icons.icon-comments/>
   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No comments') }}</h3>
   <p class="mt-1 text-sm text-gray-500"> {{ __('No comments for this route. If you manage to climb it, you can be the first to comment !') }}</p>
@@ -181,56 +205,71 @@
     </x-button>
   </div>
 </div>         
-          @endforelse
         </div>
         <div x-show="activeTab == 1" class='min-h-56'> 
-          @forelse ($logs as $log) 
+          <template x-for="log in displayLogs" :key="log.id">
           <div class=" mt-2 flex items-center items-start space-x-3">
             <div>
               <div class=" px-1">
                 <div class="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100 ring-8 ring-white">
-                  <img class="rounded-md" src="{{ $log->user->profile_photo_url }}" />
+                  <img class="rounded-md" :src="log.user.profile_photo_url" />
                 </div>
               </div>
             </div>
             <div class="min-w-0 flex-1 py-0">
               <div class="text-sm leading-6 text-gray-500">
                 <span class="">
-                  <a href="#" class="font-medium text-gray-900">{{ $log->user->name }}</a>
-                  <span class="whitespace-nowrap">{{ $log->created_at->format('d/m/Y') }}</span>
+                  <a href="#" class="font-medium text-gray-900" x-text="log.user.name"></a>
+                  <span class="whitespace-nowrap" x-text="new Date(log.created_at).toLocaleDateString()"></span>
                   </br>
                 </span>
-                <span class=""> @if($log->way == 'top-rope') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                    <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
-                      <circle cx="3" cy="3" r="3" />
-                    </svg>
-                    {{ __('Top-rope') }}
-                  </a> @elseif($log->way == 'lead') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
-                      <circle cx="3" cy="3" r="3" />
-                    </svg>
-                    {{ __('Leading') }}
-                  </a> @endif @if($log->type == 'view') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                    <svg class="h-1.5 w-1.5 fill-indigo-500" viewBox="0 0 6 6" aria-hidden="true">
-                      <circle cx="3" cy="3" r="3" />
-                    </svg>
-                    {{ __('View') }}
-                  </a> @elseif($log->type == 'work') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                    <svg class="h-1.5 w-1.5 fill-emerald-500" viewBox="0 0 6 6" aria-hidden="true">
-                      <circle cx="3" cy="3" r="3" />
-                    </svg>
-                    {{ __('After work') }}
-                  </a> @elseif($log->type == 'flash') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                    <svg class="h-1.5 w-1.5 fill-amber-500" viewBox="0 0 6 6" aria-hidden="true">
-                      <circle cx="3" cy="3" r="3" />
-                    </svg>
-                    {{ __('Flash') }}
-                  </a> @endif </span>
+                <span class="">
+                  <template x-if="log.way == 'top-rope'">
+                    <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                      <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
+                        <circle cx="3" cy="3" r="3" />
+                      </svg>
+                      {{ __('Top-rope') }}
+                    </a>
+                  </template>
+                  <template x-if="log.way == 'lead'">
+                    <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                      <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                        <circle cx="3" cy="3" r="3" />
+                      </svg>
+                      {{ __('Leading') }}
+                    </a>
+                  </template>
+                  <template x-if="log.type == 'view'">
+                    <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                      <svg class="h-1.5 w-1.5 fill-indigo-500" viewBox="0 0 6 6" aria-hidden="true">
+                        <circle cx="3" cy="3" r="3" />
+                      </svg>
+                      {{ __('View') }}
+                    </a>
+                  </template>
+                  <template x-if="log.type == 'work'">
+                    <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                      <svg class="h-1.5 w-1.5 fill-emerald-500" viewBox="0 0 6 6" aria-hidden="true">
+                        <circle cx="3" cy="3" r="3" />
+                      </svg>
+                      {{ __('After work') }}
+                    </a>
+                  </template>
+                  <template x-if="log.type == 'flash'">
+                    <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                      <svg class="h-1.5 w-1.5 fill-amber-500" viewBox="0 0 6 6" aria-hidden="true">
+                        <circle cx="3" cy="3" r="3" />
+                      </svg>
+                      {{ __('Flash') }}
+                    </a>
+                  </template>
+                </span>
               </div>
             </div>
-          </div> 
-          @empty
-          <div class="text-center rounded-lg  mt-2">
+          </div>
+          </template>
+          <div x-show="displayLogs.length === 0" class="text-center rounded-lg  mt-2">
             
   <x-icons.icon-carabiner/>
   <h3 class="mt-2 text-sm font-semibold text-gray-900">{{ __('No acsents') }}</h3>
@@ -244,7 +283,6 @@
     </x-button>
   </div>
 </div>   
-          @endforelse
         </div>
         {{--  
         <div x-show="activeTab == 2" class='min-h-56'> {{ __('Videos') }} 
