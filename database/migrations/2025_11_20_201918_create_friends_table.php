@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('friend_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            
+
             // Ensure unique friend relationships (no duplicates)
             $table->unique(['user_id', 'friend_id']);
         });
