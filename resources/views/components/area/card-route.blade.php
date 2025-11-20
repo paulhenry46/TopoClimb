@@ -182,7 +182,7 @@
               <div class="min-w-0 flex-1 py-0">
                 <div class="text-sm leading-6 text-gray-500">
                   <span class="">
-                    <a href="#" class="font-medium text-gray-900" x-text="log.user.name"></a>
+                    <a href="{{ route('friends.index') }}" class="font-medium text-gray-900 hover:text-gray-600 hover:underline" x-text="log.user.name"></a>
                     <span class="whitespace-nowrap" x-text="new Date(log.created_at).toLocaleDateString()"></span>
                     </br>
                   </span>
@@ -219,7 +219,7 @@
             <div class="min-w-0 flex-1 py-0">
               <div class="text-sm leading-6 text-gray-500">
                 <span class="">
-                  <a href="#" class="font-medium text-gray-900" x-text="log.user.name"></a>
+                  <a href="{{ route('friends.index') }}" class="font-medium text-gray-900 hover:text-gray-600 hover:underline" x-text="log.user.name"></a>
                   <span class="whitespace-nowrap" x-text="new Date(log.created_at).toLocaleDateString()"></span>
                   </br>
                 </span>
