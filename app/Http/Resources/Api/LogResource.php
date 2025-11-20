@@ -17,14 +17,19 @@ class LogResource extends JsonResource
         return [
             'id' => $this->id,
             'route_id' => $this->route_id,
-            'comments' => $this->comment,
+            'comment' => $this->comment,
             'type' => $this->type,
             'way' => $this->way,
             'grade' => $this->grade,
             'created_at' => $this->created_at,
-            'is_verified' => ($this->verified_by !== NULL),
-            'user_name' => $this->whenLoaded('user', function () { return $this->user->name; }),
-            'user_pp_url' => $this->whenLoaded('user', function () { return $this->user->profile_photo_url; }),
+            'is_verified' => ($this->verified_by !== null),
+            'user' => $this->whenLoaded('user', function () {
+                return [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                    'profile_photo_url' => $this->user->profile_photo_url,
+                ];
+            }),
         ];
     }
 }
