@@ -8,12 +8,21 @@ new class extends Component {
     public User $user;
     public $logs;
     public $favorited;
+    public $friendsLogs;
 
     public function mount(){
       
       $this->user  = auth()->user();
       $this->logs = Log::where('user_id', $this->user->id)->with('route')->orderByDesc('created_at')->take(5)->get();
       $this->favorites =$this->user->registeredRoutes()->paginate(5);
+      
+      // Get friends logs
+      $friends = $this->user->friends->merge($this->user->friendOf)->unique('id')->pluck('id');
+      $this->friendsLogs = Log::whereIn('user_id', $friends)
+                              ->with(['route', 'user'])
+                              ->orderByDesc('created_at')
+                              ->take(5)
+                              ->get();
     }
 }; ?>
 <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3 " x-data="{type_show: 'history'}">
@@ -24,6 +33,7 @@ new class extends Component {
                     <select x-model='type_show' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
                 <option value="history">{{ __('Recents') }}</option>
                 <option value="registered">{{ __('Registered') }}</option>
+                <option value="friends">{{ __('Friends') }}</option>
                 
             </select>
           </div>
@@ -121,6 +131,66 @@ new class extends Component {
 
                 {{ __('Explore sites') }}
             </a>
+    </div>
+      @endif
+
+    </div>
+<div x-show='type_show == "friends"' >
+  @if(!$this->friendsLogs->isEmpty())
+      <table class="border-separate border-spacing-y-3 min-w-full divide-y divide-gray-300 table-fixed">
+        <tbody class="bg-white"> @foreach ($this->friendsLogs as $log) <tr 
+          class="hover:bg-gray-50 cursor-pointer">
+          <td class="bg-{{$log->route->color}}-300 border-2 border-{{$log->route->color}}-300 rounded-l-md text-center h-16 w-16 relative whitespace-nowrap font-medium text-gray-900">
+           <div class='grayscale rounded-l h-full w-full bg-cover' style="background-image: url({{ $log->route->thumbnail() }})"></div>
+          </td>
+            <td class=" text-2xl text-center w-16 bg-{{$log->route->color}}-300 relative whitespace-nowrap py-4 pl-4 pr-3 font-medium text-gray-900 sm:pl-3">
+              {{$log->route->defaultGradeFormated()}}
+            </td>
+            <td class="  whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+              <div class="flex items-center">
+                <div>
+                  <div class="font-bold pb-1">{{$log->route->name}}</div>
+                  <div class="text-sm opacity-50">
+                    {{ $log->user->name }} - {{$log->created_at->format('d/m/y')}}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class=" relative whitespace-nowrap pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3"> 
+                <span class=""> @if($log->way == 'top-rope') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('Top-rope') }}
+                  </a> @elseif($log->way == 'lead') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-green-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('Leading') }}
+                  </a> @endif @if($log->type == 'view') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-indigo-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('View') }}
+                  </a> @elseif($log->type == 'work') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-emerald-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('After work') }}
+                  </a> @elseif($log->type == 'flash') <a class="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <svg class="h-1.5 w-1.5 fill-amber-500" viewBox="0 0 6 6" aria-hidden="true">
+                      <circle cx="3" cy="3" r="3" />
+                    </svg>
+                    {{ __('Flash') }}
+                  </a> @endif </span>
+            </td>
+          </tr> @endforeach </tbody>
+      </table>
+      @else
+       <div class="col-span-3 flex flex-col items-center justify-center text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor"><path d="M40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm720 0v-120q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v120H760ZM360-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm400-160q0 66-47 113t-113 47q-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113ZM120-240h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0 320Zm0-400Z"/></svg>
+        <h3 class="text-2xl font-semibold text-gray-700 mb-2">{{ __('No friend routes yet') }}</h3>
+        <p class="text-gray-500 mb-6 text-center max-w-md">{{ __("Your friends haven't climbed any routes yet, or you haven't added any friends.") }}</p>
     </div>
       @endif
 

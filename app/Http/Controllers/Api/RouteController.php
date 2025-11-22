@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\RouteResource;
 use App\Http\Resources\Api\LogResource;
+use App\Http\Resources\Api\RouteResource;
 use App\Models\Line;
-use App\Models\Route;
 use App\Models\Log;
+use App\Models\Route;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -19,6 +19,7 @@ class RouteController extends Controller
     public function index(Line $line)
     {
         $routes = $line->routes()->with(['users', 'tags', 'logs'])->get();
+
         return RouteResource::collection($routes);
     }
 
@@ -28,6 +29,7 @@ class RouteController extends Controller
     public function show(Route $route)
     {
         $route->load(['tags', 'users']);
+
         return new RouteResource($route);
     }
 
@@ -35,6 +37,22 @@ class RouteController extends Controller
     {
 
         $logs = $route->logs()->with(['user'])->get();
+
+        return LogResource::collection($logs);
+    }
+
+    /**
+     * Get logs for a route filtered by friends.
+     */
+    public function friendsLogs(Request $request, Route $route)
+    {
+        $user = $request->user();
+
+        // Get all friends (both directions)
+        $friends = $user->friends->merge($user->friendOf)->unique('id')->pluck('id');
+
+        $logs = $route->logs()->whereIn('user_id', $friends)->with(['user'])->get();
+
         return LogResource::collection($logs);
     }
 
@@ -62,24 +80,44 @@ class RouteController extends Controller
         ]);
 
         $log->load('user');
-        
+
         return (new LogResource($log))->response()->setStatusCode(201);
     }
 
     public function loggedRoutesByUser(Request $request)
     {
-         $user = $request->user();
+        $user = $request->user();
 
-    // Get all logs for this user
-    $logs = Log::where('user_id', $user->id)->get();
+        // Get all logs for this user
+        $logs = Log::where('user_id', $user->id)->get();
 
-    // Get the route IDs from these logs
-    $routeIds = $logs->pluck('route_id')->unique()->values();
+        // Get the route IDs from these logs
+        $routeIds = $logs->pluck('route_id')->unique()->values();
 
-    // Return as JSON
-    return response()->json([
-        'data' => $routeIds,
-    ]);
-        
+        // Return as JSON
+        return response()->json([
+            'data' => $routeIds,
+        ]);
+
+    }
+
+    /**
+     * Get routes climbed by friends.
+     */
+    public function friendsRoutes(Request $request)
+    {
+        $user = $request->user();
+
+        // Get all friends (both directions)
+        $friends = $user->friends->merge($user->friendOf)->unique('id')->pluck('id');
+
+        // Get logs from friends, ordered by most recent
+        $logs = Log::whereIn('user_id', $friends)
+            ->with(['route.line.sector.area', 'user'])
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get();
+
+        return LogResource::collection($logs);
     }
 }

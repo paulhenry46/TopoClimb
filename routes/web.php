@@ -27,6 +27,10 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('/friends', function () {
+        return view('friends.index');
+    })->name('friends.index');
+
     Route::prefix('/admin/users')->group(function () {
         Route::get('/', function (Site $site) {
             return view('users.index');
@@ -209,13 +213,13 @@ Route::middleware(['auth:web'])->get('/user/qr/{user}', function (App\Models\Use
     // Verify the authenticated user is a staff member in at least one contest
     $permissionName = 'contest.';
     $isStaff = auth()->user()->permissions()
-        ->where('name', 'like', $permissionName . '%')
+        ->where('name', 'like', $permissionName.'%')
         ->exists();
-    
-    if (!$isStaff) {
+
+    if (! $isStaff) {
         abort(403, 'Unauthorized. Only contest staff members can scan QR codes.');
     }
-    
+
     return response()->json([
         'id' => $user->id,
         'name' => $user->name,
