@@ -12,9 +12,11 @@ class LogObserver
      */
     public function created(Log $log): void
     {
-        // Find active contests that include this route
-        $contests = Contest::whereHas('routes', function ($query) use ($log) {
-            $query->where('route_id', $log->route_id);
+        // Find active contests that include this route via steps (steps have a many-to-many relation to routes)
+        $contests = Contest::whereHas('steps', function ($query) use ($log) {
+            $query->whereHas('routes', function ($q) use ($log) {
+            $q->where('routes.id', $log->route_id);
+            });
         })
         ->where('start_date', '<=', $log->created_at)
         ->where('end_date', '>=', $log->created_at)

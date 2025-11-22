@@ -44,13 +44,6 @@ class ContestCategory extends Model
             }
         }
 
-        // Backward compatibility: Check gender if type is gender (old approach)
-        if (!$this->gender && $this->type === 'gender' && $this->criteria) {
-            if (!$user->gender || strtolower($user->gender) !== strtolower($this->criteria)) {
-                return false;
-            }
-        }
-
         // Check age if age range is defined
         if ($this->min_age !== null || $this->max_age !== null) {
             $age = $user->getAge();
