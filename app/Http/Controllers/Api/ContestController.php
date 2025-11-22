@@ -104,10 +104,6 @@ class ContestController extends Controller
     {
         $user = $request->user();
 
-        if (! $user) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
-
         $categories = $contest->categories()
             ->whereHas('users', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -123,10 +119,6 @@ class ContestController extends Controller
     public function registerForCategory(Contest $contest, ContestCategory $category, Request $request)
     {
         $user = $request->user();
-
-        if (! $user) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
 
         // Verify the category belongs to the contest
         if ($category->contest_id !== $contest->id) {
@@ -150,10 +142,6 @@ class ContestController extends Controller
     public function unregisterFromCategory(Contest $contest, ContestCategory $category, Request $request)
     {
         $user = $request->user();
-
-        if (! $user) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
 
         // Verify the category belongs to the contest
         if ($category->contest_id !== $contest->id) {
