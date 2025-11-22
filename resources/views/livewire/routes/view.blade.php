@@ -18,6 +18,7 @@ new class extends Component {
     public Area $area;
     public Site $site;
     public $mobile_first_open;
+    //public $logs;
 
     public function mount($area){
         $this->area = $area;
@@ -37,20 +38,31 @@ new class extends Component {
     #[On('route-changed')] 
     public function readRoute($id)
     {
-        $this->route  = Route::find($id);
+        $this->route  = Route::with('logs.user')->findOrFail($id);
         $this->route_id = $id;
+        //$this->logs = Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->with('user')->get();
+        $logs = Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->with('user')->get();
+    
+        $logs = Log::where('route_id', $this->route->id)
+            ->orderBy('created_at', 'desc')
+            ->with('user')
+            ->get()
+            ->toArray();
+          //  dd($logs);
+
+    $this->dispatch('route-changed-back', $logs);
+
     }
 
     public function with(){
-      $logs = Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->take(3)->get();
-      $allLogs = Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->with('user')->get();
-      return ['logs' => $logs, 'allLogs' => $allLogs, 'route'=> $this->route];
+      $logs = Log::where('route_id', $this->route->id)->orderBy('created_at', 'desc')->with('user')->get();
+      return ['logs' => $logs, 'route'=> $this->route];
     }
    
 }; ?>
 <div>
   <div class='hidden md:block'>
-    <x-area.card-route :logs=$logs :allLogs=$allLogs key='card-md' :key_button="'button-md'"/>
+    <x-area.card-route :logs=$logs key='card-md' :key_button="'button-md'"/>
   </div>
 
 <div x-data="{ open: $wire.mobile_first_open }" x-on:route-changed.window="open=true" class="relative md:hidden" >
@@ -86,7 +98,7 @@ new class extends Component {
 
       <!-- Drawer Content -->
       <div class="p-4 overflow-y-auto max-h-[75vh]">
-          <x-area.card-route :logs=$logs :allLogs=$allLogs key='card-sm' :key_button="'button-sm'"/>
+          <x-area.card-route :logs=$logs  key='card-sm' :key_button="'button-sm'"/>
       </div>
   </div>
   <!--hdhf/-->

@@ -1,17 +1,22 @@
-@props(['logs', 'allLogs', 'key_button' => 'default-button'])
-<div class='relative' x-data="{filtered : false, friendsOnly: false, toogle(){this.filtered = !this.filtered;}, 
-  get displayLogs() {
-    if (!this.friendsOnly) return @js($allLogs);
+@props(['logs', 'key_button' => 'default-button'])
+<div x-data="{filtered : false, friendsOnly: false, toogle(){this.filtered = !this.filtered;},
+  _logs: @js($logs), 
+   get displayLogs() {
+    if (!this.friendsOnly) return this._logs;
     const friendIds = @js(auth()->check() ? auth()->user()->friends->merge(auth()->user()->friendOf)->unique('id')->pluck('id')->toArray() : []);
-    return @js($allLogs).filter(log => friendIds.includes(log.user.id));
+    return this._logs.filter(log => friendIds.includes(log.user.id));
   },
   get displayComments() {
     return this.displayLogs.filter(log => log.comment !== null && log.comment !== '');
   },
   get displayVideos() {
     return this.displayLogs.filter(log => log.video_url !== null && log.video_url !== '');
-  }
+  },
+  init() {
+      Livewire.on('route-changed-back', newLogs => { this._logs = newLogs[0]; });
+    }
 }">
+<div class='relative' >
 <div x-show="!filtered" class="bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->picture() }}'); background-position-y: 50%; ">
 </div>
 <div x-cloak x-show="filtered" class=" bg-center bg-cover h-96 rounded-t-2xl " style="background-image: url('{{ $this->route->filteredPicture() }}'); background-position-y: 50%;">
@@ -292,3 +297,4 @@
       </div>
     </div>
   </div>
+</div>
