@@ -45,6 +45,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/contests/{contest}/rank', [ContestController::class, 'globalRank']);
     Route::get('/contests/{contest}/steps', [ContestController::class, 'steps']);
     Route::get('/contests/{contest}/steps/{step}/rank', [ContestController::class, 'rank']);
+    Route::get('/contests/{contest}/categories', [ContestController::class, 'categories']);
+    Route::get('/contests/{contest}/categories/{category}/rank', [ContestController::class, 'categoryRank']);
+    Route::get('/contests/{contest}/categories/{category}/steps/{step}/rank', [ContestController::class, 'categoryStepRank']);
 
     // Teams
     Route::get('/contests/{contest}/teams', [TeamController::class, 'index']);
@@ -74,6 +77,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/users/search', [UserController::class, 'search']);
         Route::post('/user/friends', [UserController::class, 'addFriend']);
         Route::delete('/user/friends/{friendId}', [UserController::class, 'removeFriend']);
+
+        // Contest categories
+        Route::get('/contests/{contest}/user/categories', [ContestController::class, 'userCategories']);
+        Route::post('/contests/{contest}/categories/{category}/register', [ContestController::class, 'registerForCategory']);
+        Route::delete('/contests/{contest}/categories/{category}/unregister', [ContestController::class, 'unregisterFromCategory']);
 
     });
 });
