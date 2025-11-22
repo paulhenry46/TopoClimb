@@ -1,16 +1,13 @@
 <?php
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Contest;
 use App\Models\ContestCategory;
-use App\Models\Site;
-use App\Models\Route;
-use App\Models\Area;
-use App\Models\Sector;
-use App\Models\Line;
 use App\Models\Log;
+use App\Models\Route;
+use App\Models\Site;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AutoAssignCategoryTest extends TestCase
 {
@@ -30,23 +27,23 @@ class AutoAssignCategoryTest extends TestCase
             'slug' => 'test-site',
             'address' => 'Test Address',
         ]);
-        
+
         $area = $site->areas()->create([
             'name' => 'Test Area',
             'slug' => 'test-area',
             'type' => 'bouldering',
         ]);
-        
+
         $sector = $area->sectors()->create([
             'name' => 'Test Sector',
             'slug' => 'test-sector',
             'local_id' => 1,
         ]);
-        
+
         $line = $sector->lines()->create([
             'local_id' => 1,
         ]);
-        
+
         $route = $line->routes()->create([
             'name' => 'Test Route',
             'slug' => 'test-route',
@@ -64,7 +61,7 @@ class AutoAssignCategoryTest extends TestCase
             'end_date' => now()->addDay(),
             'mode' => 'free',
         ]);
-        
+
         // Associate route with contest
         $contest->routes()->attach($route->id, ['points' => 100]);
 
@@ -112,23 +109,23 @@ class AutoAssignCategoryTest extends TestCase
             'slug' => 'test-site',
             'address' => 'Test Address',
         ]);
-        
+
         $area = $site->areas()->create([
             'name' => 'Test Area',
             'slug' => 'test-area',
             'type' => 'bouldering',
         ]);
-        
+
         $sector = $area->sectors()->create([
             'name' => 'Test Sector',
             'slug' => 'test-sector',
             'local_id' => 1,
         ]);
-        
+
         $line = $sector->lines()->create([
             'local_id' => 1,
         ]);
-        
+
         $route = $line->routes()->create([
             'name' => 'Test Route',
             'slug' => 'test-route',
@@ -146,7 +143,7 @@ class AutoAssignCategoryTest extends TestCase
             'end_date' => now()->addDay(),
             'mode' => 'free',
         ]);
-        
+
         // Associate route with contest
         $contest->routes()->attach($route->id, ['points' => 100]);
 
@@ -480,23 +477,23 @@ class AutoAssignCategoryTest extends TestCase
             'slug' => 'test-site',
             'address' => 'Test Address',
         ]);
-        
+
         $area = $site->areas()->create([
             'name' => 'Test Area',
             'slug' => 'test-area',
             'type' => 'bouldering',
         ]);
-        
+
         $sector = $area->sectors()->create([
             'name' => 'Test Sector',
             'slug' => 'test-sector',
             'local_id' => 1,
         ]);
-        
+
         $line = $sector->lines()->create([
             'local_id' => 1,
         ]);
-        
+
         $route = $line->routes()->create([
             'name' => 'Test Route',
             'slug' => 'test-route',
@@ -514,7 +511,7 @@ class AutoAssignCategoryTest extends TestCase
             'end_date' => now()->addDay(),
             'mode' => 'official',
         ]);
-        
+
         // Associate route with contest
         $contest->routes()->attach($route->id, ['points' => 100]);
 

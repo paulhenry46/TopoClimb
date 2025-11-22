@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Log;
 use App\Models\Contest;
+use App\Models\Log;
 
 class LogObserver
 {
@@ -19,9 +19,9 @@ class LogObserver
                 $q->where('routes.id', $log->route_id);
             });
         })
-        ->where('start_date', '<=', $log->created_at)
-        ->where('end_date', '>=', $log->created_at)
-        ->get();
+            ->where('start_date', '<=', $log->created_at)
+            ->where('end_date', '>=', $log->created_at)
+            ->get();
 
         // Auto-assign user to eligible categories in these contests
         foreach ($contests as $contest) {
