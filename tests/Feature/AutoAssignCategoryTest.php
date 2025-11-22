@@ -462,4 +462,90 @@ class AutoAssignCategoryTest extends TestCase
         $this->assertTrue($category->userMatches($maleUser));
         $this->assertTrue($category->userMatches($femaleUser));
     }
+
+    public function test_user_is_auto_assigned_when_staff_registers_log()
+    {
+        // Create a staff member
+        $staffUser = User::factory()->create();
+
+        // Create a regular user with age and gender
+        $user = User::factory()->create([
+            'birth_date' => now()->subYears(25),
+            'gender' => 'male',
+        ]);
+
+        // Create a site
+        $site = Site::create([
+            'name' => 'Test Site',
+            'slug' => 'test-site',
+            'address' => 'Test Address',
+        ]);
+        
+        $area = $site->areas()->create([
+            'name' => 'Test Area',
+            'slug' => 'test-area',
+            'type' => 'bouldering',
+        ]);
+        
+        $sector = $area->sectors()->create([
+            'name' => 'Test Sector',
+            'slug' => 'test-sector',
+            'local_id' => 1,
+        ]);
+        
+        $line = $sector->lines()->create([
+            'local_id' => 1,
+        ]);
+        
+        $route = $line->routes()->create([
+            'name' => 'Test Route',
+            'slug' => 'test-route',
+            'local_id' => 1,
+            'grade' => 500,
+            'color' => 'blue',
+        ]);
+
+        // Create a contest
+        $contest = Contest::create([
+            'name' => 'Test Contest',
+            'description' => 'Test Description',
+            'site_id' => $site->id,
+            'start_date' => now()->subDay(),
+            'end_date' => now()->addDay(),
+            'mode' => 'official',
+        ]);
+        
+        // Associate route with contest
+        $contest->routes()->attach($route->id, ['points' => 100]);
+
+        // Create an auto-assign category
+        $category = ContestCategory::create([
+            'contest_id' => $contest->id,
+            'name' => 'Men 18-30',
+            'type' => 'gender',
+            'criteria' => 'male',
+            'auto_assign' => true,
+            'min_age' => 18,
+            'max_age' => 30,
+        ]);
+
+        // User should not be in category yet
+        $this->assertFalse($category->users->contains($user));
+
+        // Staff member registers a log for the user (like in the registrations component)
+        $log = Log::create([
+            'user_id' => $user->id,
+            'route_id' => $route->id,
+            'type' => 'flash',
+            'way' => 'lead',
+            'grade' => $route->grade,
+            'verified_by' => $staffUser->id,
+        ]);
+
+        // Refresh the category
+        $category->refresh();
+
+        // User should now be in the category
+        $this->assertTrue($category->users->contains($user), 'User should be auto-assigned to matching category when staff registers log');
+    }
 }
