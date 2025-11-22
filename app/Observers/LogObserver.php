@@ -13,7 +13,7 @@ class LogObserver
     public function created(Log $log): void
     {
         // Find active contests that include this route
-        // We need to join through contest_step_route to find contests
+        // Query through contest steps and their routes to find matching contests
         $contests = Contest::whereHas('steps', function ($query) use ($log) {
             $query->whereHas('routes', function ($q) use ($log) {
                 $q->where('routes.id', $log->route_id);
