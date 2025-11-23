@@ -49,10 +49,10 @@ class Team extends Model
             return false;
         }
 
-        // If team is full and user is not admin, cannot add
+        // If team is full and user is not admin of , cannot add
         if ($this->isFull() && $user) {
             // Check if user is admin
-            if (!$user->hasRole('super-admin') && !$contest->isStaffMember($user)) {
+            if (!$user->can('areas.' . $contest->site_id) && !$contest->isStaffMember($user)) {
                 return false;
             }
         }

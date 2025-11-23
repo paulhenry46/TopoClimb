@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\ContestController;
 use App\Models\Area;
 use App\Models\Contest;
 use App\Models\Route as ModelsRoute;
@@ -206,33 +207,7 @@ Route::prefix('/sites/{site:slug}')->group(function () {
             return view('contests.user-team', compact('site', 'contest'));
         })->name('contest.my-team');
 
-        Route::get('/contests/{contest}/join/{token}', function (Site $site, Contest $contest, string $token) {
-            $team = $contest->teams()->where('invitation_token', $token)->firstOrFail();
-            
-            // Check if user is already in a team
-            $userTeam = $contest->teams()
-                ->whereHas('users', function ($query) {
-                    $query->where('user_id', auth()->id());
-                })
-                ->first();
-            
-            if ($userTeam) {
-                return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
-                    ->with('error', __('You are already in a team for this contest.'));
-            }
-
-            // Check if team is full
-            if ($team->isFull()) {
-                return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
-                    ->with('error', __('This team is full.'));
-            }
-
-            // Add user to team
-            $team->users()->syncWithoutDetaching([auth()->id()]);
-
-            return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
-                ->with('success', __('You have successfully joined the team!'));
-        })->name('contests.team.join');
+        Route::get('/contests/{contest}/join/{token}', [ContestController::class, 'join'])->name('contests.team.join');
     });
 
     Route::prefix('/{area:slug}')->scopeBindings()->group(function () {
@@ -245,16 +220,6 @@ Route::prefix('/sites/{site:slug}')->group(function () {
 
 // User QR code route for identification (staff only)
 Route::middleware(['auth:web'])->get('/user/qr/{user}', function (App\Models\User $user) {
-    // Verify the authenticated user is a staff member in at least one contest
-    $permissionName = 'contest.';
-    $isStaff = auth()->user()->permissions()
-        ->where('name', 'like', $permissionName.'%')
-        ->exists();
-
-    if (! $isStaff) {
-        abort(403, 'Unauthorized. Only contest staff members can scan QR codes.');
-    }
-
     return response()->json([
         'id' => $user->id,
         'name' => $user->name,
@@ -262,11 +227,7 @@ Route::middleware(['auth:web'])->get('/user/qr/{user}', function (App\Models\Use
 })->name('user.qr');
 
 Route::get('/empty/photo/{color}.svg', function (string $color) {
-    $colors = config('climb.colors');
-
-    $content = str_replace('color', $colors[$color], Storage::get('photos/blank.svg'));
-
-    $response = response()->make($content, 200);
+    $response = response()->make(str_replace('color', config('climb.colors')[$color], Storage::get('photos/blank.svg')), 200);
     $response->header('Content-Type', 'image/svg+xml');
 
     return $response;

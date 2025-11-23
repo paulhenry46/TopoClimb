@@ -316,11 +316,10 @@ new class extends Component {
         </x-slot>
     </x-drawer>
 </div>
-
+@script
 <script>
-    document.addEventListener('livewire:initialized', () => {
         Livewire.on('copy_to_clipboard', (event) => {
             navigator.clipboard.writeText(event.text);
         });
-    });
 </script>
+@endscript

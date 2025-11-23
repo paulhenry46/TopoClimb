@@ -446,11 +446,11 @@ class Contest extends Model
         return $this->team_mode === 'restricted';
     }
 
-    public function canUserManageTeams(User $user)
-    {
+   // public function canUserManageTeams(User $user)
+   // {
         // Admins and staff can always manage teams
-        return $user->hasRole('super-admin') || $this->isStaffMember($user);
-    }
+    //    return $user->hasRole('super-admin') || $this->isStaffMember($user);
+   // }
 
     public function canUserCreateTeam(User $user)
     {
