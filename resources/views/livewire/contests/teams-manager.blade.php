@@ -23,6 +23,13 @@ new class extends Component {
     public $search_query = '';
     public $search_results = [];
 
+    // Livewire lifecycle hook: called when $search_query is updated in the frontend
+    public function updatedSearchQuery($value)
+    {
+        $this->search_query = $value;
+        $this->searchUsers();
+    }
+
     public function mount()
     {
         // Check if contest has team mode enabled
@@ -114,6 +121,11 @@ new class extends Component {
             })
             ->toArray();
     }
+    public function reinitQueryValue(){
+        // Close modal and reset search
+        $this->search_query = '';
+        $this->search_results = [];
+    }
 
     public function addUserToTeam($userId)
     {
@@ -134,11 +146,7 @@ new class extends Component {
         // Admins can always add users, even if team is full
         $team->users()->syncWithoutDetaching([$userId]);
         $this->dispatch('action_ok', title: 'Member added', message: 'Team member has been added successfully!');
-        
-        // Close modal and reset search
-        $this->add_user_modal_open = false;
-        $this->search_query = '';
-        $this->search_results = [];
+    
     }
 
     public function removeUserFromTeam($teamId, $userId)
@@ -156,16 +164,14 @@ new class extends Component {
             <p class="mt-2 text-sm text-gray-700">{{__('Create and manage teams for this contest')}}</p>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <button wire:click="$set('modal_open', true)" type="button"
-                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <x-button wire:click="$set('modal_open', true)">
                 {{__('Create Team')}}
-            </button>
+            </x-button>
         </div>
     </div>
 
     <!-- Teams List -->
-    <div class="bg-white shadow sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
+    
             @if($contest->teams->count() > 0)
                 <div class="space-y-4">
                     @foreach($contest->teams as $team)
@@ -182,23 +188,17 @@ new class extends Component {
                                 </div>
                                 <div class="flex gap-2">
                                     <button wire:click="openAddUserModal({{ $team->id }})" 
-                                        class="text-green-600 hover:text-green-900"
+                                        class="text-gray-600 hover:text-gray-900"
                                         title="{{__('Add member')}}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                                        </svg>
+                                        <x-icons.icon-account-manager />
                                     </button>
                                     <button wire:click="edit({{ $team->id }})" class="text-gray-600 hover:text-gray-900">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                        </svg>
+                                        <x-icons.icon-edit />
                                     </button>
                                     <button wire:click="delete({{ $team->id }})" 
                                         wire:confirm="{{__('Are you sure you want to delete this team?')}}"
                                         class="text-red-600 hover:text-red-900">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
+                                        <x-icons.icon-delete />
                                     </button>
                                 </div>
                             </div>
@@ -213,9 +213,7 @@ new class extends Component {
                                                 <button wire:click="removeUserFromTeam({{ $team->id }}, {{ $user->id }})"
                                                     wire:confirm="{{__('Remove this member from the team?')}}"
                                                     class="text-red-500 hover:text-red-700">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                    </svg>
+                                                    <x-icons.icon-cancel />
                                                 </button>
                                             </li>
                                         @endforeach
@@ -232,8 +230,6 @@ new class extends Component {
                     {{__('No teams created yet. Click "Create Team" to get started.')}}
                 </div>
             @endif
-        </div>
-    </div>
 
     <!-- Create/Edit Team Modal -->
     <x-drawer 
@@ -269,7 +265,8 @@ new class extends Component {
     <x-drawer 
         open="add_user_modal_open" 
         :title="__('Add Team Member')" 
-        :subtitle="__('Search and add a user to the team')">
+        :subtitle="__('Search and add a user to the team')"
+        save_method_name="reinitQueryValue">
         <div>
             <div class="mt-4">
                 <x-label for="search_query" value="{{ __('Search Users') }}" />
