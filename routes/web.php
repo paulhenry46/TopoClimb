@@ -200,6 +200,41 @@ Route::prefix('/sites/{site:slug}')->group(function () {
         return view('contests.live', compact('site', 'contest'));
     })->name('contest.live');
 
+    // Team management routes (authenticated users)
+    Route::middleware(['auth:web'])->group(function () {
+        Route::get('/contests/{contest}/my-team', function (Site $site, Contest $contest) {
+            return view('contests.user-team', compact('site', 'contest'));
+        })->name('contest.my-team');
+
+        Route::get('/contests/{contest}/join/{token}', function (Site $site, Contest $contest, string $token) {
+            $team = $contest->teams()->where('invitation_token', $token)->firstOrFail();
+            
+            // Check if user is already in a team
+            $userTeam = $contest->teams()
+                ->whereHas('users', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+                ->first();
+            
+            if ($userTeam) {
+                return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
+                    ->with('error', __('You are already in a team for this contest.'));
+            }
+
+            // Check if team is full
+            if ($team->isFull()) {
+                return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
+                    ->with('error', __('This team is full.'));
+            }
+
+            // Add user to team
+            $team->users()->attach(auth()->id());
+
+            return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
+                ->with('success', __('You have successfully joined the team!'));
+        })->name('contests.team.join');
+    });
+
     Route::prefix('/{area:slug}')->scopeBindings()->group(function () {
 
         Route::get('/', function (Site $site, Area $area) {

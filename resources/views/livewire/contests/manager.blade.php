@@ -34,7 +34,7 @@ new class extends Component {
     public $mode = 'free';
 
     public $use_dynamic_points = false;
-    public $team_mode = false;
+    public $team_mode = null;
     public $team_points_mode = 'unique';
 
     public $id_editing = 0;
@@ -73,6 +73,7 @@ new class extends Component {
 
         $this->modal_open = false;
         $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'team_points_mode', 'id_editing']);
+        $this->team_mode = null; // Explicitly reset to null
     }
 
     public function edit($id)
@@ -114,6 +115,7 @@ new class extends Component {
     public function open_modal()
     {
         $this->reset(['name', 'description', 'start_date', 'end_date', 'mode', 'use_dynamic_points', 'team_mode', 'team_points_mode', 'id_editing']);
+        $this->team_mode = null; // Explicitly reset to null
         $this->modal_subtitle = __('Get started by filling in the information below to create a new contest.');
         $this->modal_title = __('New contest');
         $this->modal_submit_message = __('Create');
@@ -324,20 +326,19 @@ new class extends Component {
         </div>
 
         <div class="mt-4">
-            <div class="flex items-start">
-                <div class="flex items-center h-5">
-                    <input id="team_mode" type="checkbox" wire:model="team_mode" 
-                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                </div>
-                <div class="ml-3 text-sm">
-                    <label for="team_mode" class="font-medium text-gray-700">{{ __('Enable Team Mode') }}</label>
-                    <p class="text-gray-500">{{ __('Users can create and join teams, and rankings are calculated by team.') }}</p>
-                </div>
-            </div>
+            <x-label for="team_mode" value="{{ __('Team Mode') }}" />
+            <select id="team_mode" wire:model="team_mode" 
+                class="mt-1 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
+                <option value="">{{ __('No Teams') }}</option>
+                <option value="free">{{ __('Free - Users can create teams and invite others') }}</option>
+                <option value="register">{{ __('Register - Users can join existing teams') }}</option>
+                <option value="restricted">{{ __('Restricted - Only admins can manage teams') }}</option>
+            </select>
+            <p class="mt-1 text-sm text-gray-500">{{ __('Choose how teams are managed in this contest.') }}</p>
             <x-input-error for="team_mode" class="mt-2" />
         </div>
 
-        <div class="mt-4" x-data="{ teamMode: $wire.entangle('team_mode') }" x-show="teamMode">
+        <div class="mt-4" x-data="{ teamMode: $wire.entangle('team_mode') }" x-show="teamMode && teamMode !== ''">
             <x-label for="team_points_mode" value="{{ __('Team Points Calculation') }}" />
             <fieldset>
                 <legend class="sr-only">{{__('Team Points Mode')}}</legend>
