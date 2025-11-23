@@ -24,7 +24,6 @@ class Contest extends Model
         'start_date' => 'datetime',
         'end_date' => 'datetime',
         'use_dynamic_points' => 'boolean',
-        'team_mode' => 'boolean',
     ];
 
     protected static function booted()
@@ -425,5 +424,43 @@ class Contest extends Model
                 $category->users()->syncWithoutDetaching([$user->id]);
             }
         }
+    }
+
+    public function hasTeamMode()
+    {
+        return !is_null($this->team_mode) && $this->team_mode !== '';
+    }
+
+    public function isTeamModeFree()
+    {
+        return $this->team_mode === 'free';
+    }
+
+    public function isTeamModeRegister()
+    {
+        return $this->team_mode === 'register';
+    }
+
+    public function isTeamModeRestricted()
+    {
+        return $this->team_mode === 'restricted';
+    }
+
+    public function canUserManageTeams(User $user)
+    {
+        // Admins and staff can always manage teams
+        return $user->hasRole('super-admin') || $this->isStaffMember($user);
+    }
+
+    public function canUserCreateTeam(User $user)
+    {
+        // In 'free' mode, any user can create a team
+        return $this->isTeamModeFree();
+    }
+
+    public function canUserJoinTeam(User $user)
+    {
+        // In 'register' or 'free' mode, users can join teams
+        return $this->isTeamModeRegister() || $this->isTeamModeFree();
     }
 }

@@ -11,6 +11,9 @@ class Team extends Model
     protected $fillable = [
         'name',
         'contest_id',
+        'max_users',
+        'created_by',
+        'invitation_token',
     ];
 
     public function contest()
@@ -21,6 +24,45 @@ class Team extends Model
     public function users()
     {
         return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function isFull()
+    {
+        return $this->users()->count() >= $this->max_users;
+    }
+
+    public function canAddUser($user = null)
+    {
+        // Admin can always add users
+        // In 'free' mode, team members can add users if not full
+        // In 'register' mode, users can join if not full
+        // In 'restricted' mode, only admins can add users
+        
+        $contest = $this->contest;
+        
+        if (!$contest->team_mode) {
+            return false;
+        }
+
+        // If team is full and user is not admin, cannot add
+        if ($this->isFull() && $user && !$user->hasRole('super-admin') && !$contest->isStaffMember($user)) {
+            // Only admins can exceed the limit
+            return false;
+        }
+
+        return true;
+    }
+
+    public function generateInvitationToken()
+    {
+        $this->invitation_token = bin2hex(random_bytes(32));
+        $this->save();
+        return $this->invitation_token;
     }
 
     public function getTotalPoints()
