@@ -103,14 +103,13 @@ class ContestController extends Controller
     public function userCategories(Contest $contest, Request $request)
     {
         $user = $request->user();
-
         $categories = $contest->categories()
             ->whereHas('users', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->get();
+            ->pluck('id');
 
-        return ContestCategoryResource::collection($categories);
+        return $categories;
     }
 
     /**

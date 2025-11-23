@@ -18,7 +18,6 @@ class ContestCategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'contest_id' => $this->contest_id,
-            'type' => $this->type,
             'criteria' => $this->criteria,
             'auto_assign' => $this->auto_assign,
             'min_age' => $this->min_age,
