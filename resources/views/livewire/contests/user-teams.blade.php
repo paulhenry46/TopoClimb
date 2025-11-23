@@ -81,7 +81,7 @@ new class extends Component {
         }
 
         // Add creator to team
-        $team->users()->attach(auth()->id());
+        $team->users()->syncWithoutDetaching([auth()->id()]);
 
         $this->dispatch('action_ok', title: 'Team created', message: 'Your team has been created successfully!');
         $this->modal_open = false;
@@ -113,7 +113,7 @@ new class extends Component {
         }
 
         // Add user to team
-        $team->users()->attach(auth()->id());
+        $team->users()->syncWithoutDetaching([auth()->id()]);
 
         $this->dispatch('action_ok', title: 'Joined team', message: 'You have joined the team successfully!');
         $this->join_team_modal_open = false;

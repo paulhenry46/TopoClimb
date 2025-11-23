@@ -61,7 +61,7 @@ test('team can have multiple users', function () {
         'created_by' => $user1->id,
     ]);
 
-    $team->users()->attach([$user1->id, $user2->id, $user3->id]);
+    $team->users()->syncWithoutDetaching([$user1->id, $user2->id, $user3->id]);
 
     expect($team->users)->toHaveCount(3);
     expect($team->users->pluck('id')->toArray())->toContain($user1->id, $user2->id, $user3->id);
@@ -87,7 +87,7 @@ test('team isFull returns correct value', function () {
 
     expect($team->isFull())->toBeFalse();
 
-    $team->users()->attach([User::factory()->create()->id, User::factory()->create()->id]);
+    $team->users()->syncWithoutDetaching([User::factory()->create()->id, User::factory()->create()->id]);
     $team->refresh();
 
     expect($team->isFull())->toBeTrue();
@@ -184,7 +184,7 @@ test('user can only be in one team per contest', function () {
         'max_users' => 5,
     ]);
 
-    $team1->users()->attach($user->id);
+    $team1->users()->syncWithoutDetaching([$user->id]);
 
     // User should be in team1
     expect($contest->teams()->whereHas('users', function ($query) use ($user) {

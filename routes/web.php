@@ -228,7 +228,7 @@ Route::prefix('/sites/{site:slug}')->group(function () {
             }
 
             // Add user to team
-            $team->users()->attach(auth()->id());
+            $team->users()->syncWithoutDetaching([auth()->id()]);
 
             return redirect()->route('contest.my-team', ['site' => $site->slug, 'contest' => $contest->id])
                 ->with('success', __('You have successfully joined the team!'));
