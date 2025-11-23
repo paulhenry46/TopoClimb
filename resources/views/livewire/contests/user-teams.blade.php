@@ -130,8 +130,8 @@ new class extends Component {
         // Remove user from team
         $this->user_team->users()->detach(auth()->id());
 
-        // If team is empty and was user-created, delete it
-        if ($this->user_team->users()->count() === 0 && $this->user_team->created_by) {
+        // In free mode: If team is empty, delete it automatically
+        if ($this->contest->isTeamModeFree() && $this->user_team->users()->count() === 0) {
             $this->user_team->delete();
         }
 
@@ -261,7 +261,14 @@ new class extends Component {
                     </div>
                 @endif
 
-                @if($contest->canUserJoinTeam(auth()->user()) && count($available_teams) > 0)
+                @if($contest->isTeamModeFree())
+                    <!-- Free mode: only show create option and join via link message -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800">
+                            {{__('In this contest, you can create your own team or join an existing team if you have an invitation link.')}}
+                        </p>
+                    </div>
+                @elseif($contest->canUserJoinTeam(auth()->user()) && count($available_teams) > 0)
                     <div>
                         <h3 class="text-sm font-medium text-gray-700 mb-3">{{__('Available Teams')}}</h3>
                         <div class="space-y-2">
@@ -273,13 +280,11 @@ new class extends Component {
                                             {{ count($team['users']) }} / {{ $team['max_users'] }} {{__('members')}}
                                         </p>
                                     </div>
-                                    @if($contest->isTeamModeRegister() || $contest->isTeamModeFree())
-                                        <button 
-                                            wire:click="joinTeam({{ $team['id'] }})" 
-                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                            {{__('Join Team')}}
-                                        </button>
-                                    @endif
+                                    <button 
+                                        wire:click="joinTeam({{ $team['id'] }})" 
+                                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                        {{__('Join Team')}}
+                                    </button>
                                 </div>
                             @endforeach
                         </div>

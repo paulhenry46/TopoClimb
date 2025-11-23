@@ -460,7 +460,8 @@ class Contest extends Model
 
     public function canUserJoinTeam(User $user)
     {
-        // In 'register' or 'free' mode, users can join teams
-        return $this->isTeamModeRegister() || $this->isTeamModeFree();
+        // In 'register' mode, users can browse and join teams
+        // In 'free' mode, users can only join via invitation link (not browse/join)
+        return $this->isTeamModeRegister();
     }
 }
