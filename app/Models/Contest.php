@@ -391,7 +391,7 @@ class Contest extends Model
         return $rankings;
     }
 
-    public function getCategoryRankings($categoryId, $stepId = null)
+    public function getCategoryRankings($categoryId, $stepId = null, $restricted = false)
     {
         $category = $this->categories()->find($categoryId);
         if (!$category) {
@@ -399,8 +399,8 @@ class Contest extends Model
         }
 
         $userIds = $category->users->pluck('id');
-        $rankings = $this->getRankingForStep($stepId);
-        
+        $rankings = $this->getRankingForStep($stepId, $restricted);
+
         // Filter rankings to only include users in this category
         $categoryRankings = $rankings->filter(function ($ranking) use ($userIds) {
             return $userIds->contains($ranking['user_id']);
