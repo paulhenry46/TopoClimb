@@ -14,7 +14,9 @@ return new class extends Migration
     {
         // Update contests table - change team_mode from boolean to string
         // For SQLite, we need to recreate the table
-        if (DB::connection()->getDriverName() === 'sqlite') {
+        $driver = DB::connection()->getDriverName();
+        
+        if ($driver === 'sqlite') {
             // SQLite doesn't support ALTER COLUMN, so we need to handle this differently
             // For existing databases, we'll do a data migration
             Schema::table('contests', function (Blueprint $table) {
@@ -32,8 +34,12 @@ return new class extends Migration
             Schema::table('contests', function (Blueprint $table) {
                 $table->renameColumn('team_mode_new', 'team_mode');
             });
+        } elseif ($driver === 'pgsql') {
+            // PostgreSQL syntax
+            DB::statement("ALTER TABLE contests ALTER COLUMN team_mode TYPE VARCHAR(20)");
+            DB::statement("UPDATE contests SET team_mode = CASE WHEN team_mode = 'true' THEN 'register' ELSE NULL END");
         } else {
-            // For MySQL/PostgreSQL
+            // MySQL syntax
             DB::statement("ALTER TABLE contests MODIFY COLUMN team_mode VARCHAR(20) NULL");
             DB::statement("UPDATE contests SET team_mode = CASE WHEN team_mode = '1' THEN 'register' ELSE NULL END");
         }
@@ -58,7 +64,9 @@ return new class extends Migration
         });
 
         // Revert contests table changes
-        if (DB::connection()->getDriverName() === 'sqlite') {
+        $driver = DB::connection()->getDriverName();
+        
+        if ($driver === 'sqlite') {
             Schema::table('contests', function (Blueprint $table) {
                 $table->boolean('team_mode_new')->default(false)->after('use_dynamic_points');
             });
@@ -72,8 +80,13 @@ return new class extends Migration
             Schema::table('contests', function (Blueprint $table) {
                 $table->renameColumn('team_mode_new', 'team_mode');
             });
+        } elseif ($driver === 'pgsql') {
+            // PostgreSQL syntax
+            DB::statement("UPDATE contests SET team_mode = CASE WHEN team_mode = 'register' THEN 'true' ELSE 'false' END");
+            DB::statement("ALTER TABLE contests ALTER COLUMN team_mode TYPE BOOLEAN USING team_mode::boolean");
+            DB::statement("ALTER TABLE contests ALTER COLUMN team_mode SET DEFAULT false");
         } else {
-            // Convert string back to boolean
+            // MySQL syntax
             DB::statement("UPDATE contests SET team_mode = CASE WHEN team_mode = 'register' THEN '1' ELSE '0' END");
             DB::statement("ALTER TABLE contests MODIFY COLUMN team_mode TINYINT(1) NOT NULL DEFAULT 0");
         }

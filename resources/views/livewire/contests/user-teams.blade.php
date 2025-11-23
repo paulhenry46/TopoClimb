@@ -176,10 +176,11 @@ new class extends Component {
         // Generate token if not exists
         if (!$this->user_team->invitation_token) {
             $this->user_team->generateInvitationToken();
-            $this->loadUserTeam();
+            $this->user_team->refresh(); // Refresh the model to get the updated token
         }
 
-        $this->dispatch('copy_to_clipboard', text: route('contests.team.join', ['contest' => $this->contest->id, 'token' => $this->user_team->invitation_token]));
+        $site = $this->contest->site;
+        $this->dispatch('copy_to_clipboard', text: route('contests.team.join', ['site' => $site->slug, 'contest' => $this->contest->id, 'token' => $this->user_team->invitation_token]));
         $this->dispatch('action_ok', title: 'Link copied', message: 'Invitation link copied to clipboard!');
     }
 }; ?>

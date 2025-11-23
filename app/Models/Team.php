@@ -50,9 +50,11 @@ class Team extends Model
         }
 
         // If team is full and user is not admin, cannot add
-        if ($this->isFull() && $user && !$user->hasRole('super-admin') && !$contest->isStaffMember($user)) {
-            // Only admins can exceed the limit
-            return false;
+        if ($this->isFull() && $user) {
+            // Check if user is admin
+            if (!$user->hasRole('super-admin') && !$contest->isStaffMember($user)) {
+                return false;
+            }
         }
 
         return true;
