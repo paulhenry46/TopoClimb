@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::table('contests', function (Blueprint $table) {
             $table->dropColumn('team_mode');
-            $table->enum('team_mode', ['free', 'register', 'restricted']);
+            $table->enum('team_mode', ['free', 'register', 'restricted'])->nullable();
         });
 
         // Add new columns to teams table

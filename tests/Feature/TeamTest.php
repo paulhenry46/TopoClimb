@@ -220,3 +220,72 @@ test('team belongs to contest and creator', function () {
     expect($team->creator)->toBeInstanceOf(User::class);
     expect($team->creator->id)->toBe($creator->id);
 });
+
+test('in free mode users cannot join teams via canUserJoinTeam', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'free',
+        'site_id' => $site->id,
+        'team_mode' => 'free',
+    ]);
+
+    $user = User::factory()->create();
+
+    // In free mode, users should not be able to join teams via the browse/join flow
+    expect($contest->canUserJoinTeam($user))->toBeFalse();
+});
+
+test('in register mode users can join teams via canUserJoinTeam', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'free',
+        'site_id' => $site->id,
+        'team_mode' => 'register',
+    ]);
+
+    $user = User::factory()->create();
+
+    // In register mode, users should be able to join teams via the browse/join flow
+    expect($contest->canUserJoinTeam($user))->toBeTrue();
+});
+
+test('in free mode users can create teams', function () {
+    $site = Site::create([
+        'name' => 'Test Site',
+        'slug' => 'test-site',
+        'address' => 'Test Address',
+    ]);
+
+    $contest = Contest::create([
+        'name' => 'Test Contest',
+        'description' => 'Test Description',
+        'start_date' => now(),
+        'end_date' => now()->addDays(7),
+        'mode' => 'free',
+        'site_id' => $site->id,
+        'team_mode' => 'free',
+    ]);
+
+    $user = User::factory()->create();
+
+    // In free mode, users can create teams
+    expect($contest->canUserCreateTeam($user))->toBeTrue();
+});
