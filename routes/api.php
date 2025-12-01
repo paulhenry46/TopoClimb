@@ -40,8 +40,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/routes/{route}/logs/friends', [RouteController::class, 'friendsLogs'])->middleware('auth:sanctum');
 
     // Public User endpoints
-    Route::get('/users/{user}', [UserController::class, 'publicProfile']);
-    Route::get('/users/{user}/routes', [UserController::class, 'publicRoutes']);
+    Route::get('/users/{user}', [UserController::class, 'publicProfile'])->whereNumber('user');
+    Route::get('/users/{user}/routes', [UserController::class, 'publicRoutes'])->whereNumber('user');
 
     // Current Events
     Route::get('/current_events', [ContestController::class, 'currentEvents']);
