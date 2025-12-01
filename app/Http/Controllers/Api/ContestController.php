@@ -157,4 +157,18 @@ class ContestController extends Controller
 
         return response()->json(['message' => 'Successfully unregistered from category'], 200);
     }
+
+    /**
+     * Get all currently active (ongoing) contests/events.
+     */
+    public function currentEvents()
+    {
+        $now = now();
+
+        $contests = Contest::where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->get();
+
+        return ContestResource::collection($contests);
+    }
 }
