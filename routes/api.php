@@ -39,6 +39,13 @@ Route::prefix('v1')->group(function () {
     Route::get('/routes/{route}/logs', [RouteController::class, 'logs']);
     Route::get('/routes/{route}/logs/friends', [RouteController::class, 'friendsLogs'])->middleware('auth:sanctum');
 
+    // Public User endpoints
+    Route::get('/users/{user}', [UserController::class, 'publicProfile']);
+    Route::get('/users/{user}/routes', [UserController::class, 'publicRoutes']);
+
+    // Current Events
+    Route::get('/current_events', [ContestController::class, 'currentEvents']);
+
     // Contests
     Route::get('/sites/{site}/contests', [ContestController::class, 'index']);
     Route::get('/contests/{contest}', [ContestController::class, 'show']);

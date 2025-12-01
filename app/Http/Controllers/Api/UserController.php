@@ -207,4 +207,84 @@ class UserController extends Controller
             'message' => 'Friend removed successfully',
         ]);
     }
+
+    /**
+     * Get public profile for a user with stats.
+     */
+    public function publicProfile(User $user)
+    {
+        $logs = Log::where('user_id', $user->id)->with('route.line.sector.area');
+        $total = count(array_unique((clone $logs)->get()->pluck('route_id')->toArray()));
+
+        $bouldering_logs = (clone $logs)->whereHas('route.line.sector.area', function ($query) {
+            $query->where('type', 'bouldering');
+        });
+
+        $trad_logs = (clone $logs)->whereHas('route.line.sector.area', function ($query) {
+            $query->where('type', 'trad');
+        });
+
+        $logs_b = $bouldering_logs->whereHas('route', function ($query) {
+            $query->orderBy('grade', 'desc');
+        })
+            ->with('route')
+            ->take(3)
+            ->get();
+        $route_b = $logs_b->pluck('route')->sortBy('grade')->first();
+
+        $logs_t = $trad_logs->whereHas('route', function ($query) {
+            $query->orderBy('grade', 'desc');
+        })
+            ->with('route')
+            ->take(3)
+            ->get();
+        $route_t = $logs_t->pluck('route')->sortBy('grade')->first();
+
+        if ($route_b !== null and $route_b->defaultGradeFormated() !== null) {
+            $level_b = $route_b->defaultGradeFormated();
+        } else {
+            $level_b = array_key_first(config('climb.default_cotation.points'));
+        }
+
+        if ($route_t !== null and $route_t->defaultGradeFormated() !== null) {
+            $level_t = $route_t->defaultGradeFormated();
+        } else {
+            $level_t = array_key_first(config('climb.default_cotation.points'));
+        }
+
+        // Group logs by route grade and count them
+        $routesByGrade = $logs->get()->groupBy(function ($log) {
+            return $log->route->defaultGradeFormated();
+        })->map(function (Collection $group) {
+            return $group->count();
+        });
+
+        return response()->json([
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile_photo_url' => $user->profile_photo_url,
+                'stats' => [
+                    'trad_level' => $level_t,
+                    'bouldering_level' => $level_b,
+                    'total_climbed' => $total,
+                    'routes_by_grade' => $routesByGrade,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Get last routes logged by a user (max 3).
+     */
+    public function publicRoutes(User $user)
+    {
+        $logs = Log::where('user_id', $user->id)
+            ->with(['route.line.sector.area', 'user'])
+            ->orderByDesc('created_at')
+            ->take(3)
+            ->get();
+
+        return \App\Http\Resources\Api\LogResource::collection($logs);
+    }
 }
