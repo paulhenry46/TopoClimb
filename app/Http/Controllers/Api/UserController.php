@@ -280,7 +280,6 @@ class UserController extends Controller
     public function publicRoutes(User $user)
     {
         $logs = Log::where('user_id', $user->id)
-            ->with(['route.line.sector.area', 'user'])
             ->orderByDesc('created_at')
             ->take(3)
             ->get();
