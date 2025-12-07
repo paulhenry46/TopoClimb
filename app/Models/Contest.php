@@ -300,7 +300,7 @@ class Contest extends Model
         return $basePoints;
     }
 
-    public function getRankingForStep($stepId, $restricted = false)
+    public function getRankingForStep($stepId = null, $restricted = false)
     {
 
         // Get routes - either from step or from contest
