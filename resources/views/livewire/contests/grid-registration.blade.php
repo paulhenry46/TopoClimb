@@ -166,7 +166,7 @@ new class extends Component {
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($this->authorizedUsers as $user)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="sticky left-0 z-10 bg-white border-r border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">
+                                    <td class="sticky left-0 z-10 bg-gray-100 border-r border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">
                                         {{ $user->name }}
                                     </td>
                                     @foreach($this->contestRoutes as $route)
