@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Contest extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
@@ -38,7 +39,7 @@ class Contest extends Model
                 'start_time' => $contest->start_date,
                 'end_time' => $contest->end_date,
             ]);
-            
+
             // If in official mode, create the permission
             if ($contest->mode === 'official') {
                 $contest->createStaffPermission();
@@ -54,7 +55,7 @@ class Contest extends Model
                 // Delete permission if mode changed from official to free
                 $contest->deleteStaffPermission();
             }
-            
+
             // Update main step dates if contest dates changed
             if ($contest->isDirty(['start_date', 'end_date'])) {
                 $mainStep = $contest->steps()->where('order', 0)->where('name', 'Main')->first();
@@ -88,13 +89,13 @@ class Contest extends Model
             'contest_step_id',
             'route_id'
         )
-        ->wherePivotIn('contest_step_id', function($query) {
-            $query->select('id')
-                  ->from('contest_steps')
-                  ->where('contest_id', $this->id);
-        })
-        ->withPivot('points')
-        ->withTimestamps();
+            ->wherePivotIn('contest_step_id', function ($query) {
+                $query->select('id')
+                    ->from('contest_steps')
+                    ->where('contest_id', $this->id);
+            })
+            ->withPivot('points')
+            ->withTimestamps();
     }
 
     public function staffMembers()
@@ -103,68 +104,70 @@ class Contest extends Model
         if ($this->mode !== 'official') {
             return User::whereRaw('1=0'); // Return empty query for non-official contests
         }
-        
-        $permissionName = 'contest.' . $this->id;
+
+        $permissionName = 'contest.'.$this->id;
+
         return User::permission($permissionName);
     }
-    
+
     public function addStaffMember(User $user)
     {
         if ($this->mode !== 'official') {
             return false; // Only official contests can have staff
         }
-        
-        $permissionName = 'contest.' . $this->id;
-        
+
+        $permissionName = 'contest.'.$this->id;
+
         // Create permission if it doesn't exist
         $permission = \Spatie\Permission\Models\Permission::firstOrCreate([
             'name' => $permissionName,
-            'guard_name' => 'web'
+            'guard_name' => 'web',
         ]);
-        
+
         // Give permission to user
         $user->givePermissionTo($permission);
-        
+
         return true;
     }
-    
+
     public function removeStaffMember(User $user)
     {
-        $permissionName = 'contest.' . $this->id;
-        
+        $permissionName = 'contest.'.$this->id;
+
         if ($user->hasPermissionTo($permissionName)) {
             $user->revokePermissionTo($permissionName);
         }
-        
+
         return true;
     }
-    
+
     public function isStaffMember(User $user)
     {
         if ($this->mode !== 'official') {
             return false;
         }
-        
-        $permissionName = 'contest.' . $this->id;
+
+        $permissionName = 'contest.'.$this->id;
+
         return $user->hasPermissionTo($permissionName);
     }
-    
+
     public function createStaffPermission()
     {
         if ($this->mode === 'official') {
-            $permissionName = 'contest.' . $this->id;
+            $permissionName = 'contest.'.$this->id;
             \Spatie\Permission\Models\Permission::firstOrCreate([
                 'name' => $permissionName,
-                'guard_name' => 'web'
+                'guard_name' => 'web',
             ]);
         }
     }
-    
+
     public function deleteStaffPermission()
     {
-        $permissionName = 'contest.' . $this->id;
+        $permissionName = 'contest.'.$this->id;
         $permission = \Spatie\Permission\Models\Permission::where('name', $permissionName)->first();
-        
+
         if ($permission) {
             $permission->delete();
         }
@@ -215,36 +218,62 @@ class Contest extends Model
         return $this->hasMany(ContestCategory::class);
     }
 
+    public function authorizedUsers()
+    {
+        return $this->belongsToMany(User::class, 'contest_authorized_users')
+            ->withTimestamps();
+    }
+
+    public function isUserAuthorized(User $user)
+    {
+        // If no authorized users are set, everyone is authorized
+        if ($this->authorizedUsers()->count() === 0) {
+            return true;
+        }
+
+        return $this->authorizedUsers()->where('user_id', $user->id)->exists();
+    }
+
+    public function addAuthorizedUser(User $user)
+    {
+        $this->authorizedUsers()->syncWithoutDetaching([$user->id]);
+    }
+
+    public function removeAuthorizedUser(User $user)
+    {
+        $this->authorizedUsers()->detach($user->id);
+    }
+
     public function getRoutePoints($routeId, $step)
     {
         // If a specific step was provided, prefer that step's pivot points
         if ($step instanceof ContestStep) {
             $route = $step->routes()->where('routes.id', $routeId)->first();
             if (! $route) {
-            return 0.0;
+                return 0.0;
             }
 
             $basePoints = (float) $route->pivot->points;
         } else {
             // No specific step passed: find all steps of this contest that include the route
             $stepsWithRoute = $this->steps()
-            ->whereHas('routes', function ($q) use ($routeId) {
-                $q->where('routes.id', $routeId);
-            })
-            ->with(['routes' => function ($q) use ($routeId) {
-                $q->where('routes.id', $routeId);
-            }])
-            ->get();
+                ->whereHas('routes', function ($q) use ($routeId) {
+                    $q->where('routes.id', $routeId);
+                })
+                ->with(['routes' => function ($q) use ($routeId) {
+                    $q->where('routes.id', $routeId);
+                }])
+                ->get();
 
             $basePoints = 0.0;
             foreach ($stepsWithRoute as $s) {
-            $r = $s->routes->first();
-            if ($r && isset($r->pivot->points)) {
-                $points = (float) $r->pivot->points;
-                if ($points > $basePoints) {
-                $basePoints = $points;
+                $r = $s->routes->first();
+                if ($r && isset($r->pivot->points)) {
+                    $points = (float) $r->pivot->points;
+                    if ($points > $basePoints) {
+                        $basePoints = $points;
+                    }
                 }
-            }
             }
         }
 
@@ -271,21 +300,21 @@ class Contest extends Model
         return $basePoints;
     }
 
-    public function getRankingForStep( $stepId, $restricted = false)
+    public function getRankingForStep($stepId, $restricted = false)
     {
 
         // Get routes - either from step or from contest
         if ($stepId) {
             $step = $this->steps()->find($stepId);
-            if (!$step) {
+            if (! $step) {
                 return collect();
             }
-            
+
             // If step has specific routes assigned, use those. Otherwise use all contest routes
-            $routeIds = $step->routes->count() > 0 
-                ? $step->routes->pluck('id') 
+            $routeIds = $step->routes->count() > 0
+                ? $step->routes->pluck('id')
                 : $this->routes->pluck('id');
-            
+
             $startDate = $step->start_time;
             $endDate = $step->end_time;
         } else {
@@ -311,33 +340,40 @@ class Contest extends Model
 
         $logs = $logsQuery->get();
 
+        // Filter by authorized users if they are set
+        $authorizedUserIds = $this->authorizedUsers()->pluck('user_id');
+        if ($authorizedUserIds->isNotEmpty()) {
+            $logs = $logs->whereIn('user_id', $authorizedUserIds);
+        }
+
         // Group by user and calculate points
         $rankings = $logs->groupBy('user_id')->map(function ($userLogs, $userId) use ($step, $restricted) {
             $uniqueRoutes = $userLogs->pluck('route_id')->unique();
             $totalPoints = $uniqueRoutes->sum(function ($routeId) use ($step) {
                 return $this->getRoutePoints($routeId, $step);
             });
-            if($restricted){
+            if ($restricted) {
                 return [
-                'user_id' => $userId,
-                'user_name' => $userLogs->first()->user->name,
-                'routes_count' => $uniqueRoutes->count(),
-                'total_points' => $totalPoints,
-            ];
-            }else{
+                    'user_id' => $userId,
+                    'user_name' => $userLogs->first()->user->name,
+                    'routes_count' => $uniqueRoutes->count(),
+                    'total_points' => $totalPoints,
+                ];
+            } else {
                 return [
-                'user_id' => $userId,
-                'user' => $userLogs->first()->user,
-                'routes_count' => $uniqueRoutes->count(),
-                'total_points' => $totalPoints,
-            ];
+                    'user_id' => $userId,
+                    'user' => $userLogs->first()->user,
+                    'routes_count' => $uniqueRoutes->count(),
+                    'total_points' => $totalPoints,
+                ];
             }
-            
+
         })->sortByDesc('total_points')->values();
 
         // Add ranking position
         $rankings = $rankings->map(function ($item, $index) {
             $item['rank'] = $index + 1;
+
             return $item;
         });
 
@@ -347,21 +383,22 @@ class Contest extends Model
     public function getUserRankingForStep($userId, $stepId = null)
     {
         $rankings = $this->getRankingForStep($stepId);
+
         return $rankings->firstWhere('user_id', $userId);
     }
 
     public function getTeamRankingForStep($stepId = null)
     {
-        if (!$this->team_mode) {
+        if (! $this->team_mode) {
             return collect();
         }
 
         $teams = $this->teams()->with('users')->get();
-        
+
         $rankings = $teams->map(function ($team) {
             $totalPoints = $team->getTotalPoints();
             $routeIds = $this->routes->pluck('id');
-            
+
             // Get unique routes climbed by team
             $logs = Log::whereIn('route_id', $routeIds)
                 ->whereIn('user_id', $team->users->pluck('id'))
@@ -384,6 +421,7 @@ class Contest extends Model
         // Add ranking position
         $rankings = $rankings->map(function ($item, $index) {
             $item['rank'] = $index + 1;
+
             return $item;
         });
 
@@ -393,7 +431,7 @@ class Contest extends Model
     public function getCategoryRankings($categoryId, $stepId = null, $restricted = false)
     {
         $category = $this->categories()->find($categoryId);
-        if (!$category) {
+        if (! $category) {
             return collect();
         }
 
@@ -408,6 +446,7 @@ class Contest extends Model
         // Re-rank within category
         $categoryRankings = $categoryRankings->map(function ($item, $index) {
             $item['rank'] = $index + 1;
+
             return $item;
         });
 
@@ -417,7 +456,7 @@ class Contest extends Model
     public function autoAssignUserToCategories(User $user)
     {
         $autoAssignCategories = $this->categories()->where('auto_assign', true)->get();
-        
+
         foreach ($autoAssignCategories as $category) {
             if ($category->userMatches($user)) {
                 // Sync without detaching to avoid removing existing category memberships
@@ -428,7 +467,7 @@ class Contest extends Model
 
     public function hasTeamMode()
     {
-        return !is_null($this->team_mode) && $this->team_mode !== '';
+        return ! is_null($this->team_mode) && $this->team_mode !== '';
     }
 
     public function isTeamModeFree()
@@ -446,11 +485,11 @@ class Contest extends Model
         return $this->team_mode === 'restricted';
     }
 
-   // public function canUserManageTeams(User $user)
-   // {
-        // Admins and staff can always manage teams
+    // public function canUserManageTeams(User $user)
+    // {
+    // Admins and staff can always manage teams
     //    return $user->hasRole('super-admin') || $this->isStaffMember($user);
-   // }
+    // }
 
     public function canUserCreateTeam(User $user)
     {

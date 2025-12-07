@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ContestController;
+use App\Http\Controllers\GoogleController;
 use App\Models\Area;
 use App\Models\Contest;
 use App\Models\Route as ModelsRoute;
@@ -75,6 +75,14 @@ Route::middleware([
             Route::get('/contests/{contest}/categories', function (Site $site, Contest $contest) {
                 return view('contests.categories', compact('site', 'contest'));
             })->middleware('can:edit_areas,site')->name('contests.categories');
+
+            Route::get('/contests/{contest}/authorized-users', function (Site $site, Contest $contest) {
+                return view('contests.authorized-users', compact('site', 'contest'));
+            })->middleware('can:edit_areas,site')->name('contests.authorized-users');
+
+            Route::get('/contests/{contest}/grid-registration', function (Site $site, Contest $contest) {
+                return view('contests.grid-registration', compact('site', 'contest'));
+            })->middleware('can:access_registrations,contest')->name('contests.grid-registration');
 
             Route::prefix('/areas/{area}')->group(function () {
                 Route::get('/', function (Site $site, Area $area) {
