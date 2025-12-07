@@ -50,7 +50,7 @@ new class extends Component {
             unset($this->checked[$routeId][$userId]);
         } else {
             // Create a log
-            Log::create([
+           $log =  Log::create([
                 'route_id' => $routeId,
                 'user_id' => $userId,
                 'grade' => $route->grade,
@@ -100,7 +100,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="px-4 sm:px-6 lg:px-8 py-8">
+<div class="px-4 sm:px-6 lg:px-8 py-8 bg-white">
     <div class="sm:flex sm:items-center mb-6">
         <div class="sm:flex-auto">
             <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Grid Registration')}}</h1>
@@ -123,8 +123,8 @@ new class extends Component {
         <div class="rounded-md bg-blue-50 p-4 mb-6">
             <div class="flex">
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">{{__('No users to display')}}</h3>
-                    <div class="mt-2 text-sm text-blue-700">
+                    <h3 class="text-sm font-medium text-gray-800">{{__('No users to display')}}</h3>
+                    <div class="mt-2 text-sm text-gray-700">
                         <p>{{__('Either no authorized users are set, or no users have climbs yet. Add authorized users first.')}}</p>
                     </div>
                 </div>
@@ -134,17 +134,17 @@ new class extends Component {
         <div class="rounded-md bg-blue-50 p-4 mb-6">
             <div class="flex">
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">{{__('No routes in contest')}}</h3>
-                    <div class="mt-2 text-sm text-blue-700">
+                    <h3 class="text-sm font-medium text-gray-800">{{__('No routes in contest')}}</h3>
+                    <div class="mt-2 text-sm text-gray-700">
                         <p>{{__('Add routes to contest steps first.')}}</p>
                     </div>
                 </div>
             </div>
         </div>
     @else
-        <div class="bg-white shadow sm:rounded-lg overflow-x-auto">
+        <div class=" sm:rounded-lg overflow-x-auto">
             <div class="px-4 py-5 sm:p-6">
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto border-l border-gray-300">
                     <table class="min-w-full border-collapse border border-gray-300">
                         <thead class="bg-gray-50">
                             <tr>
@@ -166,7 +166,7 @@ new class extends Component {
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($this->authorizedUsers as $user)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="sticky left-0 z-10 bg-white border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">
+                                    <td class="sticky left-0 z-10 bg-white border-r border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">
                                         {{ $user->name }}
                                     </td>
                                     @foreach($this->contestRoutes as $route)

@@ -27,8 +27,10 @@ new class extends Component {
     {
         $this->validate();
 
+
         // Check if already authorized
-        if ($this->contest->isUserAuthorized(User::find($this->user_id))) {
+        if (($this->contest->isUserAuthorized(User::find($this->user_id))) && ($this->authorizedUsers()->count() !== 0)) {
+
             $this->dispatch('action_error', title: 'Already authorized', message: 'This user is already authorized for this contest!');
             return;
         }
@@ -183,25 +185,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6">
-        <h1 class="text-base font-semibold leading-6 text-gray-900">{{__('Manage Authorized Users')}}</h1>
-        <p class="mt-2 text-sm text-gray-700">{{__('Control which users can participate in this contest. Only authorized users will appear in rankings and can access team features.')}}</p>
-        
-        @if($this->authorizedUsers->count() === 0)
-            <div class="mt-4 rounded-md bg-blue-50 p-4">
-                <div class="flex">
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-blue-800">{{__('No restrictions')}}</h3>
-                        <div class="mt-2 text-sm text-blue-700">
-                            <p>{{__('Currently, all users can participate. Add authorized users to restrict access to this contest.')}}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div>
-
+<div>
     <!-- CSV Import Section -->
     <div class="bg-white shadow sm:rounded-lg mb-6">
         <div class="px-4 py-5 sm:p-6">
@@ -216,7 +200,7 @@ new class extends Component {
                         id="csv_file"
                         wire:model="csv_file"
                         accept=".csv,.txt"
-                        class="mt-2 block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
+                        class="mt-1 block w-full file:inline-flex file:items-center file:px-4 file:py-2 file:bg-gray-800 file:border file:border-transparent file:rounded-md file:font-semibold file:text-sm file:text-white file:tracking-widest file:hover:bg-gray-700 file:focus:bg-gray-700 file:active:bg-gray-900 file:focus:outline-hidden file:disabled:opacity-50 file:transition file:ease-in-out file:duration-150"
                     />
                     <x-input-error for='csv_file'/>
                 </div>
@@ -258,7 +242,7 @@ new class extends Component {
     </div>
 
     <!-- Manual Add User Section -->
-    <div class="bg-white shadow sm:rounded-lg mb-6">
+    <div class="bg-white shadow sm:rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <h3 class="text-base font-semibold leading-6 text-gray-900 mb-4">{{__('Add Individual User')}}</h3>
             
@@ -296,13 +280,7 @@ new class extends Component {
                     </x-button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Current Authorized Users -->
-    <div class="bg-white shadow sm:rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4 mt-4">
                 <h3 class="text-base font-semibold leading-6 text-gray-900">{{__('Authorized Users')}} ({{ $this->authorizedUsers->count() }})</h3>
                 
                 @if($this->authorizedUsers->count() > 0)
@@ -352,8 +330,19 @@ new class extends Component {
                     </table>
                 </div>
             @else
-                <p class="text-sm text-gray-500">{{__('No authorized users yet. All users can currently participate.')}}</p>
-            @endif
+            @if($this->authorizedUsers->count() === 0)
+            <div class="mt-4 rounded-md bg-green-50 p-4">
+                <div class="flex">
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-green-800">{{__('No restrictions')}}</h3>
+                        <div class="mt-2 text-sm text-green-700">
+                            <p>{{__('Currently, all users can participate. Add authorized users to restrict access to this contest.')}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+                @endif
         </div>
     </div>
 </div>
