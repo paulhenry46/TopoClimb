@@ -221,8 +221,14 @@ new class extends Component {
                   <a wire:navigate href="{{ route('admin.contests.staff', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Staff')}}">
                     <x-icons.icon-account-manager class="w-5 h-5"/>
                   </a>
+                  <a wire:navigate href="{{ route('admin.contests.authorized-users', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Authorized Users')}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M440-440h80v-120h120v-80H520v-120h-80v120H320v80h120v120ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h480q33 0 56.5 23.5T800-800v640q0 33-23.5 56.5T720-80H240Z"/></svg>
+                  </a>
                   <a wire:navigate href="{{ route('admin.contests.registrations', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Registrations')}}">
                     <x-icons.icon-task class="w-5 h-5"/>
+                  </a>
+                  <a wire:navigate href="{{ route('admin.contests.grid-registration', ['site' => $site->id, 'contest' => $contest->id]) }}" class="text-gray-600 hover:text-gray-900" title="{{__('Grid Registration')}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M120-520v-320h320v320H120Zm0 400v-320h320v320H120Zm400-400v-320h320v320H520Zm0 400v-320h320v320H520Z"/></svg>
                   </a>
                 @endif
                 <button wire:click="edit({{ $contest->id }})" class="text-gray-600 hover:text-gray-900" title="{{__('Edit')}}">
