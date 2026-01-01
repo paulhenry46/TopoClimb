@@ -341,7 +341,8 @@ Potential additions to the system:
 
 ## Notes
 
-- Achievements are evaluated on-demand, not automatically on every log creation
+- Achievements are evaluated automatically when users create climbing logs via the LogObserver
+- Manual evaluation can be triggered via AchievementService if needed (e.g., for batch processing)
 - The system is designed to be performant with database queries using indices
 - Contest achievements are only created when explicitly requested
 - Achievement definitions should be immutable once created (don't change criteria for existing achievements)

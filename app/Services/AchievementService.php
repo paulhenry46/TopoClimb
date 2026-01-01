@@ -98,13 +98,21 @@ class AchievementService
                 $achievement = Achievement::where('key', $definition->getKey())->first();
                 
                 if ($achievement) {
-                    UserAchievement::create([
-                        'user_id' => $user->id,
-                        'achievement_id' => $achievement->id,
-                        'unlocked_at' => now(),
-                    ]);
+                    // Use firstOrCreate to handle race conditions gracefully
+                    $userAchievement = UserAchievement::firstOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'achievement_id' => $achievement->id,
+                        ],
+                        [
+                            'unlocked_at' => now(),
+                        ]
+                    );
 
-                    $newlyUnlocked[] = $definition->getKey();
+                    // Only add to newly unlocked if it was just created
+                    if ($userAchievement->wasRecentlyCreated) {
+                        $newlyUnlocked[] = $definition->getKey();
+                    }
                 }
             }
         }
@@ -153,13 +161,18 @@ class AchievementService
         $definition = new ContestAchievement($contestId, $achievement->name, $achievement->description);
         
         if ($definition->isUnlocked($user)) {
-            UserAchievement::create([
-                'user_id' => $user->id,
-                'achievement_id' => $achievement->id,
-                'unlocked_at' => now(),
-            ]);
+            // Use firstOrCreate to handle race conditions gracefully
+            $userAchievement = UserAchievement::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'achievement_id' => $achievement->id,
+                ],
+                [
+                    'unlocked_at' => now(),
+                ]
+            );
 
-            return true;
+            return $userAchievement->wasRecentlyCreated;
         }
 
         return false;
