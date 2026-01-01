@@ -68,9 +68,9 @@ new class extends Component {
                 <p class="mt-2 text-sm text-gray-700">{{ __('Manage all achievements in the system') }}</p>
             </div>
             <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                <button wire:click="syncAchievements" type="button" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <x-button wire:click="syncAchievements" type="button" >
                     {{ __('Sync Achievements') }}
-                </button>
+                </x-button>
             </div>
         </div>
 
@@ -100,7 +100,7 @@ new class extends Component {
                                     {{ Str::limit($achievement->description, 50) }}
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                    <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-blue-700/10">
                                         {{ $achievement->type }}
                                     </span>
                                 </td>

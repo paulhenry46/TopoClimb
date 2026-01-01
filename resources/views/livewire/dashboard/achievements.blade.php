@@ -45,7 +45,7 @@ new class extends Component {
     }
 }; ?>
 
-<div>
+<div x-data="{ expanded: false }" class="relative">
     <div class="mb-6">
         <div class="flex justify-between items-center mb-2">
             <h3 class="text-lg font-semibold text-gray-900">{{ __('Progression') }}</h3>
@@ -56,10 +56,19 @@ new class extends Component {
         </div>
     </div>
 
+    <!-- Achievements Collapsible Container -->
+    <div
+        :class="expanded ? 'max-h-none overflow-visible' : 'max-h-72 overflow-hidden cursor-pointer'"
+        class="transition-all duration-300 ease-in-out relative group  rounded-lg"
+        @click="expanded = !expanded"
+        @keydown.enter.space="expanded = !expanded"
+        tabindex="0"
+        aria-expanded="false"
+    >
     <!-- Unlocked Achievements -->
     @if($unlockedAchievements->count() > 0)
     <div class="mb-6">
-        <h3 class="text-md font-semibold text-gray-900 mb-3">{{ __('Réussites obtenues') }}</h3>
+        <h3 class="text-md font-semibold text-gray-900 mb-3">{{ __('Unlocked achievements') }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             @foreach($unlockedAchievements as $achievement)
             <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-300 rounded-lg p-4 shadow-sm">
@@ -77,7 +86,7 @@ new class extends Component {
                         @endphp
                         @if($unlockedAt && $unlockedAt->pivot->unlocked_at)
                         <p class="text-xs text-gray-500 mt-2">
-                            {{ __('Débloqué le') }} {{ $unlockedAt->pivot->unlocked_at->format('d/m/Y') }}
+                            {{ __('Unlocked at') }} {{ $unlockedAt->pivot->unlocked_at->format('d/m/Y') }}
                         </p>
                         @endif
                     </div>
@@ -91,15 +100,13 @@ new class extends Component {
     <!-- Locked Achievements -->
     @if($lockedAchievements->count() > 0)
     <div>
-        <h3 class="text-md font-semibold text-gray-900 mb-3">{{ __('Réussites disponibles') }}</h3>
+        <h3 class="text-md font-semibold text-gray-900 mb-3">{{ __('Available achievements') }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             @foreach($lockedAchievements as $achievement)
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 opacity-75 hover:opacity-100 transition-opacity">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
-                        <svg class="h-6 w-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" class="h-6 w-6 text-gray-400" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"/></svg>
                     </div>
                     <div class="ml-3 flex-1">
                         <h4 class="text-sm font-semibold text-gray-700">{{ $achievement->name }}</h4>
@@ -111,13 +118,27 @@ new class extends Component {
         </div>
     </div>
     @endif
+    </div>
 
     @if($totalCount == 0)
     <div class="text-center py-8">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
         </svg>
-        <p class="mt-2 text-sm text-gray-500">{{ __('Aucune réussite disponible pour le moment') }}</p>
+        <p class="mt-2 text-sm text-gray-500">{{ __('No achievements for now') }}</p>
     </div>
     @endif
+    <!-- Overlay for collapsed state -->
+    <template x-if="!expanded">
+        <div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white to-transparent pointer-events-none group-hover:from-gray-100 transition-all duration-300"></div>
+    </template>
+    <!-- Expand/collapse button -->
+    <button
+        type="button"
+        class="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 px-4 py-1 rounded-full bg-gray-600 text-white text-xs font-semibold shadow group-hover:bg-gray-700 transition-all duration-200"
+        x-text="expanded ? '{{ __('Fold') }}' : '{{ __('Unfold') }}'"
+        @click.stop="expanded = !expanded"
+        
+        x-cloak
+    ></button>
 </div>
