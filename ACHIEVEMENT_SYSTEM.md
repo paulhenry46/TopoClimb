@@ -95,6 +95,51 @@ new ContestAchievement($contestId, 'Contest Champion', 'Participated in contest'
 **Criteria:**
 - Requires at least one log for a route in the contest
 
+### 5. Grade Diversity Achievement
+Awards user for climbing routes across different grade ranges.
+
+**Example:**
+```php
+new GradeDiversityAchievement(6)
+```
+
+**Criteria:**
+- Requires climbing at least one route in N different grades
+
+### 6. Daily Marathon Achievement
+Awards user for high volume climbing in a single day.
+
+**Example:**
+```php
+new DailyMarathonAchievement(20)
+```
+
+**Criteria:**
+- Requires at least N distinct routes climbed on any single day
+
+### 7. Weekly Regularity Achievement
+Awards user for consistent climbing over consecutive weeks.
+
+**Example:**
+```php
+new WeeklyRegularityAchievement(4)  // "Régulier"
+new WeeklyRegularityAchievement(12) // "Jamais sans ma salle"
+```
+
+**Criteria:**
+- Requires climbing at least once per week for N consecutive weeks
+
+### 8. Unique Routes Achievement
+Awards user for variety in route selection (no repeats).
+
+**Example:**
+```php
+new UniqueRoutesAchievement(50)  // "Collectionneur"
+```
+
+**Criteria:**
+- Requires climbing at least N unique/distinct routes
+
 ## Achievement Service
 
 The `AchievementService` class manages achievement definitions and evaluation.
@@ -105,9 +150,15 @@ The `AchievementService` class manages achievement definitions and evaluation.
 Returns all predefined achievement definitions.
 
 Currently includes:
-- Max grade achievements: 5a, 5c, 6a, 6a+, 6b, 6c, 7a, 7b, 8a
-- Total routes: 10, 25, 50, 100, 250, 500
-- Grade count: 10x 6a+, 10x 6b, 10x 6c, 5x 7a, 10x 7a
+- Max grade achievements: 5a, 5c, 6a, 6a+, 6b, 6c, 7a, 7b, 8a (9 achievements)
+- Total routes: 10, 25, 50, 100, 250, 500 (6 achievements)
+- Grade count: 10x 6a+, 10x 6b, 10x 6c, 5x 7a, 10x 7a (5 achievements)
+- Grade diversity: 6 different grades (1 achievement)
+- Daily marathon: 20 routes in one day (1 achievement)
+- Weekly regularity: 4 weeks, 12 weeks (2 achievements)
+- Unique routes collector: 50, 100, 200 routes (3 achievements)
+
+**Total: 27+ predefined achievements**
 
 #### `syncAchievements(): void`
 Synchronizes achievement definitions to the database.
@@ -310,13 +361,47 @@ Tests cover:
 - Duplicate prevention
 - Multiple achievement unlocking
 
+## User Interface
+
+### Dashboard Integration
+
+The achievements UI is integrated into the user dashboard at `/dashboard`. Users can view:
+
+1. **Progress Overview**
+   - Visual progress bar showing unlocked/total achievements
+   - Percentage and count display (e.g., "5 / 30")
+
+2. **Unlocked Achievements Section**
+   - Golden/yellow gradient background for visual appeal
+   - Star icon (⭐) indicating unlocked status
+   - Achievement name and description
+   - Unlock date displayed
+   - Grid layout (2 columns on desktop, 1 on mobile)
+
+3. **Locked Achievements Section**
+   - Gray background with lock icon (🔒)
+   - Shows what's available to unlock
+   - Motivates users to continue climbing
+   - Hover effect for better UX
+
+### Component Location
+- Livewire Component: `resources/views/livewire/dashboard/achievements.blade.php`
+- Uses Volt (Livewire 3) for reactivity
+- Automatically loads user's achievements and progress
+
+### Visual Design
+- **Unlocked**: Yellow-gold theme with gradient backgrounds
+- **Locked**: Grayscale theme with subtle hover effects
+- **Responsive**: Grid adapts to screen size
+- **Accessible**: Clear icons and text hierarchy
+
 ## Future Enhancements
 
 Potential additions to the system:
 
-1. **Regularity Achievements**
-   - Weekly/monthly climbing frequency
-   - Consecutive weeks/months climbing
+1. ~~**Regularity Achievements**~~ ✅ IMPLEMENTED
+   - ~~Weekly/monthly climbing frequency~~
+   - ~~Consecutive weeks/months climbing~~
 
 2. **Social Achievements**
    - Climb with X different friends
@@ -334,10 +419,10 @@ Potential additions to the system:
    - Seasonal challenges
    - Monthly goals
 
-6. **Display Features**
-   - Achievement badges/icons
-   - User profile achievement showcase
-   - Leaderboards for achievements
+6. **Display Features** ✅ PARTIALLY IMPLEMENTED
+   - ~~Achievement badges/icons~~
+   - ~~User profile achievement showcase~~
+   - Leaderboards for achievements (future)
 
 ## Notes
 
