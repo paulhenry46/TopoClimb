@@ -10,6 +10,10 @@ use App\Achievements\MaxGradeAchievement;
 use App\Achievements\TotalRoutesAchievement;
 use App\Achievements\GradeCountAchievement;
 use App\Achievements\ContestAchievement;
+use App\Achievements\GradeDiversityAchievement;
+use App\Achievements\DailyMarathonAchievement;
+use App\Achievements\WeeklyRegularityAchievement;
+use App\Achievements\UniqueRoutesAchievement;
 
 class AchievementService
 {
@@ -56,6 +60,22 @@ class AchievementService
 
         foreach ($gradeCountDefinitions as $def) {
             $achievements[] = new GradeCountAchievement($def['grade'], $def['count'], $def['label']);
+        }
+
+        // Grade diversity achievements
+        $achievements[] = new GradeDiversityAchievement(6);
+
+        // Daily marathon achievements
+        $achievements[] = new DailyMarathonAchievement(20);
+
+        // Weekly regularity achievements
+        $achievements[] = new WeeklyRegularityAchievement(4);  // Régulier
+        $achievements[] = new WeeklyRegularityAchievement(12); // Jamais sans ma salle
+
+        // Unique routes (collector) achievements
+        $routeCollectorCounts = [50, 100, 200];
+        foreach ($routeCollectorCounts as $count) {
+            $achievements[] = new UniqueRoutesAchievement($count);
         }
 
         return $achievements;
