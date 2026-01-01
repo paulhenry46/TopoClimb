@@ -26,16 +26,36 @@ new class extends Component {
     }
 }; ?>
 <div class="bg-white overflow-hidden  sm:rounded-lg md:col-span-3 " x-data="{type_show: 'history'}">
-                <div class='px-4 py-4 flex justify-between items-center'>
-                    <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
-                       {{ __('Routes') }}
-                    </h2>
-                    <select x-model='type_show' class='h-10 block  rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-gray-600 sm:text-sm sm:leading-6'>
-                <option value="history">{{ __('Recents') }}</option>
-                <option value="registered">{{ __('Registered') }}</option>
-                <option value="friends">{{ __('Friends') }}</option>
-                
-            </select>
+          <div class='flex px-4 items-center my-3'>
+            <h2 class="px-4  text-xl font-semibold text-gray-900 mr-2">
+              {{ __('Routes') }}
+            </h2>
+            <div class="w-full flex space-x-2">
+              <button
+                class="flex-1 py-2 rounded-l-md text-center text-sm font-medium focus:outline-none transition-all duration-150"
+                :class="type_show === 'history' ? 'bg-gray-500 text-white shadow' : 'bg-gray-100 text-gray-700'"
+                @click="type_show = 'history'"
+                type="button"
+              >
+                {{ __('Recents') }}
+              </button>
+              <button
+                class="flex-1 py-2  text-center text-sm font-medium focus:outline-none transition-all duration-150"
+                :class="type_show === 'registered' ? 'bg-gray-500 text-white shadow' : 'bg-gray-100 text-gray-700'"
+                @click="type_show = 'registered'"
+                type="button"
+              >
+                {{ __('Registered') }}
+              </button>
+              <button
+                class="flex-1 py-2 rounded-r-md text-center text-sm font-medium focus:outline-none transition-all duration-150"
+                :class="type_show === 'friends' ? 'bg-gray-500 text-white shadow' : 'bg-gray-100 text-gray-700'"
+                @click="type_show = 'friends'"
+                type="button"
+              >
+                {{ __('Friends') }}
+              </button>
+            </div>
           </div>
 <div class='mx-5 md:min-h-96 '>
 <div x-show='type_show == "history"'>
