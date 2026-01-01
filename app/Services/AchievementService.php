@@ -26,21 +26,16 @@ class AchievementService
     {
         $achievements = [];
 
-        // Max grade achievements
-        $gradeDefinitions = [
-            500 => '5a',
-            540 => '5c',
-            600 => '6a',
-            610 => '6a+',
-            620 => '6b',
-            640 => '6c',
-            700 => '7a',
-            720 => '7b',
-            800 => '8a',
-        ];
-
-        foreach ($gradeDefinitions as $grade => $label) {
-            $achievements[] = new MaxGradeAchievement($grade, $label);
+        // Get grade definitions from config
+        $cotationPoints = config('climb.default_cotation.points');
+        
+        // Max grade achievements - select key grades
+        $selectedGrades = ['5a', '5c', '6a', '6a+', '6b', '6c', '7a', '7b', '8a'];
+        foreach ($selectedGrades as $gradeLabel) {
+            if (isset($cotationPoints[$gradeLabel])) {
+                $grade = $cotationPoints[$gradeLabel];
+                $achievements[] = new MaxGradeAchievement($grade, $gradeLabel);
+            }
         }
 
         // Total routes achievements
@@ -49,17 +44,20 @@ class AchievementService
             $achievements[] = new TotalRoutesAchievement($count);
         }
 
-        // Grade count achievements
+        // Grade count achievements - use config for grades
         $gradeCountDefinitions = [
-            ['grade' => 610, 'count' => 10, 'label' => '6a+'],
-            ['grade' => 620, 'count' => 10, 'label' => '6b'],
-            ['grade' => 640, 'count' => 10, 'label' => '6c'],
-            ['grade' => 700, 'count' => 5, 'label' => '7a'],
-            ['grade' => 700, 'count' => 10, 'label' => '7a'],
+            ['label' => '6a+', 'count' => 10],
+            ['label' => '6b', 'count' => 10],
+            ['label' => '6c', 'count' => 10],
+            ['label' => '7a', 'count' => 5],
+            ['label' => '7a', 'count' => 10],
         ];
 
         foreach ($gradeCountDefinitions as $def) {
-            $achievements[] = new GradeCountAchievement($def['grade'], $def['count'], $def['label']);
+            if (isset($cotationPoints[$def['label']])) {
+                $grade = $cotationPoints[$def['label']];
+                $achievements[] = new GradeCountAchievement($grade, $def['count'], $def['label']);
+            }
         }
 
         // Grade diversity achievements
