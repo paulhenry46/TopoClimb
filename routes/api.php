@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AchievementController;
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContestController;
@@ -64,6 +65,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/tags', [TagController::class, 'index']);
     Route::get('/tags/{tag}', [TagController::class, 'show']);
 
+    // Achievements (public)
+    Route::get('/achievements', [AchievementController::class, 'index']);
+
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
 
@@ -89,6 +93,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/contests/{contest}/user/categories', [ContestController::class, 'userCategories']);
         Route::post('/contests/{contest}/categories/{category}/register', [ContestController::class, 'registerForCategory']);
         Route::delete('/contests/{contest}/categories/{category}/unregister', [ContestController::class, 'unregisterFromCategory']);
+
+        // User Achievements (authenticated)
+        Route::get('/user/achievements', [AchievementController::class, 'userAchievements']);
 
     });
 });
