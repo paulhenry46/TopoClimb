@@ -15,8 +15,7 @@ beforeEach(function () {
     $this->site = Site::create([
         'name' => 'Test Site',
         'slug' => 'test-site',
-        'lat' => 0,
-        'lon' => 0,
+        'address' => '123 Test Street',
         'cotation_type' => 'default',
     ]);
 
@@ -24,17 +23,20 @@ beforeEach(function () {
         'site_id' => $this->site->id,
         'name' => 'Test Area',
         'slug' => 'test-area',
+        'type' => 'bouldering',
     ]);
 
     $this->sector = Sector::create([
         'area_id' => $this->area->id,
         'name' => 'Test Sector',
         'slug' => 'test-sector',
+        'local_id' => 1,
     ]);
 
     $this->line = Line::create([
         'sector_id' => $this->sector->id,
         'name' => 'Test Line',
+        'local_id' => 1,
     ]);
 
     // Sync achievements
