@@ -140,4 +140,22 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'friends', 'friend_id', 'user_id')
             ->withTimestamps();
     }
+
+    /**
+     * Get all achievements unlocked by this user.
+     */
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')
+            ->withPivot('unlocked_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if the user has unlocked a specific achievement.
+     */
+    public function hasAchievement($achievementKey)
+    {
+        return $this->achievements()->where('key', $achievementKey)->exists();
+    }
 }

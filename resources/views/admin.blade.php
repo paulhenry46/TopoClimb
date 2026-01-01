@@ -58,6 +58,13 @@
           @endif
           @if(auth()->user()->hr() <= 0)
           <x-grid-pattern-title >
+                {{ __('Achievements') }}
+            </x-grid-pattern-title >
+          <x-grid-pattern-item >
+            <livewire:admin.achievements />
+          </x-grid-pattern-item >
+          
+          <x-grid-pattern-title >
                 {{ __('Others') }}
             </x-grid-pattern-title >
           <div class='overflow-hidden  mb-4' >
