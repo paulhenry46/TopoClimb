@@ -28,7 +28,7 @@ class AchievementController extends Controller
         $user = $request->user();
         
         // Get all achievement IDs that the user has unlocked
-        $achievementIds = $user->achievements()->pluck('achievements.id');
+        $achievementIds = $user->achievements()->pluck('achievement_id');
         
         return response()->json([
             'data' => $achievementIds,

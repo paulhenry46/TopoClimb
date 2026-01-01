@@ -156,7 +156,7 @@ test('user achievements endpoint returns correct achievement IDs', function () {
     
     // User should have unlocked the max_grade_600 and total_routes_10 achievements at minimum
     $user->refresh();
-    $userAchievementIds = $user->achievements()->pluck('achievements.id')->toArray();
+    $userAchievementIds = $user->achievements()->pluck('achievement_id')->toArray();
     
     // The API response should match the user's actual achievements
     expect($achievementIds)->toEqual($userAchievementIds);
