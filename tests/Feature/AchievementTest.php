@@ -62,7 +62,7 @@ test('max grade achievement is unlocked when user climbs required grade', functi
         'color' => 'blue',
     ]);
 
-    // Create a log for the user
+    // Create a log for the user (this will auto-evaluate achievements via observer)
     Log::create([
         'route_id' => $route->id,
         'user_id' => $user->id,
@@ -71,13 +71,11 @@ test('max grade achievement is unlocked when user climbs required grade', functi
         'way' => 'lead',
     ]);
 
-    // Evaluate achievements
-    $service = new AchievementService();
-    $newlyUnlocked = $service->evaluateAchievements($user);
+    // Refresh user to get latest relationships
+    $user->refresh();
 
-    // Check if 6a achievement was unlocked
+    // Check if 6a achievement was unlocked automatically
     expect($user->hasAchievement('max_grade_600'))->toBeTrue();
-    expect($newlyUnlocked)->toContain('max_grade_600');
 });
 
 test('total routes achievement is unlocked when user climbs required count', function () {
@@ -155,7 +153,7 @@ test('achievement is not unlocked twice', function () {
         'color' => 'blue',
     ]);
 
-    // Create a log for the user
+    // Create a log for the user (auto-evaluates via observer)
     Log::create([
         'route_id' => $route->id,
         'user_id' => $user->id,
@@ -164,16 +162,18 @@ test('achievement is not unlocked twice', function () {
         'way' => 'lead',
     ]);
 
-    // Evaluate achievements first time
+    // Evaluate achievements manually (should find nothing new since observer already did it)
     $service = new AchievementService();
-    $firstUnlocked = $service->evaluateAchievements($user);
+    $newlyUnlocked = $service->evaluateAchievements($user);
 
-    // Evaluate achievements second time
-    $secondUnlocked = $service->evaluateAchievements($user);
-
-    // First time should unlock, second time should not
-    expect($firstUnlocked)->toContain('max_grade_600');
-    expect($secondUnlocked)->not->toContain('max_grade_600');
+    // Manual evaluation should not unlock again
+    expect($newlyUnlocked)->not->toContain('max_grade_600');
+    
+    // But user should still have the achievement
+    expect($user->hasAchievement('max_grade_600'))->toBeTrue();
+    
+    // Verify only one user_achievement record exists
+    expect($user->achievements()->where('key', 'max_grade_600')->count())->toBe(1);
 });
 
 test('user can have multiple achievements', function () {

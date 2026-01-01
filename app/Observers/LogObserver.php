@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Log;
 use App\Models\Contest;
+use App\Services\AchievementService;
 
 class LogObserver
 {
@@ -26,6 +27,10 @@ class LogObserver
         foreach ($contests as $contest) {
             $contest->autoAssignUserToCategories($log->user);
         }
+
+        // Evaluate achievements for the user
+        $achievementService = new AchievementService();
+        $achievementService->evaluateAchievements($log->user);
     }
 
     /**

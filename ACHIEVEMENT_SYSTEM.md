@@ -219,6 +219,12 @@ php artisan db:seed --class=AchievementSeeder
 
 ## Usage Examples
 
+### Automatic Evaluation (Recommended)
+
+Achievements are automatically evaluated whenever a user creates a climbing log. This is handled by the `LogObserver` which calls the `AchievementService` after each log is created.
+
+No additional code is required - achievements will be automatically unlocked as users climb!
+
 ### Initial Setup
 
 Run the achievement seeder to populate the database:
@@ -227,21 +233,18 @@ Run the achievement seeder to populate the database:
 php artisan db:seed --class=AchievementSeeder
 ```
 
-### Evaluating Achievements After a Climb
+### Manual Evaluation (Optional)
 
-When a user logs a climb, evaluate their achievements:
+If you need to manually trigger achievement evaluation (for example, to re-evaluate all users after adding new achievements), you can call the service directly:
 
 ```php
 use App\Services\AchievementService;
 
-// After creating a log
-$log = Log::create([...]);
-
-// Evaluate achievements
+// Evaluate for a specific user
 $service = new AchievementService();
-$newAchievements = $service->evaluateAchievements($log->user);
+$newAchievements = $service->evaluateAchievements($user);
 
-// Optionally notify user of new achievements
+// If new achievements were unlocked
 if (!empty($newAchievements)) {
     foreach ($newAchievements as $key) {
         $achievement = Achievement::where('key', $key)->first();
@@ -249,6 +252,8 @@ if (!empty($newAchievements)) {
     }
 }
 ```
+
+Note: In normal operation, automatic evaluation via the LogObserver is sufficient.
 
 ### Checking User's Achievements
 
