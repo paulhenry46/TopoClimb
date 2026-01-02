@@ -13,10 +13,12 @@ class Achievement extends Model
         'type',
         'criteria',
         'contest_id',
+        'percent',
     ];
 
     protected $casts = [
         'criteria' => 'array',
+        'percent' => 'float',
     ];
 
     /**

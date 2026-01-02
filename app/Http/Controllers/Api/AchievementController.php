@@ -26,12 +26,11 @@ class AchievementController extends Controller
     public function userAchievements(Request $request)
     {
         $user = $request->user();
-        
-        // Get all achievement IDs that the user has unlocked
-        $achievementIds = $user->achievements()->pluck('achievement_id');
-        
-        return response()->json([
-            'data' => $achievementIds,
-        ]);
+        $achievements = $user->achievements()->withPivot('unlocked_at')->get();
+        $result = [];
+        foreach ($achievements as $achievement) {
+            $result[$achievement->id] = $achievement->pivot->unlocked_at;
+        }
+        return response()->json($result);
     }
 }

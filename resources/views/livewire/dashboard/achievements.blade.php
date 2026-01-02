@@ -81,6 +81,9 @@ new class extends Component {
                     <div class="ml-3 flex-1">
                         <h4 class="text-sm font-semibold text-gray-900">{{ $achievement->name }}</h4>
                         <p class="text-xs text-gray-600 mt-1">{{ $achievement->description }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                            {{ __('Unlocked by :percent% of users', ['percent' => number_format($achievement->percent * 100, 1)]) }}
+                        </p>
                         @php
                             $unlockedAt = $user->achievements()->where('achievements.id', $achievement->id)->first();
                         @endphp
@@ -111,6 +114,9 @@ new class extends Component {
                     <div class="ml-3 flex-1">
                         <h4 class="text-sm font-semibold text-gray-700">{{ $achievement->name }}</h4>
                         <p class="text-xs text-gray-500 mt-1">{{ $achievement->description }}</p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            {{ __('Unlocked by :percent% of users', ['percent' => number_format($achievement->percent * 100, 1)]) }}
+                        </p>
                     </div>
                 </div>
             </div>
