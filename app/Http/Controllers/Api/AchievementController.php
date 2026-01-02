@@ -31,6 +31,6 @@ class AchievementController extends Controller
         foreach ($achievements as $achievement) {
             $result[$achievement->id] = $achievement->pivot->unlocked_at;
         }
-        return response()->json($result);
+        return response()->json(['data'=>$result]);
     }
 }
