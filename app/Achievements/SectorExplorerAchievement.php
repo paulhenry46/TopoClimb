@@ -21,12 +21,12 @@ class SectorExplorerAchievement extends BaseAchievement
 
     public function getName(): string
     {
-        return 'Explorateur de la salle';
+        return __('Gym explorer');
     }
 
     public function getDescription(): string
     {
-        return 'Grimper au moins une voie dans chaque secteur de la salle';
+        return __('Climb at least one route in every sector of the gym');
     }
 
     public function getType(): string

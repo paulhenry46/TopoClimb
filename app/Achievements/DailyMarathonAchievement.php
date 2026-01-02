@@ -19,14 +19,17 @@ class DailyMarathonAchievement extends BaseAchievement
         return 'daily_marathon_' . $this->requiredCount;
     }
 
+    /**
+     * Name and description are already translated using __().
+     */
     public function getName(): string
     {
-        return 'Marathon de grimpe';
+        return __('Climbing marathon');
     }
 
     public function getDescription(): string
     {
-        return 'Grimper ' . $this->requiredCount . ' voies dans la même journée';
+        return __('Climb :count routes in a single day', ['count' => $this->requiredCount]);
     }
 
     public function getType(): string

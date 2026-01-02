@@ -21,12 +21,12 @@ class TotalRoutesAchievement extends BaseAchievement
 
     public function getName(): string
     {
-        return $this->requiredCount . ' voies grimpées';
+        return __(':count routes climbed', ['count' => $this->requiredCount]);
     }
 
     public function getDescription(): string
     {
-        return 'Grimper un total de ' . $this->requiredCount . ' voies';
+        return __('Climb a total of :count routes', ['count' => $this->requiredCount]);
     }
 
     public function getType(): string

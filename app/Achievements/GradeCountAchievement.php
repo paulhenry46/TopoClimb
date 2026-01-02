@@ -25,12 +25,12 @@ class GradeCountAchievement extends BaseAchievement
 
     public function getName(): string
     {
-        return $this->requiredCount . ' voies en ' . $this->gradeLabel . '+';
+        return __(':count routes in grade :grade+', ['count' => $this->requiredCount, 'grade' => $this->gradeLabel]);
     }
 
     public function getDescription(): string
     {
-        return 'Grimper ' . $this->requiredCount . ' voies de cotation ' . $this->gradeLabel . ' ou plus';
+        return __('Climb :count routes graded :grade or higher', ['count' => $this->requiredCount, 'grade' => $this->gradeLabel]);
     }
 
     public function getType(): string

@@ -12,12 +12,12 @@ abstract class BaseAchievement
     abstract public function getKey(): string;
 
     /**
-     * Get the display name for this achievement.
+     * Get the display name for this achievement (should be translated with __()).
      */
     abstract public function getName(): string;
 
     /**
-     * Get the description for this achievement.
+     * Get the description for this achievement (should be translated with __()).
      */
     abstract public function getDescription(): string;
 

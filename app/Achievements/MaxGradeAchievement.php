@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class MaxGradeAchievement extends BaseAchievement
 {
     private int $requiredGrade;
-    private string $gradeLabel;
+    private string $gradeLabel; 
 
     public function __construct(int $requiredGrade, string $gradeLabel)
     {
@@ -23,12 +23,12 @@ class MaxGradeAchievement extends BaseAchievement
 
     public function getName(): string
     {
-        return 'Grimpeur ' . $this->gradeLabel;
+        return __('Climber :grade', ['grade' => $this->gradeLabel]);
     }
 
     public function getDescription(): string
     {
-        return 'Réaliser une voie de cotation ' . $this->gradeLabel . ' ou plus';
+        return __('Climb a route graded :grade or higher', ['grade' => $this->gradeLabel]);
     }
 
     public function getType(): string

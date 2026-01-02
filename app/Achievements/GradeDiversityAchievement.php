@@ -19,14 +19,17 @@ class GradeDiversityAchievement extends BaseAchievement
         return 'grade_diversity_' . $this->requiredCount;
     }
 
+    /**
+     * Name and description are already translated using __().
+     */
     public function getName(): string
     {
-        return 'Explorateur de cotations';
+        return __('Grade explorer');
     }
 
     public function getDescription(): string
     {
-        return 'Grimper au moins une voie dans ' . $this->requiredCount . ' cotations différentes';
+        return __('Climb at least one route in :count different grades', ['count' => $this->requiredCount]);
     }
 
     public function getType(): string

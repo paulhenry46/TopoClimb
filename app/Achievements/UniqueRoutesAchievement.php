@@ -21,12 +21,12 @@ class UniqueRoutesAchievement extends BaseAchievement
 
     public function getName(): string
     {
-        return 'Collectionneur';
+        return __('Collector');
     }
 
     public function getDescription(): string
     {
-        return 'Avoir grimpé ' . $this->requiredCount . ' voies différentes';
+        return __('Climb :count different routes', ['count' => $this->requiredCount]);
     }
 
     public function getType(): string

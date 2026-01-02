@@ -22,16 +22,16 @@ class WeeklyRegularityAchievement extends BaseAchievement
     public function getName(): string
     {
         if ($this->requiredWeeks == 4) {
-            return 'Régulier';
+            return __('Consistent');
         } elseif ($this->requiredWeeks == 12) {
-            return 'Jamais sans ma salle';
+            return __('Never miss my gym');
         }
-        return 'Grimpeur régulier';
+        return __('Regular climber');
     }
 
     public function getDescription(): string
     {
-        return 'Grimper au moins 1 fois par semaine pendant ' . $this->requiredWeeks . ' semaines consécutives';
+        return __('Climb at least once a week for :weeks consecutive weeks', ['weeks' => $this->requiredWeeks]);
     }
 
     public function getType(): string
@@ -48,26 +48,33 @@ class WeeklyRegularityAchievement extends BaseAchievement
 
     public function isUnlocked(User $user): bool
     {
-        // Get all logs grouped by week
-        $logs = DB::table('logs')
-            ->where('user_id', $user->id)
-            ->select(DB::raw('YEARWEEK(created_at, 1) as year_week'))
-            ->distinct()
-            ->orderBy('year_week')
-            ->pluck('year_week')
+        // Get all logs and group by ISO year and week in PHP
+        $logs = $user->logs()
+            ->orderBy('created_at')
+            ->get()
+            ->map(function ($log) {
+                $date = $log->created_at instanceof \Carbon\Carbon ? $log->created_at : \Carbon\Carbon::parse($log->created_at);
+                return $date->isoFormat('GGGG-ww'); // ISO year-week
+            })
+            ->unique()
+            ->values()
             ->toArray();
 
         if (count($logs) < $this->requiredWeeks) {
             return false;
         }
 
-        // Check for consecutive weeks
+        // Convert year-week strings to comparable integers for consecutive check
+        $weeks = array_map(function ($yearWeek) {
+            [$year, $week] = explode('-', $yearWeek);
+            return ((int)$year) * 100 + (int)$week;
+        }, $logs);
+
         $maxConsecutive = 1;
         $currentConsecutive = 1;
 
-        for ($i = 1; $i < count($logs); $i++) {
-            // Check if weeks are consecutive
-            if ($logs[$i] == $logs[$i - 1] + 1) {
+        for ($i = 1; $i < count($weeks); $i++) {
+            if ($weeks[$i] == $weeks[$i - 1] + 1) {
                 $currentConsecutive++;
                 $maxConsecutive = max($maxConsecutive, $currentConsecutive);
             } else {

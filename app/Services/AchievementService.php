@@ -28,9 +28,25 @@ class AchievementService
 
         // Get grade definitions from config
         $cotationPoints = config('climb.default_cotation.points');
-        
-        // Max grade achievements - select key grades
-        $selectedGrades = ['5a', '5c', '6a', '6a+', '6b', '6c', '7a', '7b', '8a'];
+        $cotationReverse = config('climb.default_cotation_reverse');
+
+        // Max grade achievements - select grades from config
+        $gradeKeys = array_keys($cotationReverse);
+        $selectedGrades = [];
+        $minSeparation = 100;
+        if (count($gradeKeys) <= 10) {
+            foreach ($gradeKeys as $key) {
+                $selectedGrades[] = $cotationReverse[$key];
+            }
+        } else {
+            $lastKey = null;
+            foreach ($gradeKeys as $key) {
+                if ($lastKey === null || ($key - $lastKey) >= $minSeparation) {
+                    $selectedGrades[] = $cotationReverse[$key];
+                    $lastKey = $key;
+                }
+            }
+        }
         foreach ($selectedGrades as $gradeLabel) {
             if (isset($cotationPoints[$gradeLabel])) {
                 $grade = $cotationPoints[$gradeLabel];
@@ -45,13 +61,14 @@ class AchievementService
         }
 
         // Grade count achievements - use config for grades
-        $gradeCountDefinitions = [
-            ['label' => '6a+', 'count' => 10],
-            ['label' => '6b', 'count' => 10],
-            ['label' => '6c', 'count' => 10],
-            ['label' => '7a', 'count' => 5],
-            ['label' => '7a', 'count' => 10],
-        ];
+
+        $gradeCountDefinitions = [];
+        foreach ($selectedGrades as $gradeLabel) {
+            $gradeCountDefinitions[] = [
+                'label' => $gradeLabel,
+                'count' => 10,
+            ];
+        }
 
         foreach ($gradeCountDefinitions as $def) {
             if (isset($cotationPoints[$def['label']])) {

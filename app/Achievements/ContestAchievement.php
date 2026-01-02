@@ -12,6 +12,11 @@ class ContestAchievement extends BaseAchievement
     private string $name;
     private string $description;
 
+    /**
+     * @param int $contestId
+     * @param string $name (should be translated with __() before passing)
+     * @param string $description (should be translated with __() before passing)
+     */
     public function __construct(int $contestId, string $name, string $description)
     {
         $this->contestId = $contestId;
