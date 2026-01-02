@@ -52,7 +52,7 @@ new class extends Component {
             <span class="text-sm text-gray-600">{{ $unlockedCount }} / {{ $totalCount }}</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $this->getProgressPercentage() }}%"></div>
+            <div class="bg-gray-600 h-2.5 rounded-full" style="width: {{ $this->getProgressPercentage() }}%"></div>
         </div>
     </div>
 
@@ -71,7 +71,7 @@ new class extends Component {
         <h3 class="text-md font-semibold text-gray-900 mb-3">{{ __('Unlocked achievements') }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             @foreach($unlockedAchievements as $achievement)
-            <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-300 rounded-lg p-4 shadow-sm">
+            <div class=" border-2 border-yellow-300 rounded-lg p-4">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
                         <svg class="h-6 w-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
@@ -86,7 +86,7 @@ new class extends Component {
                         @endphp
                         @if($unlockedAt && $unlockedAt->pivot->unlocked_at)
                         <p class="text-xs text-gray-500 mt-2">
-                            {{ __('Unlocked at') }} {{ $unlockedAt->pivot->unlocked_at->format('d/m/Y') }}
+                            {{ __('Unlocked at') }} {{ \Carbon\Carbon::parse($unlockedAt->pivot->unlocked_at)->format('d/m/Y') }}
                         </p>
                         @endif
                     </div>

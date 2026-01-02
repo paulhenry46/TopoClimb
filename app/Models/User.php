@@ -110,6 +110,11 @@ class User extends Authenticatable
         return $this->hasMany(Log::class, 'verified_by');
     }
 
+    public function logs()
+    {
+        return $this->hasMany(Log::class);
+    }
+
     public function teams()
     {
         return $this->belongsToMany(Team::class)->withTimestamps();
