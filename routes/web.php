@@ -28,6 +28,10 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('/stats', function () {
+        return view('stats');
+    })->name('stats');
+
     Route::get('/friends', function () {
         return view('friends.index');
     })->name('friends.index');

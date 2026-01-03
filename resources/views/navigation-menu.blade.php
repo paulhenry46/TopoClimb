@@ -30,6 +30,11 @@
                         {{ __('Friends') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link wire:navigate href="{{ route('stats') }}" :active="request()->routeIs('stats')">
+                        {{ __('Statistics') }}
+                    </x-nav-link>
+                </div>
                @if(auth()->user()->hr() <= 3)
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link wire:navigate href="{{ route('admin.sites.manage') }}" :active="request()->routeIs('admin.*')">
@@ -122,6 +127,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link href="{{ route('friends.index') }}" :active="request()->routeIs('friends.index')">
                 {{ __('Friends') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('stats') }}" :active="request()->routeIs('stats')">
+                {{ __('Statistics') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link href="{{ route('sites.public-index') }}" :active="request()->routeIs('sites.public-index')">
                 {{ __('All sites') }}
