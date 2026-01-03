@@ -41,7 +41,7 @@ new class extends Component {
     }
 }; ?>
 
-<div class="space-y-6">
+<div class="space-y-8">
     @if(!$hasStats)
         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
             <div class="flex">
@@ -60,17 +60,17 @@ new class extends Component {
         </div>
     @else
         <!-- Header with Last Updated -->
-        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 overflow-hidden shadow-lg sm:rounded-lg">
-            <div class="p-6 text-white">
+        <div class="bg-white border border-gray-200 shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-2xl font-bold flex items-center">
-                            <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
+                            
+                                                            <svg class="w-8 h-8 mr-3" xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M680-160q-17 0-28.5-11.5T640-200v-200q0-17 11.5-28.5T680-440h80q17 0 28.5 11.5T800-400v200q0 17-11.5 28.5T760-160h-80Zm-240 0q-17 0-28.5-11.5T400-200v-560q0-17 11.5-28.5T440-800h80q17 0 28.5 11.5T560-760v560q0 17-11.5 28.5T520-160h-80Zm-240 0q-17 0-28.5-11.5T160-200v-360q0-17 11.5-28.5T200-600h80q17 0 28.5 11.5T320-560v360q0 17-11.5 28.5T280-160h-80Z"/></svg>
+
                             {{ __('Your Climbing Statistics') }}
                         </h2>
-                        <p class="text-indigo-100 mt-1">{{ __('Updated') }} {{ $lastCalculated }}</p>
+                        <p class="text-gray-500 mt-1">{{ __('Updated') }} {{ $lastCalculated }}</p>
                     </div>
                 </div>
             </div>
@@ -78,13 +78,13 @@ new class extends Component {
 
         <!-- Critical Alerts -->
         @if($userStats->overtraining_detected || $userStats->plateau_detected)
-        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg border-l-4 border-red-500">
+        <div class="bg-white border border-red-200 shadow-sm sm:rounded-lg border-l-4 border-red-500">
             <div class="p-6">
                 <h3 class="text-lg font-bold text-red-600 flex items-center mb-4">
                     <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    {{ __('⚠️ Important Alerts') }}
+                    {{ __('Important Alerts') }}
                 </h3>
                 <div class="space-y-3">
                     @if($userStats->overtraining_detected)
@@ -120,13 +120,12 @@ new class extends Component {
         @endif
 
         <!-- Technical Analysis -->
-        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
-            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 border-b border-indigo-100">
+        <div class="bg-white border border-gray-200 shadow-sm sm:rounded-lg">
+            <div class="bg-gray-50 p-6 border-b border-gray-100">
                 <h3 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <svg class="w-7 h-7 mr-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                    </svg>
-                    {{ __('🎯 Technical Analysis') }}
+                    
+                    <svg class="text-gray-600 w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"  fill="currentColor"><path d="M360-400v-160q0-17 11.5-28.5T400-600h160q17 0 28.5 11.5T600-560v160q0 17-11.5 28.5T560-360H400q-17 0-28.5-11.5T360-400Zm80-40h80v-80h-80v80Zm-80 280v-40h-80q-33 0-56.5-23.5T200-280v-80h-40q-17 0-28.5-11.5T120-400q0-17 11.5-28.5T160-440h40v-80h-40q-17 0-28.5-11.5T120-560q0-17 11.5-28.5T160-600h40v-80q0-33 23.5-56.5T280-760h80v-40q0-17 11.5-28.5T400-840q17 0 28.5 11.5T440-800v40h80v-40q0-17 11.5-28.5T560-840q17 0 28.5 11.5T600-800v40h80q33 0 56.5 23.5T760-680v80h40q17 0 28.5 11.5T840-560q0 17-11.5 28.5T800-520h-40v80h40q17 0 28.5 11.5T840-400q0 17-11.5 28.5T800-360h-40v80q0 33-23.5 56.5T680-200h-80v40q0 17-11.5 28.5T560-120q-17 0-28.5-11.5T520-160v-40h-80v40q0 17-11.5 28.5T400-120q-17 0-28.5-11.5T360-160Zm320-120v-400H280v400h400ZM480-480Z"/></svg>
+                    {{ __('Technical Analysis') }}
                 </h3>
                 <p class="text-sm text-gray-600 mt-2">{{ __('How you climb, not just what you succeed') }}</p>
             </div>
@@ -134,21 +133,14 @@ new class extends Component {
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <!-- Consistency Variance -->
-                    <div class="border-2 rounded-xl p-5 hover:shadow-md transition-shadow {{ $this->getConsistencyStatus() === 'excellent' ? 'border-green-200 bg-green-50' : ($this->getConsistencyStatus() === 'good' ? 'border-blue-200 bg-blue-50' : 'border-gray-200') }}">
+                    <div class="border-2 rounded-xl p-5 hover:shadow-md transition-shadow border-gray-200">
                         <div class="flex items-start justify-between mb-2">
                             <h4 class="font-semibold text-gray-900 flex items-center text-sm">
-                                <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
+                                <svg class="w-5 h-5 mr-2 text-gray-500" xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960" fill="currentColor"><path d="M680-160q-17 0-28.5-11.5T640-200v-200q0-17 11.5-28.5T680-440h80q17 0 28.5 11.5T800-400v200q0 17-11.5 28.5T760-160h-80Zm-240 0q-17 0-28.5-11.5T400-200v-560q0-17 11.5-28.5T440-800h80q17 0 28.5 11.5T560-760v560q0 17-11.5 28.5T520-160h-80Zm-240 0q-17 0-28.5-11.5T160-200v-360q0-17 11.5-28.5T200-600h80q17 0 28.5 11.5T320-560v360q0 17-11.5 28.5T280-160h-80Z"/></svg>
                                 {{ __('Consistency') }}
                             </h4>
-                            @if($this->getConsistencyStatus() === 'excellent')
-                            <span class="text-xs bg-green-500 text-white px-2 py-1 rounded-full font-medium">{{ __('Excellent') }}</span>
-                            @elseif($this->getConsistencyStatus() === 'good')
-                            <span class="text-xs bg-blue-500 text-white px-2 py-1 rounded-full font-medium">{{ __('Good') }}</span>
-                            @endif
                         </div>
-                        <p class="text-3xl font-bold text-indigo-600 mb-2">
+                        <p class="text-3xl font-bold text-gray-600 mb-2">
                             {{ $userStats->consistency_variance !== null ? number_format($userStats->consistency_variance, 2) : 'N/A' }}
                         </p>
                         <p class="text-xs text-gray-600">{{ __('Variance in difficulty. Lower = more consistent.') }}</p>
@@ -181,9 +173,8 @@ new class extends Component {
                     <div class="border-2 rounded-xl p-5 hover:shadow-md transition-shadow {{ $userStats->risk_profile_abandonment_rate > 40 ? 'border-red-200 bg-red-50' : ($userStats->risk_profile_abandonment_rate > 20 ? 'border-yellow-200 bg-yellow-50' : 'border-green-200 bg-green-50') }}">
                         <div class="flex items-start justify-between mb-2">
                             <h4 class="font-semibold text-gray-900 flex items-center text-sm">
-                                <svg class="w-5 h-5 mr-2 {{ $userStats->risk_profile_abandonment_rate > 40 ? 'text-red-500' : 'text-yellow-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                                
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"  class="w-5 h-5 mr-2 {{ $userStats->risk_profile_abandonment_rate > 40 ? 'text-red-500' : ($userStats->risk_profile_abandonment_rate > 20 ? 'text-yellow-500' : 'text-green-500') }}" fill="currentColor" stroke="currentColor"><path d="M320-80q-17 0-28.5-11.5T280-120v-640q0-17 11.5-28.5T320-800h80v-40q0-17 11.5-28.5T440-880h80q17 0 28.5 11.5T560-840v40h80q17 0 28.5 11.5T680-760v300q0 17-11.5 28.5T640-420q-17 0-28.5-11.5T600-460v-260H360v560h140q17 0 28.5 11.5T540-120q0 17-11.5 28.5T500-80H320Zm40-80Zm380-3-56 55q-11 11-27.5 11.5T628-108q-11-11-11-28t11-28l56-56-56-56q-11-11-11-28t11-28q11-11 28-11t28 11l56 56 56-56q11-11 27.5-11.5T852-332q11 11 11 28t-11 28l-55 56 55 56q11 11 11.5 27.5T852-108q-11 11-28 11t-28-11l-56-55Z"/></svg>
                                 {{ __('Abandonment Rate') }}
                             </h4>
                             @if($userStats->risk_profile_abandonment_rate > 40)
@@ -203,15 +194,15 @@ new class extends Component {
                     <!-- Endurance vs Power -->
                     <div class="border-2 border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
                         <h4 class="font-semibold text-gray-900 flex items-center text-sm mb-2">
-                            <svg class="w-5 h-5 mr-2 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
                             {{ __('Endurance vs Power') }}
                         </h4>
                         <div class="flex items-baseline space-x-2 mb-2">
-                            <p class="text-2xl font-bold text-emerald-600">{{ $userStats->long_routes_count ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-600">{{ $userStats->long_routes_count ?? 0 }}</p>
                             <span class="text-gray-400">/</span>
-                            <p class="text-2xl font-bold text-blue-600">{{ $userStats->short_routes_count ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-600">{{ $userStats->short_routes_count ?? 0 }}</p>
                         </div>
                         <p class="text-xs text-gray-600">{{ __('Long / Short routes completed') }}</p>
                     </div>
@@ -220,14 +211,18 @@ new class extends Component {
                     @if($userStats->movement_preferences)
                     <div class="border-2 border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow md:col-span-2">
                         <h4 class="font-semibold text-gray-900 flex items-center text-sm mb-3">
-                            <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                            </svg>
+                            
+                            <svg class="w-5 h-5 mr-2 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"  fill="currentColor">
+              <path d="M856-390 570-104q-12 12-27 18t-30 6q-15 0-30-6t-27-18L103-457q-11-11-17-25.5T80-513v-287q0-33 23.5-56.5T160-880h287q16 0 31 6.5t26 17.5l352 353q12 12 17.5 27t5.5 30q0 15-5.5 29.5T856-390ZM260-640q25 0 42.5-17.5T320-700q0-25-17.5-42.5T260-760q-25 0-42.5 17.5T200-700q0 25 17.5 42.5T260-640Z" />
+            </svg>
                             {{ __('Movement Preferences') }}
                         </h4>
                         <div class="flex flex-wrap gap-2">
                             @foreach(array_slice($userStats->movement_preferences, 0, 8, true) as $tag => $count)
-                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-sm">
+                                <span class=" mr-2 inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                                    <svg class="h-1.5 w-1.5 fill-gray-500" viewBox="0 0 6 6" aria-hidden="true">
+                <circle cx="3" cy="3" r="3"></circle>
+              </svg>
                                     {{ $tag }}: {{ $count }}
                                 </span>
                             @endforeach
@@ -239,13 +234,12 @@ new class extends Component {
         </div>
 
         <!-- Behavioral Analysis -->
-        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
-            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 border-b border-emerald-100">
+        <div class="bg-white border border-gray-200 shadow-sm sm:rounded-lg">
+            <div class="bg-gray-50 p-6 border-b border-gray-100">
                 <h3 class="text-2xl font-bold text-gray-900 flex items-center">
-                    <svg class="w-7 h-7 mr-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    {{ __('🧠 Behavioral Analysis') }}
+                    
+                    <svg class="w-7 h-7 mr-3 text-emerald-600"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960"fill="currentColor"><path d="m447-426 2 26q.9 7.11 5.85 11.56Q459.8-384 467-384h26q7.2 0 12.15-4.44 4.95-4.45 5.85-11.56l2-26q11.43-3.82 20.71-8.91Q543-440 552-448l23 10q6.44 3 12.88 1.06T598-445l13-22q4-6 2-13t-6.69-10.75L586-505q2-11.5 2-23t-2-23l20.31-14.25Q611-569 613-576t-2-13l-13-22q-3.68-6.13-10.12-8.06Q581.44-621 575-618l-23 10q-8-8-18-13t-21-9l-2-26q-.9-7.11-5.85-11.56Q500.2-672 493-672h-26q-7.2 0-12.15 4.44-4.95 4.45-5.85 11.56l-2 26q-11.43 3.82-20.71 8.91Q417-616 408-608l-23-10q-6.44-3-12.88-1.06-6.44 1.93-10.12 8.06l-13 22q-4 6-2 13t6.69 10.75L374-551q-2 11.5-2 23t2 23l-20.31 14.25Q349-487 347-480t2 13l13 22q3.68 6.12 10.12 8.06Q378.56-435 385-438l23-10q8 8 18 13t21 9Zm33-54q-20 0-34-14t-14-34q0-20 14-34t34-14q20 0 34 14t14 34q0 20-14 34t-34 14ZM264-271q-57-48-88.5-115.57T144-529q0-139.58 98.29-237.29Q340.58-864 481-864q109 0 196 58.5T792-653l66 223q5 17.48-5.5 31.74Q842-384 824-384h-56v120q0 29.7-21.15 50.85Q725.7-192 696-192h-96v60q0 15.3-10.29 25.65Q579.42-96 564.21-96t-25.71-10.35Q528-116.7 528-132v-96q0-15.3 10.35-25.65Q548.7-264 564-264h132v-156q0-15.3 10.35-25.65Q716.7-456 732-456h44l-52-173q-22-72-89.5-117.5T481-792q-111 0-188 76.63T216-529q0 58.93 25 111.96Q266-364 311-326l25 22v172q0 15.3-10.29 25.65Q315.42-96 300.21-96t-25.71-10.35Q264-116.7 264-132v-139Zm232-173Z"/></svg>
+                    {{ __('Behavioral Analysis') }}
                 </h3>
                 <p class="text-sm text-gray-600 mt-2">{{ __('What you choose to climb reveals your style') }}</p>
             </div>
@@ -340,13 +334,13 @@ new class extends Component {
         </div>
 
         <!-- Progression Analysis -->
-        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 border-b border-green-100">
+        <div class="bg-white border border-gray-200 shadow-sm sm:rounded-lg">
+            <div class="bg-gray-50 p-6 border-b border-gray-100">
                 <h3 class="text-2xl font-bold text-gray-900 flex items-center">
                     <svg class="w-7 h-7 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
-                    {{ __('📈 Progression Analysis') }}
+                    {{ __('Progression Analysis') }}
                 </h3>
                 <p class="text-sm text-gray-600 mt-2">{{ __('Your actual improvement over time') }}</p>
             </div>
@@ -409,13 +403,13 @@ new class extends Component {
         </div>
 
         <!-- Training Load Analysis -->
-        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg">
-            <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 border-b border-purple-100">
+        <div class="bg-white border border-gray-200 shadow-sm sm:rounded-lg">
+            <div class="bg-gray-50 p-6 border-b border-gray-100">
                 <h3 class="text-2xl font-bold text-gray-900 flex items-center">
                     <svg class="w-7 h-7 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    {{ __('💪 Training Load') }}
+                    {{ __('Training Load') }}
                 </h3>
                 <p class="text-sm text-gray-600 mt-2">{{ __('Optimize progression and prevent injuries') }}</p>
             </div>
@@ -505,7 +499,7 @@ new class extends Component {
         </div>
 
         <!-- Help Section -->
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+        <div class="bg-gray-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
             <div class="flex">
                 <div class="flex-shrink-0">
                     <svg class="h-6 w-6 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
@@ -513,8 +507,8 @@ new class extends Component {
                     </svg>
                 </div>
                 <div class="ml-3">
-                    <h3 class="text-sm font-medium text-blue-800">{{ __('📖 Need More Details?') }}</h3>
-                    <p class="text-sm text-blue-700 mt-1">
+                    <h3 class="text-sm font-medium text-gray-800">{{ __('📖 Need More Details?') }}</h3>
+                    <p class="text-sm text-gray-700 mt-1">
                         {{ __('For detailed explanations of how each statistic is calculated, see the') }}
                         <a href="https://github.com/paulhenry46/TopoClimb/blob/main/STATS_CALCULATION_DOCUMENTATION.md" target="_blank" class="font-medium underline hover:text-blue-900">
                             {{ __('Statistics Calculation Documentation') }}
