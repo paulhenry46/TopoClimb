@@ -297,7 +297,7 @@ new class extends Component {
                 <div class="ml-3">
                     <p class="text-sm text-blue-700">
                         {{ __('For detailed explanations of how each statistic is calculated, see the') }}
-                        <a href="https://github.com/paulhenry46/TopoClimb/blob/copilot/add-climber-statistics-table/STATS_CALCULATION_DOCUMENTATION.md" target="_blank" class="font-medium underline">
+                        <a href="https://github.com/paulhenry46/TopoClimb/blob/main/STATS_CALCULATION_DOCUMENTATION.md" target="_blank" class="font-medium underline">
                             {{ __('Statistics Calculation Documentation') }}
                         </a>
                     </p>
