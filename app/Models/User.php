@@ -163,4 +163,12 @@ class User extends Authenticatable
     {
         return $this->achievements()->where('key', $achievementKey)->exists();
     }
+
+    /**
+     * Get the user's statistics.
+     */
+    public function stats()
+    {
+        return $this->hasOne(UserStats::class);
+    }
 }

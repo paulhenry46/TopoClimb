@@ -15,6 +15,11 @@ class Log extends Model
         'type',
         'way',
         'verified_by',
+        'is_public',
+    ];
+
+    protected $casts = [
+        'is_public' => 'boolean',
     ];
 
     public function user()
@@ -30,5 +35,21 @@ class Log extends Model
     public function verifiedBy()
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
+     * Scope to only include public logs.
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
+    }
+
+    /**
+     * Scope to include tentative logs (private).
+     */
+    public function scopeTentative($query)
+    {
+        return $query->where('type', 'tentative');
     }
 }
