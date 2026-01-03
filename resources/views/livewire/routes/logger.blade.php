@@ -55,20 +55,6 @@ new class extends Component {
 
     public function save(){
 
-      // Only check for duplicates if this is not a tentative log
-      if ($this->type !== 'tentative') {
-        $existingLog = Log::where('user_id', $this->user->id)
-          ->where('route_id', $this->route->id)
-          ->where('way', $this->way)
-          ->where('type', '!=', 'tentative')
-          ->exists();
-
-      if ($existingLog) {
-          $this->dispatch('action_error', title: 'Duplicate Log', message: 'You have already logged this route.');
-          return;
-      }
-      }
-
         $this->validate();
         $log = new Log;
         $log->user_id = $this->user->id;

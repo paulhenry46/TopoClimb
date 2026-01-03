@@ -66,7 +66,8 @@ New table with comprehensive metrics for each user. See migration for full schem
 - ✅ Visible in public profiles
 - ✅ Counted in contests
 - ✅ Trigger achievement unlocks
-- ✅ Limited to one per route+way combination
+- ✅ **Multiple logs allowed per route** - Users can log successful ascents multiple times
+- ✅ **Counted as unique routes in stats** - The same route logged multiple times counts as 1 route in statistics
 
 ## API Changes
 
@@ -86,6 +87,24 @@ New option added: **"Attempt (Private)"**
 - Automatically sets `is_public = false`
 
 ## Usage Examples
+
+### Logging Multiple Ascents
+Users can now log the same route multiple times to track:
+- Improvement on favorite routes
+- Different conditions (e.g., fresh vs tired)
+- Practice sessions on the same route
+- Repeat sends for training
+
+**Important**: The same route logged multiple times will:
+- ✅ Show all logs in your personal log history
+- ✅ Count as **1 unique route** in statistics (e.g., "Total routes climbed")
+- ✅ All logs count toward training volume and session metrics
+- ✅ Only the first successful log (work/flash/view) counts for progression metrics
+
+**Example**:
+- You log Route A as "flash" on Monday
+- You log Route A as "work" again on Friday (practicing)
+- Your stats show: 1 unique route climbed, 2 total logs, both contribute to training volume
 
 ### Tracking a Project
 1. Attempt a hard route → Log as "Attempt (Private)"
