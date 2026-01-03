@@ -32,6 +32,10 @@ Route::middleware([
         return view('stats');
     })->name('stats');
 
+    Route::get('/newStats', function () {
+        return view('newStats');
+    })->name('newStats');
+
     Route::get('/friends', function () {
         return view('friends.index');
     })->name('friends.index');
