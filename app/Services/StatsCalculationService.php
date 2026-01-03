@@ -158,9 +158,10 @@ class StatsCalculationService
         
         foreach ($sessions as $date => $sessionLogs) {
             if ($sessionLogs->count() > 1) {
-                $first = $sessionLogs->min('created_at');
-                $last = $sessionLogs->max('created_at');
-                $duration = $last->diffInHours($first);
+                $sorted = $sessionLogs->sortBy('created_at');
+                $first = $sorted->first()->created_at;
+                $last = $sorted->last()->created_at;
+                $duration = $first->diffInHours($last, false); // false = get absolute value
                 $sessionDurations[] = $duration;
             }
             $routesPerSession[] = $sessionLogs->count();
@@ -369,7 +370,7 @@ class StatsCalculationService
         if ($performanceLogs->count() > 1) {
             $performanceArray = $performanceLogs->values();
             for ($i = 1; $i < $performanceLogs->count(); $i++) {
-                $timeDiff = $performanceArray[$i]->created_at->diffInHours($performanceArray[$i - 1]->created_at);
+                $timeDiff = $performanceArray[$i - 1]->created_at->diffInHours($performanceArray[$i]->created_at, false); // false = absolute value
                 $performanceTimes[] = $timeDiff;
             }
         }
