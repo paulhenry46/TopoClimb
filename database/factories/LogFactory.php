@@ -16,17 +16,17 @@ class LogFactory extends Factory
      */
     public function definition(): array
     {
+        $type = fake()->randomElement(['work', 'flash', 'view', 'tentative']);
+        
         return [
             'user_id' => \App\Models\User::factory(),
             'route_id' => \App\Models\Route::factory(),
-            'type' => fake()->randomElement(['work', 'flash', 'view', 'tentative']),
+            'type' => $type,
             'way' => fake()->randomElement(['top-rope', 'lead', 'bouldering']),
             'grade' => fake()->numberBetween(300, 900),
             'comment' => fake()->optional()->sentence(),
             'video_url' => fake()->optional()->url(),
-            'is_public' => function (array $attributes) {
-                return $attributes['type'] !== 'tentative';
-            },
+            'is_public' => $type !== 'tentative',
         ];
     }
 }

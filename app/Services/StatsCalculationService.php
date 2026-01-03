@@ -7,6 +7,7 @@ use App\Models\UserStats;
 use App\Models\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log as LogFacade;
 
 class StatsCalculationService
 {
@@ -87,9 +88,16 @@ class StatsCalculationService
         }
 
         // Long routes vs short routes (based on route type or tags)
+        // Eager load tags to avoid N+1 query
+        $publicLogsWithTags = $publicLogs->load('route.tags');
+        
         // Assuming routes with 'continuity' or 'endurance' tags are long
-        $longRoutesLogs = $publicLogs->filter(function ($log) {
-            return $log->route && $log->route->tags()->whereIn('name', ['continuity', 'endurance', 'resistance'])->exists();
+        $longRoutesLogs = $publicLogsWithTags->filter(function ($log) {
+            if (!$log->route || !$log->route->tags) {
+                return false;
+            }
+            $tagNames = $log->route->tags->pluck('name')->map(fn($name) => strtolower($name))->toArray();
+            return !empty(array_intersect($tagNames, ['continuity', 'endurance', 'resistance']));
         });
         $stats->long_routes_count = $longRoutesLogs->count();
         $stats->short_routes_count = $publicLogs->count() - $longRoutesLogs->count();
@@ -175,8 +183,8 @@ class StatsCalculationService
         // Sector fidelity - most climbed sectors
         $sectorCounts = [];
         foreach ($allLogs as $log) {
-            if ($log->route && $log->route->line && $log->route->line->sector) {
-                $sectorName = $log->route->line->sector->name;
+            $sectorName = $log->route?->line?->sector?->name;
+            if ($sectorName) {
                 $sectorCounts[$sectorName] = ($sectorCounts[$sectorName] ?? 0) + 1;
             }
         }
@@ -272,16 +280,18 @@ class StatsCalculationService
 
         // Progression by sector
         $progressionBySector = [];
-        foreach ($publicLogs->groupBy(fn($log) => $log->route->line->sector->name ?? 'Unknown') as $sector => $sectorLogs) {
-            if ($sectorLogs->count() > 1) {
-                $sortedSectorLogs = $sectorLogs->sortBy('created_at');
-                $firstLog = $sortedSectorLogs->first();
-                $lastLog = $sortedSectorLogs->last();
-                $monthsDiff = $firstLog->created_at->diffInMonths($lastLog->created_at);
-                if ($monthsDiff > 0) {
-                    $gradeDiff = $lastLog->grade - $firstLog->grade;
-                    $progressionBySector[$sector] = round($gradeDiff / $monthsDiff, 2);
-                }
+        foreach ($publicLogs->groupBy(fn($log) => $log->route?->line?->sector?->name ?? 'Unknown') as $sector => $sectorLogs) {
+            if ($sector === 'Unknown' || $sectorLogs->count() <= 1) {
+                continue;
+            }
+            
+            $sortedSectorLogs = $sectorLogs->sortBy('created_at');
+            $firstLog = $sortedSectorLogs->first();
+            $lastLog = $sortedSectorLogs->last();
+            $monthsDiff = $firstLog->created_at->diffInMonths($lastLog->created_at);
+            if ($monthsDiff > 0) {
+                $gradeDiff = $lastLog->grade - $firstLog->grade;
+                $progressionBySector[$sector] = round($gradeDiff / $monthsDiff, 2);
             }
         }
         if (!empty($progressionBySector)) {
@@ -379,7 +389,7 @@ class StatsCalculationService
                 try {
                     $this->calculateStatsForUser($user);
                 } catch (\Exception $e) {
-                    \Log::error("Error calculating stats for user {$user->id}: " . $e->getMessage());
+                    LogFacade::error("Error calculating stats for user {$user->id}: " . $e->getMessage());
                 }
             }
         });

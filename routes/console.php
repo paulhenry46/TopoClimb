@@ -5,7 +5,6 @@ use App\Jobs\SoftDeleteRoute;
 use App\Models\Route;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Schedule;
-use Illuminate\Support\Facades\Artisan;
 
 
 Schedule::call(function () {
