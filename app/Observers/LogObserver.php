@@ -28,9 +28,24 @@ class LogObserver
             $contest->autoAssignUserToCategories($log->user);
         }
 
-        // Evaluate achievements for the user
-        $achievementService = new AchievementService();
-        $achievementService->evaluateAchievements($log->user);
+        // Evaluate achievements for the user (only for public logs)
+        if ($log->is_public) {
+            $achievementService = new AchievementService();
+            $achievementService->evaluateAchievements($log->user);
+        }
+    }
+
+    /**
+     * Handle the Log "creating" event to set is_public based on type.
+     */
+    public function creating(Log $log): void
+    {
+        // Ensure is_public is set correctly based on log type
+        if ($log->type === 'tentative' && !isset($log->is_public)) {
+            $log->is_public = false;
+        } elseif (!isset($log->is_public)) {
+            $log->is_public = true;
+        }
     }
 
     /**

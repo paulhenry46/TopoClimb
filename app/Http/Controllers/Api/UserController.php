@@ -213,7 +213,7 @@ class UserController extends Controller
      */
     public function publicProfile(User $user)
     {
-        $logs = Log::where('user_id', $user->id)->with('route.line.sector.area');
+        $logs = Log::where('user_id', $user->id)->where('is_public', true)->with('route.line.sector.area');
         $total = count(array_unique((clone $logs)->get()->pluck('route_id')->toArray()));
 
         $bouldering_logs = (clone $logs)->whereHas('route.line.sector.area', function ($query) {
