@@ -21,9 +21,12 @@
             <div class="md:col-span-4">
                 <div class='h-full'>
                     <div class="bg-white overflow-hidden  sm:rounded-lg col-span-2">
-                        <h2 class="px-4 py-4 text-xl font-semibold text-gray-900">
-                            {{ __('Stats') }}
-                         </h2>
+                        <div class="flex items-center justify-between px-4 py-4">
+                            <h2 class="text-xl font-semibold text-gray-900">
+                                {{ __('Stats') }}
+                            </h2>
+                            <a  wire:navigate href="/newStats" class="inline-block px-4 py-2 bg-gray-500 text-white text-sm font-semibold rounded hover:bg-gray-600 transition">{{ __('See training Stats') }}</a>
+                        </div>
                     </div>
                     <livewire:dashboard.stats class='h-full'/>
                 </div>
