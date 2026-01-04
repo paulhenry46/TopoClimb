@@ -587,7 +587,7 @@ new class extends Component {
                             <div class="flex items-center justify-between">
                                 <div class="flex-1 mr-8">
                                     <!-- Thermometer -->
-                                    <div class="relative h-48">
+                                    <div class="relative h-36">
                                         <div class="absolute bottom-0 left-1/2 -ml-6 w-12 h-full border-4 border-[#2D2D2D] rounded-full overflow-hidden">
                                             @php $intensityPercent = min(($userStats->weekly_intensity ?? 0) / 10, 100); @endphp
                                             <div class="absolute bottom-0 w-full bg-indigo-500  transition-all duration-500" style="height: {{ $intensityPercent }}%;"></div>
@@ -621,7 +621,6 @@ new class extends Component {
                                     <svg class="w-32 h-32" viewBox="0 0 100 100">
                                         @php
                                             $ratio = $userStats->acute_chronic_ratio ?? 1;
-                                           
                                             $height = min($ratio * 40, 90);
                                         @endphp
                                         <polygon points="50,{{ 90 - $height }} 20,90 80,90" fill="currentColor" class="{{ $userStats->acute_chronic_ratio && $userStats->acute_chronic_ratio > 1.5 ? 'text-red-500' : ($userStats->acute_chronic_ratio && $userStats->acute_chronic_ratio < 0.8 ? 'text-pink-500' : 'text-purple-500') }}"/>
@@ -630,10 +629,7 @@ new class extends Component {
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Recovery Time: Hourglass -->
                         
-
                         <!-- Peak Frequency: Mountain -->
                         <div class="p-6 bg-gray-200/50 rounded-2xl border border-pink-400/10 sm:col-span-2">
                             <h3 class="text-xl font-semibold text-gray-600 mb-4">{{ __('Peak Performance Frequency') }}</h3>
