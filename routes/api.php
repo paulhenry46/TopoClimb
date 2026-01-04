@@ -81,6 +81,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/user/logs/friends', [RouteController::class, 'friendsRoutes']);
         Route::get('/user/stats', [UserController::class, 'stats']);
         Route::get('/user/completeStats', [UserController::class, 'completeStats']);
+        Route::get('/user/user-stats', [UserController::class, 'userStats']);
         Route::get('/user/qrcode', [UserController::class, 'qrcode']);
         Route::post('/user/update', [UserController::class, 'update']);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\UserResource;
+use App\Http\Resources\Api\UserStatsResource;
 use App\Jobs\GenerateQrCodeOfUser;
 use App\Models\Log;
 use App\Models\User;
@@ -424,6 +425,26 @@ class UserController extends Controller
                 'last_calculated_at' => $userStats->last_calculated_at,
             ],
         ]);
+    }
+
+    /**
+     * Get user stats for the authenticated user.
+     */
+    public function userStats(Request $request)
+    {
+        $user = $request->user();
+        
+        // Load user stats if they exist
+        $userStats = $user->stats;
+        
+        if (!$userStats) {
+            return response()->json([
+                'message' => 'Statistics not yet calculated. They will be available after the nightly update.',
+                'data' => null,
+            ], 404);
+        }
+
+        return new UserStatsResource($userStats);
     }
 
     /**
