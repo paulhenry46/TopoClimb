@@ -169,23 +169,23 @@ new class extends Component {
                                     <div class="ml-8">
                                         <!-- Ghost Hold SVG -->
                                         <svg
-   version="1.1"
-   id="svg1"
-   class="h-32 w-32"
-   viewBox="0 0 171.20456 182.4651"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="g1"
-     transform="translate(2.6586854,-12.560471)">
-    <path class="text-gray-500"
-       style="fill:currentColor;fill-opacity:0.521699;stroke:none"
-       d="M 69,13.46373 C 62.46825,14.61788 55.81651,16.66312 50,19.86496 10.2697,41.73549 22.05693,89.98555 12.26543,127 c -3.33758,12.61694 -21.30565,37.74644 -12.537797,49.8912 7.765207,10.75597 17.716757,-1.5039 26.233017,2.22994 8.42284,3.69289 11.91174,13.02537 22.03935,15.34953 11.04195,2.534 17.8664,-4.36065 28,-5.62344 5.14346,-0.64096 9.56716,3.30707 15,2.12422 3.81161,-0.82986 7.05746,-4.42932 11,-4.41513 9.01051,0.0325 14.46274,9.99983 25,8.11421 9.21361,-1.64877 10.79211,-11.16653 18.10417,-14.54939 7.74729,-3.5842 18.12209,6.26483 22.73303,-6.125 2.56549,-6.8936 -2.42794,-13.2726 -5.52856,-18.99614 -5.23766,-9.66843 -8.88957,-20.3196 -11.42438,-31 C 142.13255,87.12475 149.82867,37.71335 109,18.32021 103.64532,15.7768 97.8828,14.05382 92,13.28935 84.87779,12.36382 76.07762,12.21314 69,13.46373 m 4,4.82562 c 6.86157,-0.89166 14.25401,-0.51318 21,0.9213 50.80096,10.80238 42.65979,67.79705 52.12962,106.78935 2.71233,11.16806 6.27472,21.80792 11.65125,32 2.1651,4.10431 6.78241,9.77982 4.47299,14.72067 -3.049,6.52318 -13.26077,-0.64267 -18.2392,1.06174 -8.34146,2.85574 -8.98527,14.52917 -19.01466,15.84799 -9.23772,1.21471 -14.38609,-9.39323 -23,-9.22763 -4.79738,0.0922 -8.29202,4.34593 -13,4.87964 -5.23955,0.59396 -9.53456,-3.0437 -15,-1.67207 -9.43374,2.36753 -15.77137,8.01684 -26,5.08873 C 39.32192,186.21484 36.44826,177.93781 28.99614,174.17902 21.92018,170.60995 8.85656,180.75732 4.17901,172.85185 1.403663,168.16125 4.11121,162.42378 6.00077,158 10.37927,147.74945 14.90533,137.87589 17.625,127 26.43108,91.78478 15.29082,41.05643 56,23.03935 c 5.3724,-2.37771 11.16989,-3.99237 17,-4.75 M 56.00077,59.61574 C 41.07233,63.05399 42.74359,98.14479 59.99614,94.59105 75.20888,91.45748 72.28322,55.86565 56.00077,59.61574 m 45.00309,0.0772 c -14.39194,3.85879 -11.75116,39.24509 4.99537,34.8696 14.48618,-3.78491 11.8086,-39.37511 -4.99537,-34.8696 M 94,102 c -4.45711,2.25605 -7.52709,8.24583 -13,8.17284 -3.87788,-0.0517 -9.80966,-8.69641 -12.39969,-6.99691 -3.77398,2.47638 2.46373,8.77597 4.41821,10.12114 C 81.41912,119.07874 96.76037,113.4288 94,102 Z"
-       id="path1" />
-  </g>
-</svg>
+                                        version="1.1"
+                                        id="svg1"
+                                        class="h-32 w-32"
+                                        viewBox="0 0 171.20456 182.4651"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:svg="http://www.w3.org/2000/svg">
+                                        <defs
+                                            id="defs1" />
+                                        <g
+                                            id="g1"
+                                            transform="translate(2.6586854,-12.560471)">
+                                            <path class="text-gray-500"
+                                            style="fill:currentColor;fill-opacity:0.521699;stroke:none"
+                                            d="M 69,13.46373 C 62.46825,14.61788 55.81651,16.66312 50,19.86496 10.2697,41.73549 22.05693,89.98555 12.26543,127 c -3.33758,12.61694 -21.30565,37.74644 -12.537797,49.8912 7.765207,10.75597 17.716757,-1.5039 26.233017,2.22994 8.42284,3.69289 11.91174,13.02537 22.03935,15.34953 11.04195,2.534 17.8664,-4.36065 28,-5.62344 5.14346,-0.64096 9.56716,3.30707 15,2.12422 3.81161,-0.82986 7.05746,-4.42932 11,-4.41513 9.01051,0.0325 14.46274,9.99983 25,8.11421 9.21361,-1.64877 10.79211,-11.16653 18.10417,-14.54939 7.74729,-3.5842 18.12209,6.26483 22.73303,-6.125 2.56549,-6.8936 -2.42794,-13.2726 -5.52856,-18.99614 -5.23766,-9.66843 -8.88957,-20.3196 -11.42438,-31 C 142.13255,87.12475 149.82867,37.71335 109,18.32021 103.64532,15.7768 97.8828,14.05382 92,13.28935 84.87779,12.36382 76.07762,12.21314 69,13.46373 m 4,4.82562 c 6.86157,-0.89166 14.25401,-0.51318 21,0.9213 50.80096,10.80238 42.65979,67.79705 52.12962,106.78935 2.71233,11.16806 6.27472,21.80792 11.65125,32 2.1651,4.10431 6.78241,9.77982 4.47299,14.72067 -3.049,6.52318 -13.26077,-0.64267 -18.2392,1.06174 -8.34146,2.85574 -8.98527,14.52917 -19.01466,15.84799 -9.23772,1.21471 -14.38609,-9.39323 -23,-9.22763 -4.79738,0.0922 -8.29202,4.34593 -13,4.87964 -5.23955,0.59396 -9.53456,-3.0437 -15,-1.67207 -9.43374,2.36753 -15.77137,8.01684 -26,5.08873 C 39.32192,186.21484 36.44826,177.93781 28.99614,174.17902 21.92018,170.60995 8.85656,180.75732 4.17901,172.85185 1.403663,168.16125 4.11121,162.42378 6.00077,158 10.37927,147.74945 14.90533,137.87589 17.625,127 26.43108,91.78478 15.29082,41.05643 56,23.03935 c 5.3724,-2.37771 11.16989,-3.99237 17,-4.75 M 56.00077,59.61574 C 41.07233,63.05399 42.74359,98.14479 59.99614,94.59105 75.20888,91.45748 72.28322,55.86565 56.00077,59.61574 m 45.00309,0.0772 c -14.39194,3.85879 -11.75116,39.24509 4.99537,34.8696 14.48618,-3.78491 11.8086,-39.37511 -4.99537,-34.8696 M 94,102 c -4.45711,2.25605 -7.52709,8.24583 -13,8.17284 -3.87788,-0.0517 -9.80966,-8.69641 -12.39969,-6.99691 -3.77398,2.47638 2.46373,8.77597 4.41821,10.12114 C 81.41912,119.07874 96.76037,113.4288 94,102 Z"
+                                            id="path1" />
+                                        </g>
+                                        </svg>
 
                                     </div>
                                 </div>
@@ -196,7 +196,7 @@ new class extends Component {
                                 <h3 class="text-xl font-semibold text-gray-600 mb-6">{{ __('Endurance vs Power') }}</h3>
                                 <div class="flex justify-around items-end h-48">
                                     <div class="flex flex-col flex-1 mx-4 h-full justify-end items-center">
-                                        <div class="text-2xl font-bold text-indigo-500 mb-2">{{ $userStats->long_routes_count ?? 0 }}</div>
+                                        <div class="text-2xl font-bold text-indigo-500 mb-2 font-mono">{{ $userStats->long_routes_count ?? 0 }}</div>
                                         @php 
                                         $longHeight = min(($userStats->long_routes_count ?? 0) * 10, 100); 
                                         if ($longHeight < 5){
@@ -209,7 +209,7 @@ new class extends Component {
                                         <p class="text-sm text-gray-400 mt-2">{{ __('Long Routes') }}</p>
                                     </div>
                                     <div class="flex flex-col flex-1 mx-4 h-full justify-end items-center" >
-                                        <div class="text-2xl font-bold text-blue-500 mb-2">{{ $userStats->short_routes_count ?? 0 }}</div>
+                                        <div class="text-2xl font-bold text-blue-500 mb-2 font-mono">{{ $userStats->short_routes_count ?? 0 }}</div>
                                         @php 
                                         $shortHeight = min(($userStats->short_routes_count ?? 0) * 10, 100); 
                                         if ($shortHeight < 5){
@@ -540,15 +540,21 @@ new class extends Component {
                         <div class="p-6 bg-gray-200/50 rounded-2xl border border-blue-400/10">
                             <h3 class="text-xl font-semibold text-gray-600 mb-6">{{ __('Progression by Style') }}</h3>
                             <div class="grid grid-cols-3 gap-6">
+                                @php
+                                    $colors = ['text-indigo-500', 'text-pink-500', 'text-purple-500']
+                                @endphp
                                 @foreach($userStats->progression_by_style as $style => $rate)
+                                @php
+                                    $color = $colors[rand(0, 2)]
+                                @endphp
                                     <div class="text-center">
                                         <!-- Climbing Hold -->
                                         <svg class="w-20 h-20 mx-auto mb-3" viewBox="0 0 100 100">
-                                            <ellipse cx="50" cy="50" rx="35" ry="40" fill="{{ $rate > 0 ? '#6BCB77' : '#888' }}" opacity="0.8" transform="rotate({{ rand(-20, 20) }} 50 50)"/>
+                                            <ellipse class="{{ $rate > 0 ? $color : 'text-red-500' }}" cx="50" cy="50" rx="35" ry="40" fill="currentColor" opacity="0.8" transform="rotate({{ rand(-20, 20) }} 50 50)"/>
                                             <circle cx="50" cy="50" r="6" fill="#000" opacity="0.3"/>
                                         </svg>
                                         <p class="text-sm text-gray-400 capitalize mb-1">{{ $style }}</p>
-                                        <p class="font-bold" style="color: {{ $rate > 0 ? '#6BCB77' : '#E63946' }}">
+                                        <p class="font-bold  {{ $rate > 0 ? $color : 'text-red-500' }}">
                                             {{ $rate > 0 ? '+' : '' }}{{ number_format($rate, 1) }}
                                         </p>
                                     </div>
@@ -563,7 +569,7 @@ new class extends Component {
             <!-- TRAINING LOAD -->
             <section class="relative mb-12">
                 
-                <div class="bg-gray-50 rounded-3xl p-8 border border-orange-400/20">
+                <div class="bg-gray-50 rounded-3xl p-8 border border-blue-400/20">
                     <h2 class="text-3xl font-bold text-gray-600 mb-2 flex items-center">
                         <span class="text-4xl mr-3"><svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -612,7 +618,7 @@ new class extends Component {
                                 </div>
                                 <div class="ml-8">
                                     <!-- Triangle visualization -->
-                                    <svg class="w-32 h-32" viewBox="0 0 100 100">http://127.0.0.1:8000/newStats
+                                    <svg class="w-32 h-32" viewBox="0 0 100 100">
                                         @php
                                             $ratio = $userStats->acute_chronic_ratio ?? 1;
                                            
@@ -629,7 +635,7 @@ new class extends Component {
                         
 
                         <!-- Peak Frequency: Mountain -->
-                        <div class="p-6 bg-gray-200/50 rounded-2xl border border-yellow-400/10 sm:col-span-2">
+                        <div class="p-6 bg-gray-200/50 rounded-2xl border border-pink-400/10 sm:col-span-2">
                             <h3 class="text-xl font-semibold text-gray-600 mb-4">{{ __('Peak Performance Frequency') }}</h3>
                             <div class="flex items-end justify-between">
                                 <div>
@@ -655,14 +661,14 @@ new class extends Component {
             </section>
 
             <!-- Documentation Link -->
-            <div class="bg-gradient-to-r from-blue-200/10 to-green-200/10 border-l-4 border-blue-400 p-6 rounded-r-2xl backdrop-blur">
+            <div class="bg-indigo-200/10 border-l-4 border-indigo-400 p-6 rounded-r-2xl backdrop-blur">
                 <div class="flex items-start">
                     
                     <div>
                         <h3 class="text-lg font-bold text-gray-600 mb-2">{{ __('Want to learn more?') }}</h3>
                         <p class="text-gray-400">
                             {{ __('For detailed explanations of how each statistic is calculated, see the') }}
-                            <a href="https://github.com/paulhenry46/TopoClimb/blob/main/STATS_CALCULATION_DOCUMENTATION.md" target="_blank" class="font-semibold text-blue-400 hover:text-green-400 underline transition-colors">
+                            <a href="https://github.com/paulhenry46/TopoClimb/blob/main/STATS_CALCULATION_DOCUMENTATION.md" target="_blank" class="font-semibold text-indigo-400 hover:text-indigo-800 underline transition-colors">
                                 {{ __('Statistics Calculation Documentation') }}
                             </a>
                         </p>

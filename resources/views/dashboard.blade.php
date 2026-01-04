@@ -25,7 +25,7 @@
                             <h2 class="text-xl font-semibold text-gray-900">
                                 {{ __('Stats') }}
                             </h2>
-                            <a  wire:navigate href="/newStats" class="inline-block px-4 py-2 bg-gray-500 text-white text-sm font-semibold rounded hover:bg-gray-600 transition">{{ __('See training Stats') }}</a>
+                            <a  wire:navigate href="{{ route('newStats') }}"><x-button type='button' class=''>{{ __('See training Stats') }}</x-button></a>
                         </div>
                     </div>
                     <livewire:dashboard.stats class='h-full'/>
