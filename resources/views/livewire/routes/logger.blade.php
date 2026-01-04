@@ -55,16 +55,6 @@ new class extends Component {
 
     public function save(){
 
-      $existingLog = Log::where('user_id', $this->user->id)
-        ->where('route_id', $this->route->id)
-        ->where('way', $this->way)
-        ->exists();
-
-    if ($existingLog) {
-        $this->dispatch('action_error', title: 'Duplicate Log', message: 'You have already logged this route.');
-        return;
-    }
-
         $this->validate();
         $log = new Log;
         $log->user_id = $this->user->id;
@@ -74,6 +64,8 @@ new class extends Component {
         $log->comment = $this->comment;
         $log->grade = $this->cotation;
         $log->way = $this->way;
+        // Set is_public to false for tentative logs
+        $log->is_public = ($this->type !== 'tentative');
         $log->save();
     }
     protected function gradeToInt($grade){
@@ -205,6 +197,29 @@ new class extends Component {
                             <p class="text-sm text-gray-500">{{ __('Here, we know the movements, we\'ve already worked the way.') }}</p>
                           </div>
                            <div class="flex-shrink-0 self-center text-emerald-500" x-show='type =="work"'>
+                            <x-icons.icon-check/>
+                          </div>
+                        </div>
+                      </li>
+                      <li x-on:click='type = "tentative"'>
+                        <div class="group relative flex items-start space-x-3 py-4">
+                          <div class="flex-shrink-0">
+                            <span class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gray-500">
+                              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                              </svg>
+                            </span>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-gray-900">
+                              <a href="#">
+                                <span class="absolute inset-0" aria-hidden="true"></span>
+                                {{__('Attempt (Private)')}}
+                              </a>
+                            </div>
+                            <p class="text-sm text-gray-500">{{ __('Log an attempt on the route. This log will be private and only visible to you for tracking your progress.') }}</p>
+                          </div>
+                           <div class="flex-shrink-0 self-center text-gray-500" x-show='type =="tentative"'>
                             <x-icons.icon-check/>
                           </div>
                         </div>

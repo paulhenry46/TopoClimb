@@ -74,6 +74,7 @@ class Team extends Model
         
         // Get logs from all team members
         $logs = Log::whereIn('route_id', $routeIds)
+            ->where('is_public', true)
             ->whereIn('user_id', $this->users->pluck('id'))
             ->whereBetween('created_at', [$contest->start_date, $contest->end_date]);
 

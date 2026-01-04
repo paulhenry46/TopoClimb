@@ -18,3 +18,6 @@ Schedule::call(function () {
       SoftDeleteRoute::dispatchSync($route);
    }
 })->daily();
+
+// Calculate user statistics nightly at 2 AM
+Schedule::command('stats:calculate')->dailyAt('02:00');

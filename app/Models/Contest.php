@@ -193,6 +193,7 @@ class Contest extends Model
     public function verifiedLogs()
     {
         return Log::whereIn('route_id', $this->routes->pluck('id'))
+            ->where('is_public', true)
             ->whereNotNull('verified_by')
             ->whereBetween('created_at', [$this->start_date, $this->end_date])
             ->get();
@@ -284,6 +285,7 @@ class Contest extends Model
 
         // Calculate dynamic points based on number of climbers who completed it
         $query = Log::where('route_id', $routeId)
+            ->where('is_public', true)
             ->whereBetween('created_at', [$this->start_date, $this->end_date]);
 
         // In official mode, only count verified logs
@@ -331,6 +333,7 @@ class Contest extends Model
 
         // Build base query
         $logsQuery = Log::whereIn('route_id', $routeIds)
+            ->where('is_public', true)
             ->whereBetween('created_at', [$startDate, $endDate]);
 
         // Filter by mode
@@ -401,6 +404,7 @@ class Contest extends Model
 
             // Get unique routes climbed by team
             $logs = Log::whereIn('route_id', $routeIds)
+                ->where('is_public', true)
                 ->whereIn('user_id', $team->users->pluck('id'))
                 ->whereBetween('created_at', [$this->start_date, $this->end_date]);
 
